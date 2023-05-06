@@ -58,6 +58,7 @@ public class LoginService {
             loginMsg = MsgConstants.LOGIN_ID_EX_001;
             loginUser = new LoginUser("", loginMsg);
         }
+        loginUser.setId(id);
         return loginUser;
     }
 }
