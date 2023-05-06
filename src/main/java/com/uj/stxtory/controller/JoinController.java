@@ -23,6 +23,10 @@ public class JoinController {
     public String join(Model model,
                        String userId, String userName, String userPassword,
                        String userEmail, String userPhone){
+        if(userId.trim().isEmpty() || userName.trim().isEmpty() || userPassword.trim().isEmpty()){
+            model.addAttribute(MsgConstants.BLANK_CHECK, MsgConstants.JOIN_ACCOUNT_EX_001);
+            return "/join";
+        }
         String joinComplete = joinService.join(userId, userName, userPassword, userEmail, userPhone);
         if (MsgConstants.SUCCESS.equals(joinComplete)){
             return "redirect:/";
