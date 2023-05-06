@@ -18,7 +18,7 @@ public class LoginService {
     public LoginUser loginSession(String id){
         String loginMsg = MsgConstants.SUCCESS;
 
-        Optional<TbUser> byUserId = userRepository.findByUserId(id);
+        Optional<TbUser> byUserId = userRepository.findByUserLoginId(id);
         LoginUser loginUser = null;
         if (byUserId.isPresent()){
             loginUser = new LoginUser(byUserId.get().getUserName(), loginMsg);
@@ -45,7 +45,7 @@ public class LoginService {
             loginMsg = MsgConstants.LOGIN_PWD_EX_002;
             return new LoginUser("", loginMsg);
         }
-        Optional<TbUser> byUserId = userRepository.findByUserId(id);
+        Optional<TbUser> byUserId = userRepository.findByUserLoginId(id);
         LoginUser loginUser = null;
         if (byUserId.isPresent()){
             if(!pwd.equals(byUserId.get().getUserPassword())){

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
@@ -20,13 +21,15 @@ public class LoginController {
     LoginService loginService;
 
     @GetMapping(value = "/logout")
-    public String logout(HttpSession session){
+    public String logout(HttpServletRequest request){
+        HttpSession session = request.getSession();
         session.setAttribute("id",null);
         return "redirect:/";
     }
 
     @GetMapping(value = "/")
-    public String loginPage(Model model, HttpSession session){
+    public String loginPage(Model model, HttpServletRequest request){
+        HttpSession session = request.getSession();
         Object idSession = session.getAttribute("id");
         if(idSession != null){
             LoginUser loginUser = loginService.loginSession((String) idSession);
@@ -42,7 +45,8 @@ public class LoginController {
 
     @PostMapping(value = "/")
     @ResponseBody
-    public LoginUser login(HttpSession session, @RequestBody Map<String, String> data){
+    public LoginUser login(HttpServletRequest request, @RequestBody Map<String, String> data){
+        HttpSession session = request.getSession();
         LoginUser loginUser = loginService.login(data.get("userId"), data.get("userPassword"));
         if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
             session.setAttribute("id",loginUser.getId());

@@ -27,7 +27,7 @@ class StxtoryApplicationTests {
 		String name = "테스트";
 
 		TbUser tbUser = new TbUser();
-		tbUser.setUserId(id);
+		tbUser.setUserLoginId(id);
 		tbUser.setUserPassword(pwd);
 		tbUser.setUserName(name);
 

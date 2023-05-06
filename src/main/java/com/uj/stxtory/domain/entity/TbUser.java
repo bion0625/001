@@ -14,8 +14,8 @@ public class TbUser {
     @GeneratedValue
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private String userId;
+    @Column(name = "user_login_id", nullable = false)
+    private String userLoginId;
 
     @Column(name = "user_password", nullable = false)
     private String userPassword;

@@ -20,14 +20,14 @@ public class JoinService {
 
         String complete = MsgConstants.FAIL;
 
-        Optional<TbUser> byUserId = userRepository.findByUserId(userId);
+        Optional<TbUser> byUserId = userRepository.findByUserLoginId(userId);
         if (byUserId.isPresent()){
             complete = MsgConstants.DUPLICATE_ID;
             return complete;
         }
 
         TbUser tbUser = new TbUser();
-        tbUser.setUserId(userId);
+        tbUser.setUserLoginId(userId);
         tbUser.setUserName(userName);
         tbUser.setUserPassword(userPassword);
         tbUser.setUserEmail(userEmail);
