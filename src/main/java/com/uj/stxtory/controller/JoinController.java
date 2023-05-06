@@ -7,6 +7,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.Map;
 
 @Controller
 public class JoinController {
@@ -20,20 +24,27 @@ public class JoinController {
     }
 
     @PostMapping(value = "/join")
-    public String join(Model model,
-                       String userId, String userName, String userPassword,
-                       String userEmail, String userPhone){
+    @ResponseBody
+    public Map<String, String> join(Model model, @RequestBody Map<String, String> data){
+        String userId = data.get("userId");
+        String userName = data.get("userName");
+        String userPassword = data.get("userPassword");
+        String userEmail = data.get("userEmail");
+        String userPhone = data.get("userPhone");
         if(userId.trim().isEmpty() || userName.trim().isEmpty() || userPassword.trim().isEmpty()){
-            model.addAttribute(MsgConstants.BLANK_CHECK, MsgConstants.JOIN_ACCOUNT_EX_001);
-            return "/join";
+            data.put("MSG",MsgConstants.JOIN_ACCOUNT_EX_001);
+            return data;
         }
         String joinComplete = joinService.join(userId, userName, userPassword, userEmail, userPhone);
         if (MsgConstants.SUCCESS.equals(joinComplete)){
-            return "redirect:/";
+            data.put("MSG",MsgConstants.SUCCESS);
+            return data;
         }else if(MsgConstants.DUPLICATE_ID.equals(joinComplete)){
-            model.addAttribute(MsgConstants.DUPLICATE_ID,userId + MsgConstants.JOIN_ID_EX_001);
+            data.put("MSG",userId + MsgConstants.JOIN_ID_EX_001);
+            return data;
         }
-        return "/join";
+        data.put("MSG",userId + MsgConstants.JOIN_BASE_EX_001);
+        return data;
     }
 
 }

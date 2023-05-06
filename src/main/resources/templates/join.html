@@ -34,6 +34,8 @@
         let name = document.querySelector('#userName').value;
         let pwd = document.querySelector('#userPassword').value;
         let pwdCheck = document.querySelector('#userPasswordCheck').value;
+        let email = document.querySelector('#userEmail').value;
+        let phone = document.querySelector('#userPhone').value;
         let joinForm = document.querySelector('#joinForm');
         if(id === ''){
             alert('아이디를 입력해주세요');
@@ -59,7 +61,29 @@
             alert('아이디, 이름, 비밀번호에는 공백을 넣을 수 없습니다.');
             return;
         }
-        joinForm.submit();
+        fetch("/join",{
+            method:"POST",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            body:JSON.stringify({
+                userId:id,
+                userName:name,
+                userPassword:pwd,
+                userEmail:email,
+                userPhone:phone
+            })
+        }).then(data => data.json())
+            .then(data => {
+                console.log(data);
+                if(data.MSG === 'SUCCESS'){
+                    alert('가입되셨습니다.');
+                    location.href = '/';
+                }else{
+                    alert(data.MSG);
+                }
+            })
+        // joinForm.submit();
     }
     function back(){
         location.href="/";
