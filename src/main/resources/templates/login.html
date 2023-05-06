@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Login</title>
+    <link rel="stylesheet" href="../css/bootstrap.min.css">
 </head>
 <body>
 <form action="/" method="post" id="loginForm">
@@ -13,26 +14,6 @@
     <button type="button" onclick="login()">로그인</button>
     <a href="/join">회원가입</a>
 </form>
-<script>
-    function login(){
-        fetch('/', {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                userId: document.querySelector('#userId').value,
-                userPassword: document.querySelector('#userPassword').value,
-            }),
-        }).then(data => data.json())
-            .then(data => {
-                if(data.loginCheck === "SUCCESS"){
-                    location.href="/main";
-                }else{
-                    alert(data.loginCheck);
-                }
-            });
-    }
-</script>
+<script src="../js/login.js"></script>
 </body>
 </html>
