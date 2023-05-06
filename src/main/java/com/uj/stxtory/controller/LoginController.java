@@ -7,8 +7,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.servlet.http.HttpSession;
+import java.util.Map;
 
 @Controller
 public class LoginController {
@@ -38,14 +41,12 @@ public class LoginController {
     }
 
     @PostMapping(value = "/")
-    public String login(Model model, HttpSession session, String userId, String userPassword){
-        LoginUser loginUser = loginService.login(userId, userPassword);
-        model.addAttribute("loginUser", loginUser);
-
+    @ResponseBody
+    public LoginUser login(HttpSession session, @RequestBody Map<String, String> data){
+        LoginUser loginUser = loginService.login(data.get("userId"), data.get("userPassword"));
         if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
             session.setAttribute("id",loginUser.getId());
-            return "redirect:/main";
         }
-        return "/login";
+        return loginUser;
     }
 }
