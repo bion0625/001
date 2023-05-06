@@ -1,5 +1,6 @@
 package com.uj.stxtory.service;
 
+import com.uj.stxtory.domain.dto.LoginUser;
 import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,15 +14,50 @@ public class LoginService {
     @Autowired
     UserRepository userRepository;
 
-    public String login(String id, String pwd){
-        Optional<TbUser> byUserId = userRepository.findByUserId(id);
-        if(byUserId.isEmpty()){
-            return "noId";
-        }
-        if(!pwd.equals(byUserId.get().getUserPassword())){
-            return "noPwd";
-        }
+    public LoginUser loginSession(String id){
+        String loginMsg = "SUCCESS";
 
-        return "SUCCESS";
+        Optional<TbUser> byUserId = userRepository.findByUserId(id);
+        LoginUser loginUser = null;
+        if (byUserId.isPresent()){
+            loginUser = new LoginUser(byUserId.get().getUserName(), loginMsg);
+        }else{
+            loginMsg = "없는 아이디입니다.";
+            loginUser = new LoginUser("", loginMsg);
+        }
+        loginUser.setId(id);
+        return loginUser;
+    }
+
+    public LoginUser login(String id, String pwd){
+        String loginMsg = "SUCCESS";
+
+        if (id.isEmpty() && pwd.isEmpty()){
+            loginMsg = "로그인 정보를 입력해주세요.";
+            return new LoginUser("", loginMsg);
+        }
+        if (id.isEmpty()){
+            loginMsg = "아이디를 입력해주세요.";
+            return new LoginUser("", loginMsg);
+        }
+        if (pwd.isEmpty()){
+            loginMsg = "비밀번호를 입력해주세요.";
+            return new LoginUser("", loginMsg);
+        }
+        Optional<TbUser> byUserId = userRepository.findByUserId(id);
+        LoginUser loginUser = null;
+        if (byUserId.isPresent()){
+            if(!pwd.equals(byUserId.get().getUserPassword())){
+                loginMsg = "비밀번호가 틀렸습니다.";
+                loginUser = new LoginUser("", loginMsg);
+            }else{
+                loginUser = new LoginUser(byUserId.get().getUserName(), loginMsg);
+            }
+        }else{
+            loginMsg = "없는 아이디입니다.";
+            loginUser = new LoginUser("", loginMsg);
+        }
+        loginUser.setId(id);
+        return loginUser;
     }
 }

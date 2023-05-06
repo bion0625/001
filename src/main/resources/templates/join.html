@@ -6,7 +6,59 @@
 </head>
 <body>
 <p>회원가입 페이지</p>
+<p><span th:if="${duplicateId}!=null" th:text="${duplicateId}"></span></p>
+<form id="joinForm" action="/join" method="post">
+    <label for="userId">아이디</label>
+    <input type="text" name="userId" id="userId" onkeydown="textCheck(this)" required>
+    <label for="userName">이름</label>
+    <input type="text" name="userName" id="userName" onkeydown="textCheck(this)" required>
+    <label for="userPassword">비밀번호</label>
+    <input type="password" name="userPassword" id="userPassword" required>
+    <label for="userPasswordCheck">비밀번호 확인</label>
+    <input type="password" name="userPasswordCheck" id="userPasswordCheck" required>
+    <label for="userEmail">이메일</label>
+    <input type="text" name="userEmail" id="userEmail">
+    <label for="userPhone">전화번호</label>
+    <input type="text" name="userPhone" id="userPhone">
+    <button type="button" onclick="join()">가입</button>
+    <button type="button" onclick="back()">뒤로가기</button>
+</form>
 <script>
+    function textCheck(ob){
+        let text = ob.value;
+        ob.value = text.replace(' ','');
+    }
+    function join(){
+        let id = document.querySelector('#userId').value;
+        let name = document.querySelector('#userName').value;
+        let pwd = document.querySelector('#userPassword').value;
+        let pwdCheck = document.querySelector('#userPasswordCheck').value;
+        let joinForm = document.querySelector('#joinForm');
+        if(id === ''){
+            alert('아이디를 입력해주세요');
+            return;
+        };
+        if(name === ''){
+            alert('아이디를 입력해주세요');
+            return;
+        };
+        if(pwd === ''){
+            alert('비밀번호를 입력해주세요');
+            return;
+        };
+        if(pwdCheck === ''){
+            alert('비밀번호를 확인해주세요');
+            return;
+        };
+        if(pwd !== pwdCheck){
+            alert('비밀번호와 비밀번호 확인 값이 다릅니다');
+            return;
+        }
+        joinForm.submit();
+    }
+    function back(){
+        location.href="/";
+    }
 </script>
 </body>
 </html>

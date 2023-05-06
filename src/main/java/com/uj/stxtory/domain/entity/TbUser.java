@@ -23,7 +23,10 @@ public class TbUser {
     @Column(name = "user_name", nullable = false)
     private String userName;
 
-    @Column(name = "user_phone", nullable = false)
+    @Column(name = "user_email", nullable = true)
+    private String userEmail;
+
+    @Column(name = "user_phone", nullable = true)
     private String userPhone;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")

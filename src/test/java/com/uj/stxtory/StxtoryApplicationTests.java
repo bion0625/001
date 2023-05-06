@@ -5,7 +5,6 @@ import com.uj.stxtory.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 import java.util.List;
@@ -26,13 +25,11 @@ class StxtoryApplicationTests {
 		String id = "stxtory";
 		String pwd = "11dnjf3dlf#";
 		String name = "테스트";
-		String phone = "01023977156";
 
 		TbUser tbUser = new TbUser();
 		tbUser.setUserId(id);
 		tbUser.setUserPassword(pwd);
 		tbUser.setUserName(name);
-		tbUser.setUserPhone(phone);
 
 		userRepository.save(tbUser);
 	}
