@@ -15,10 +15,5 @@
     <button type="submit" onclick="login()">로그인</button>
     <a href="/join">회원가입</a>
 </form>
-<div>
-    <span th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'" th:text="${loginUser.name}">유저 이름</span>
-    <span th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'">님, 로그인 성공하셨습니다.</span>
-    <a th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'" href="/logout">logout</a>
-</div>
 </body>
 </html>

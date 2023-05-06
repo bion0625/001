@@ -31,10 +31,10 @@ public class LoginController {
 
             if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
                 session.setAttribute("id",loginUser.getId());
-//            return "main";
+            return "redirect:/main";
             }
         }
-        return "login";
+        return "/login";
     }
 
     @PostMapping(value = "/")
@@ -44,8 +44,8 @@ public class LoginController {
 
         if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
             session.setAttribute("id",loginUser.getId());
-//            return "main";
+            return "redirect:/main";
         }
-        return "login";
+        return "/login";
     }
 }

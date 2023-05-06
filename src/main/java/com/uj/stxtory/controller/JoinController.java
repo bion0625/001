@@ -29,7 +29,7 @@ public class JoinController {
         }else if(MsgConstants.DUPLICATE_ID.equals(joinComplete)){
             model.addAttribute(MsgConstants.DUPLICATE_ID,userId + MsgConstants.JOIN_ID_EX_001);
         }
-        return "join";
+        return "/join";
     }
 
 }
