@@ -18,7 +18,7 @@
 <div>
     <span th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'" th:text="${loginUser.name}">유저 이름</span>
     <span th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'">님, 로그인 성공하셨습니다.</span>
-    <a href="/logout">logout</a>
+    <a th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'" href="/logout">logout</a>
 </div>
 </body>
 </html>

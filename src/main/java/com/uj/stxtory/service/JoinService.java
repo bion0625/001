@@ -1,5 +1,6 @@
 package com.uj.stxtory.service;
 
+import com.uj.stxtory.MsgConstants;
 import com.uj.stxtory.domain.dto.LoginUser;
 import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.repository.UserRepository;
@@ -17,11 +18,11 @@ public class JoinService {
     public String join(String userId, String userName, String userPassword,
                         String userEmail, String userPhone){
 
-        String complete = "fail";
+        String complete = MsgConstants.FAIL;
 
         Optional<TbUser> byUserId = userRepository.findByUserId(userId);
         if (byUserId.isPresent()){
-            complete = "duplicateId";
+            complete = MsgConstants.DUPLICATE_ID;
             return complete;
         }
 
@@ -34,7 +35,7 @@ public class JoinService {
 
         TbUser save = userRepository.save(tbUser);
         if (save != null && save.getId() != null){
-            complete = "SUCCESS";
+            complete = MsgConstants.SUCCESS;
         }
 
         return complete;

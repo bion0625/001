@@ -1,5 +1,6 @@
 package com.uj.stxtory.controller;
 
+import com.uj.stxtory.MsgConstants;
 import com.uj.stxtory.service.JoinService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,10 +24,10 @@ public class JoinController {
                        String userId, String userName, String userPassword,
                        String userEmail, String userPhone){
         String joinComplete = joinService.join(userId, userName, userPassword, userEmail, userPhone);
-        if ("SUCCESS".equals(joinComplete)){
+        if (MsgConstants.SUCCESS.equals(joinComplete)){
             return "redirect:/";
-        }else if("duplicateId".equals(joinComplete)){
-            model.addAttribute("duplicateId",userId + "는 이미 존재하는 아이디입니다.");
+        }else if(MsgConstants.DUPLICATE_ID.equals(joinComplete)){
+            model.addAttribute(MsgConstants.DUPLICATE_ID,userId + MsgConstants.JOIN_ID_EX_001);
         }
         return "join";
     }
