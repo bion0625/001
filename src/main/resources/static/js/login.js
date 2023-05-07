@@ -1,3 +1,7 @@
+function join(){
+    location.href="/join";
+}
+
 function login(){
     fetch('/', {
         method: "POST",
