@@ -82,6 +82,7 @@
 
 </head>
 <body class="text-center">
+<script src="../js/common/loading.js"></script>
 <script src="../js/login.js"></script>
 
 <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
@@ -119,10 +120,14 @@
                 <input type="checkbox" value="remember-me"> Remember me
             </label>
         </div>-->
-        <button class="w-100 btn btn-lg btn-primary" type="button" onclick="login()">Login</button>
-        <button class="w-100 btn btn-lg" type="button" onclick="join()">Join</button>
+        <button class="w-100 btn btn-lg btn-primary" type="button" onclick="login()">로그인</button>
+        <button class="w-100 btn btn-lg btn-secondary" type="button" onclick="signUp()">가입</button>
         <!--<p class="mt-5 mb-3 text-body-secondary">&copy; 2017–2023</p>-->
     </form>
+    <div class="clearfix text-center d-none" id="loading">
+        <div class="spinner-border float-end" role="status">
+        </div>
+    </div>
 </main>
 </body>
 </html>

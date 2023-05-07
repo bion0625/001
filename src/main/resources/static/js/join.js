@@ -2,7 +2,8 @@ function textCheck(ob){
     let text = ob.value;
     ob.value = text.replace(' ','');
 }
-function join(){
+function signUp(){
+    loadingFormStart();
     let id = document.querySelector('#userId').value;
     let name = document.querySelector('#userName').value;
     let pwd = document.querySelector('#userPassword').value;
@@ -48,7 +49,7 @@ function join(){
         })
     }).then(data => data.json())
         .then(data => {
-            console.log(data);
+            loadingFormEnd();
             if(data.MSG === 'SUCCESS'){
                 alert('가입되셨습니다.');
                 location.href = '/';
@@ -59,5 +60,6 @@ function join(){
     // joinForm.submit();
 }
 function back(){
+    loadingFormStart();
     location.href="/";
 }
