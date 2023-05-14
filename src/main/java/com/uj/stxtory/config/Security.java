@@ -26,14 +26,14 @@ public class Security implements WebMvcConfigurer {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         /* @formatter:off */
         http
-//                .csrf().disable()//todo loginPagecustom을 위해 추가 한 부분, 검색 필요
+                .csrf().disable()//todo loginPagecustom을 위해 추가 한 부분, 검색 필요
                 .authorizeRequests()
 //                .antMatchers("/", "/home", "/signUp").permitAll() // 설정한 리소스의 접근을 인증절차 없이 허용
                 .anyRequest().authenticated() // 그 외 모든 리소스를 의미하며 인증 필요
                 .and()
                 .formLogin()
                 .permitAll()
-//                .loginPage("/login") // 기본 로그인 페이지
+                .loginPage("/login") // 기본 로그인 페이지
                 .and()
                 .logout()
                 .permitAll()

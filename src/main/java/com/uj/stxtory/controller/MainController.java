@@ -14,13 +14,8 @@ import javax.servlet.http.HttpSession;
 
 @Controller
 public class MainController extends BaseController{
-    @GetMapping(value = "/main")
+    @GetMapping(value = "/")
     public String main(Model model, HttpServletRequest request){
-        HttpSession session = request.getSession();
-        String sessionCheckView = sessionCheck(model, session);
-        if (MsgConstants.SUCCESS.equals(sessionCheckView)){
-            sessionCheckView = "/main";
-        }
-        return sessionCheckView;
+        return "/main";
     }
 }
