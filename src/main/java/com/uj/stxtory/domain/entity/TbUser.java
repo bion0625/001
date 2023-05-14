@@ -23,6 +23,9 @@ public class TbUser {
     @Column(name = "user_name", nullable = false)
     private String userName;
 
+    @Column(name = "user_role", nullable = false)
+    private String userRole = "USER";
+
     @Column(name = "user_email", nullable = true)
     private String userEmail;
 

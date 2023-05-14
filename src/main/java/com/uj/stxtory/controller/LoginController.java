@@ -27,30 +27,39 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @GetMapping(value = "/")
-    public String loginPage(Model model, HttpServletRequest request){
-        HttpSession session = request.getSession();
-        Object idSession = session.getAttribute("id");
-        if(idSession != null){
-            LoginUser loginUser = loginService.loginSession((String) idSession);
-            model.addAttribute("loginUser", loginUser);
+//    @GetMapping(value = "/login")
+//    public String loginPage(Model model, HttpServletRequest request){
+//        HttpSession session = request.getSession();
+//        Object idSession = session.getAttribute("id");
+//        if(idSession != null){
+//            LoginUser loginUser = loginService.loginSession((String) idSession);
+//            model.addAttribute("loginUser", loginUser);
+//
+//            if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
+//                session.setAttribute("id",loginUser.getId());
+//            return "redirect:/main";
+//            }
+//        }
+//        return "login";
+//    }
+//
+//    @PostMapping(value = "/")
+//    @ResponseBody
+//    public LoginUser login(HttpServletRequest request, @RequestBody Map<String, String> data){
+//        HttpSession session = request.getSession();
+//        LoginUser loginUser = loginService.login(data.get("userId"), data.get("userPassword"));
+//        if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
+//            session.setAttribute("id",loginUser.getId());
+//        }
+//        return loginUser;
+//    }
 
-            if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
-                session.setAttribute("id",loginUser.getId());
-            return "redirect:/main";
-            }
-        }
+    @GetMapping(value = "/login")
+    public String loginPage(Model model, HttpServletRequest request){
         return "/login";
     }
-
-    @PostMapping(value = "/")
-    @ResponseBody
-    public LoginUser login(HttpServletRequest request, @RequestBody Map<String, String> data){
-        HttpSession session = request.getSession();
-        LoginUser loginUser = loginService.login(data.get("userId"), data.get("userPassword"));
-        if (loginUser != null && !loginUser.getLoginCheck().isEmpty() && "SUCCESS".equals(loginUser.getLoginCheck())){
-            session.setAttribute("id",loginUser.getId());
-        }
-        return loginUser;
+    @PostMapping(value = "/login")
+    public String login(Model model, HttpServletRequest request){
+        return "/main";
     }
 }
