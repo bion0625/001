@@ -33,11 +33,9 @@ public class SecurityService implements UserDetailsService {
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
         Optional<TbUser> tbUser = userRepository.findByUserLoginId(userLoginId);
-        System.out.println("tbUser = " + tbUser);
         if (tbUser.isPresent()){
             TbUser user = tbUser.get();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getUserRole()));
-            System.out.println("user = " + user);
             return new User(user.getUserLoginId(), user.getUserPassword(), grantedAuthorities);
         }else{
             throw new UsernameNotFoundException("can not found User : " + userLoginId);
