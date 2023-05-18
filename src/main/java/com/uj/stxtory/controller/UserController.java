@@ -7,9 +7,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import javax.servlet.http.HttpServletRequest;
 
 @Controller
-public class MainController{
-    @GetMapping(value = "/")
-    public String main(Model model, HttpServletRequest request){
-        return "/main";
+public class UserController {
+
+    @GetMapping(value = "/login")
+    public String loginPage(Model model, HttpServletRequest request){
+        return "/login";
     }
 }
