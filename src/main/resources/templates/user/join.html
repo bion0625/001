@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Join</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f0f0;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    form {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+    }
+    h2 {
+      color: #333;
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: calc(100% - 20px);
+      padding: 10px;
+      margin: 10px 0;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      box-sizing: border-box;
+    }
+    span {
+      color: #cc0000;
+    }
+    button {
+      background-color: #333;
+      color: #fff;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+    button:hover {
+      background-color: #555;
+    }
+    button[type="button"] {
+      background-color: #888;
+    }
+  </style>
+  <script>
+    function validatePassword() {
+      var password = document.getElementById("joinPassword").value;
+      var confirmPassword = document.getElementById("joinPasswordCheck").value;
+
+      if (password !== confirmPassword) {
+        alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+        return false;
+      }
+      return true;
+    }
+  </script>
+</head>
+<body>
+<form method="post" th:object="${user}" th:action="@{/join}" onsubmit="return validatePassword()">
+  <h2>회원가입</h2>
+  <p>
+    <input type="text" id="joinLoginId" name="userLoginId" placeholder="LOGIN ID" th:field="*{userLoginId}">
+    <span th:if="${#fields.hasErrors('userLoginId')}" th:errors="*{userLoginId}"></span>
+  </p>
+  <p>
+    <input type="password" id="joinPassword" name="userPassword" placeholder="PASSWORD" th:field="*{userPassword}">
+    <span th:if="${#fields.hasErrors('userPassword')}" th:errors="*{userPassword}"></span>
+  </p>
+  <p>
+    <input type="password" id="joinPasswordCheck" placeholder="PASSWORD CHECK">
+    <span style="display:none;" id="joinPasswordCheckMsg">비밀번호와 비밀번호 확인이 일치하지 않습니다.</span>
+  </p>
+  <p>
+    <input type="text" id="joinName" name="userName" placeholder="NAME" th:field="*{userName}">
+    <span th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></span>
+  </p>
+  <p>
+    <input type="text" id="joinPhone" name="userPhone" placeholder="PHONE" th:field="*{userPhone}">
+    <span th:if="${#fields.hasErrors('userPhone')}" th:errors="*{userPhone}"></span>
+  </p>
+  <p>
+    <input type="text" id="joinEmail" name="userEmail" placeholder="E-MAIL" th:field="*{userEmail}">
+    <span th:if="${#fields.hasErrors('userEmail')}" th:errors="*{userEmail}"></span>
+  </p>
+  <p>
+    <button type="submit">회원가입</button>
+    <button type="button" onclick="window.location.href='/login'">로그인</button>
+  </p>
+</form>
+<script>
+  const passwordCheckHandler = () => {
+    if (document.querySelector("#joinPasswordCheck").value == document.querySelector("#joinPassword").value) {
+      document.querySelector("#joinPasswordCheckMsg").style = "display:none;";
+    } else document.querySelector("#joinPasswordCheckMsg").style = "display:block;";
+  };
+  document.querySelector("#joinPassword").addEventListener("keyup", passwordCheckHandler);
+  document.querySelector("#joinPasswordCheck").addEventListener("keyup", passwordCheckHandler);
+</script>
+</body>
+</html>

@@ -2,7 +2,6 @@ package com.uj.stxtory.service;
 
 import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,7 +9,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +19,7 @@ import java.util.Set;
 @Service
 public class SecurityService implements UserDetailsService {
 
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     public SecurityService(@Autowired UserRepository userRepository){
         this.userRepository = userRepository;
@@ -36,7 +34,11 @@ public class SecurityService implements UserDetailsService {
         if (tbUser.isPresent()){
             TbUser user = tbUser.get();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getUserRole()));
-            return new User(user.getUserLoginId(), user.getUserPassword(), grantedAuthorities);
+            return User.builder()
+                    .username(user.getUserLoginId())
+                    .password(user.getUserPassword())
+                    .authorities(grantedAuthorities)
+                    .build();
         }else{
             throw new UsernameNotFoundException("can not found User : " + userLoginId);
         }
