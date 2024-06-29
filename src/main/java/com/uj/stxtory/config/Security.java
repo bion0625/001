@@ -22,12 +22,14 @@ public class Security implements WebMvcConfigurer {
         http
                 .csrf().disable()//todo loginPagecustom을 위해 추가 한 부분, 검색 필요
                 .authorizeRequests()
-                .antMatchers("/", "/home", "/join").permitAll() // 설정한 리소스의 접근을 인증절차 없이 허용
+//                .antMatchers("/", "/home", "/join").permitAll() // 설정한 리소스의 접근을 인증절차 없이 허용
+                .antMatchers("/join").permitAll() // 설정한 리소스의 접근을 인증절차 없이 허용
                 .anyRequest().authenticated() // 그 외 모든 리소스를 의미하며 인증 필요
                 .and()
                 .formLogin()
                 .permitAll()
                 .loginPage("/login") // 기본 로그인 페이지
+                .defaultSuccessUrl("/", true) // 로그인 성공 후 이동할 URL
                 .and()
                 .logout()
                 .permitAll()
