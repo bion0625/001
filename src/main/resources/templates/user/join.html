@@ -71,27 +71,27 @@
 <form method="post" th:object="${user}" th:action="@{/join}" onsubmit="return validatePassword()">
   <h2>회원가입</h2>
   <p>
-    <input type="text" id="joinLoginId" name="userLoginId" placeholder="LOGIN ID" th:field="*{userLoginId}">
+    <input type="text" id="joinLoginId" name="userLoginId" placeholder="LOGIN ID" th:field="*{userLoginId}" required>
     <span th:if="${#fields.hasErrors('userLoginId')}" th:errors="*{userLoginId}"></span>
   </p>
   <p>
-    <input type="password" id="joinPassword" name="userPassword" placeholder="PASSWORD" th:field="*{userPassword}">
+    <input type="password" id="joinPassword" name="userPassword" placeholder="PASSWORD" th:field="*{userPassword}" required>
     <span th:if="${#fields.hasErrors('userPassword')}" th:errors="*{userPassword}"></span>
   </p>
   <p>
-    <input type="password" id="joinPasswordCheck" placeholder="PASSWORD CHECK">
+    <input type="password" id="joinPasswordCheck" placeholder="PASSWORD CHECK" required>
     <span style="display:none;" id="joinPasswordCheckMsg">비밀번호와 비밀번호 확인이 일치하지 않습니다.</span>
   </p>
   <p>
-    <input type="text" id="joinName" name="userName" placeholder="NAME" th:field="*{userName}">
+    <input type="text" id="joinName" name="userName" placeholder="NAME" th:field="*{userName}" required>
     <span th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></span>
   </p>
   <p>
-    <input type="text" id="joinPhone" name="userPhone" placeholder="PHONE" th:field="*{userPhone}">
+    <input type="text" id="joinPhone" name="userPhone" placeholder="PHONE" th:field="*{userPhone}" required>
     <span th:if="${#fields.hasErrors('userPhone')}" th:errors="*{userPhone}"></span>
   </p>
   <p>
-    <input type="text" id="joinEmail" name="userEmail" placeholder="E-MAIL" th:field="*{userEmail}">
+    <input type="text" id="joinEmail" name="userEmail" placeholder="E-MAIL" th:field="*{userEmail}" required>
     <span th:if="${#fields.hasErrors('userEmail')}" th:errors="*{userEmail}"></span>
   </p>
   <p>
