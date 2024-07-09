@@ -1,15 +1,15 @@
 package com.uj.stxtory.domain.entity;
 
 import lombok.Data;
-import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.persistence.*;
-import java.time.LocalDateTime;
-import java.util.Date;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
 @Entity
 @Data
-public class TbUser {
+public class TbUser extends Base {
     @Id
     @GeneratedValue
     private Long id;
@@ -31,16 +31,4 @@ public class TbUser {
 
     @Column(name = "user_phone", nullable = true)
     private String userPhone;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Column(name = "updated_at", nullable = true)
-    private LocalDateTime updatedAt;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd hh:mm:ss")
-    @Column(name = "deleted_at", nullable = true)
-    private LocalDateTime deletedAt;
 }
