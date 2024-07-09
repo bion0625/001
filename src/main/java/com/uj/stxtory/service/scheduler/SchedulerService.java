@@ -27,6 +27,6 @@ public class SchedulerService {
             System.out.print(content);
             msg.append(content);
         }
-        mailService.sendGmail(new Date().getTime() + " - 종목", msg.toString());
+        mailService.sendGmail(new Date() + " - 종목", msg.toString());
     }
 }
