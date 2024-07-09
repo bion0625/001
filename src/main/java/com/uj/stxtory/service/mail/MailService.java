@@ -1,12 +1,15 @@
 package com.uj.stxtory.service.mail;
 
+import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.entity.GmailToken;
 import com.uj.stxtory.domain.entity.TargetMail;
 import com.uj.stxtory.repository.TargetEailRepository;
+import com.uj.stxtory.service.stock.TreeDayPriceService;
 import com.uj.stxtory.service.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import javax.mail.Authenticator;
@@ -24,6 +27,9 @@ public class MailService {
     TokenService tokenService;
 
     private final TargetEailRepository targetEailRepository;
+
+    @Autowired
+    TreeDayPriceService treeDayPriceService;
 
     public MailService(TargetEailRepository targetEailRepository) {
         this.targetEailRepository = targetEailRepository;
@@ -72,6 +78,23 @@ public class MailService {
             Transport.send(msg);
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean treeDaysMailSend () {
+        StringBuilder msg = new StringBuilder();
+        try {
+            List<StockInfo> stockInfos = treeDayPriceService.start();
+            for (StockInfo info : stockInfos) {
+                String content = String.format("%s\t%s\n", info.getCode(), info.getName());
+                System.out.print(content);
+                msg.append(content);
+            }
+            sendGmail(new Date() + " - 종목", msg.toString());
+            return true;
+        }catch (Exception e){
+            System.out.println("error! to threeDaysMailSend, msg is " + msg.toString());
+            return false;
         }
     }
 }

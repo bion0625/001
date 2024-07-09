@@ -21,10 +21,7 @@ public class StockInfoService {
         List<StockInfo> stocks = new ArrayList<>();
         Document doc = null;
         try {
-            doc = Jsoup.connect("http://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13")
-                    .userAgent("Mozilla/5.0")
-                    .ignoreContentType(true)
-                    .get();
+            doc = getDocumentByUrl("http://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -51,10 +48,7 @@ public class StockInfoService {
     public List<StockPriceInfo> getPriceInfo(String code, int page) { // 종목 및 페이지로 가격 정보 가져오기
         Document doc = null;
         try {
-            doc = Jsoup.connect(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page))
-                    .userAgent("Mozilla/5.0")
-                    .ignoreContentType(true)
-                    .get();
+            doc = getDocumentByUrl(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -97,14 +91,19 @@ public class StockInfoService {
     }
 
     public int getPriceTotalPage(String code) throws IOException { // 가격 정보 가져올 때, 전체 페이지 가져오기
-        Document doc = Jsoup.connect(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s", code))
-                .userAgent("Mozilla/5.0")
-                .ignoreContentType(true)
-                .get();
+        Document doc = getDocumentByUrl(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s", code));
 
         Element pgRR = doc.select(".pgRR a").get(0);
         String href = pgRR.attr("href");
         int totalPage = Integer.valueOf(href.substring(href.indexOf("&page=") + 6).trim());
         return totalPage;
+    }
+
+    private Document getDocumentByUrl(String url) throws IOException {
+        return Jsoup.connect(url)
+                .userAgent("Mozilla/5.0")
+                .ignoreContentType(true)
+                .timeout(10000)
+                .get();
     }
 }
