@@ -8,7 +8,9 @@ import com.uj.stxtory.service.stock.TreeDayPriceService;
 import com.uj.stxtory.service.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
@@ -20,6 +22,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+@Transactional
 @Service
 public class MailService {
 
@@ -40,7 +43,7 @@ public class MailService {
     }
 
     public List<TargetMail> getTargets() {
-        return targetEailRepository.findAll();
+        return targetEailRepository.findAllByDeletedAtIsNull();
     }
 
     public void sendGmail(String title, String content) {
@@ -96,5 +99,14 @@ public class MailService {
             System.out.println("error! to threeDaysMailSend, msg is " + msg.toString());
             return false;
         }
+    }
+
+    public boolean gmailTaretEmailDelete(String target) {
+        TargetMail email = targetEailRepository.findByEmail(target).orElse(null);
+
+        if (email == null) return false;
+
+        email.setDeletedAt(LocalDateTime.now());
+        return true;
     }
 }

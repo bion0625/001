@@ -4,6 +4,8 @@ import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,6 +15,7 @@ import java.util.stream.Collectors;
  * 3) 기준 날짜 대비 신고가 아니면 제외
  * 4) 당일 diff가 5% ~ 15% 내에 있지 않으면 제외
  */
+@Transactional
 @Service
 public class TreeDayPriceService {
     @Autowired

@@ -16,6 +16,7 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Transactional
 @Service
 public class SecurityService implements UserDetailsService {
 

@@ -1,11 +1,13 @@
 package com.uj.stxtory.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
 
+@Data
 @MappedSuperclass
 public abstract class Base {
     @Column(name = "created_at", nullable = false)

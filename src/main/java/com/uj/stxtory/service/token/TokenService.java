@@ -3,10 +3,12 @@ package com.uj.stxtory.service.token;
 import com.uj.stxtory.domain.entity.GmailToken;
 import com.uj.stxtory.repository.GmailTokenRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
+@Transactional
 public class TokenService {
     private final GmailTokenRepository gmailTokenRepository;
 
