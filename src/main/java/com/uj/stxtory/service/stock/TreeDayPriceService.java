@@ -2,10 +2,14 @@ package com.uj.stxtory.service.stock;
 
 import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
+import com.uj.stxtory.domain.entity.Stock;
+import com.uj.stxtory.repository.StockRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -14,12 +18,65 @@ import java.util.stream.Collectors;
  * 2) 오늘이 거래량 최고면 제외
  * 3) 기준 날짜 대비 신고가 아니면 제외
  * 4) 당일 diff가 5% ~ 15% 내에 있지 않으면 제외
+ * 5) 고점 대비 당일 최저가가 5% 미만이면 제외
  */
 @Transactional
+@Slf4j
 @Service
 public class TreeDayPriceService {
     @Autowired
     StockInfoService stockInfoService;
+
+    @Autowired
+    StockRepository stockRepository;
+
+    public List<Stock> getAll() {
+        return stockRepository.findAllByDeletedAtIsNull();
+    }
+
+    public List<Stock> saveNewByToday(List<Stock> all) {
+        List<String> codes = all.stream().map(Stock::getCode).collect(Collectors.toList());
+        List<Stock> today = start()
+                .stream().map(StockInfo::toEntity).collect(Collectors.toList());
+        for (Stock stock : today) {
+            if (!codes.contains(stock.getCode())) {
+                stockRepository.save(stock);
+                all.add(stock);
+            }
+        }
+        return all;
+    }
+
+    public List<Stock> renewalUpdateByToday(List<Stock> all) {
+        for (Stock stock : all) {
+            List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
+            // 거래량이 0이면 하루 전으로 계산
+            int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
+            // 마지막 가격
+            StockPriceInfo price = prices.get(lastdayIndex);
+            // 당일 하한가가 하한 매도 가격 대비 같거나 낮으면 삭제
+            if (price.getLow() <= stock.getMinimumSellingPrice()) {
+                stock.setDeletedAt(LocalDateTime.now());
+                all.remove(stock);
+                if (all.isEmpty()) return all;
+            }
+            // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
+            else if (price.getHigh() > stock.getExpectedSellingPrice()) {
+                // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 대도 가격 및 기대 매도 가격 갱신
+                while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
+                        && price.getHigh() < stock.getExpectedSellingPrice()) {
+                    stock.sellingPriceUpdate(price.getDate());
+                }
+                // 바뀐 하한 매도 가격 기준으로 삭제 여부 재확인
+                if (price.getLow() <= stock.getMinimumSellingPrice()) {
+                    stock.setDeletedAt(LocalDateTime.now());
+                    all.remove(stock);
+                    if (all.isEmpty()) return all;
+                }
+            }
+        }
+        return all;
+    }
 
     public List<StockInfo> start() {
         // 신고가 개월 수 (페이지 계산식 항)
@@ -37,8 +94,11 @@ public class TreeDayPriceService {
 
         List<StockInfo> stocks = stockInfoService.getCompanyInfo();
 
+        return filterByThreeDay(stocks, SEARCH_PAGE);
+    }
+
+    private List<StockInfo> filterByThreeDay(List<StockInfo> stocks, int SEARCH_PAGE) {
         // 로그시작
-        System.out.println();
         int percent = 0;
 
         for (StockInfo stock : stocks) {
@@ -48,7 +108,7 @@ public class TreeDayPriceService {
             // 로그
             if ((cnt * 100) / stocks.size() > percent) {
                 percent = (cnt * 100) / stocks.size();
-                System.out.println(String.format("%d", percent) + "%");
+                log.info(String.format("%d", percent) + "%");
             }
 
             // 부하를 방지하기 위해 일단 1페이지만 확인 후 신고가 설정할 때 다시 구하기
@@ -65,9 +125,6 @@ public class TreeDayPriceService {
             double diffPercent = (double) (prices.get(lastdayIndex).getDiff() * 100) / (double) prices.get(lastdayIndex + 1).getClose();
             if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15)) continue;
 
-            // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
-            prices = stockInfoService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
-
             // 6개월 중 신고가가 아니면 제외
             checkPrice = prices.stream().reduce((p, c) -> p.getHigh() > c.getHigh() ? p : c).orElse(null);
             if(checkPrice == null || prices.get(0).getHigh() != checkPrice.getHigh()) continue;
@@ -78,17 +135,19 @@ public class TreeDayPriceService {
                 continue;
             }
 
-            // 고점 대비 10% 이하면 제외
-            if ((prices.get(lastdayIndex).getHigh() - prices.get(lastdayIndex).getLow())/prices.get(lastdayIndex).getHigh() > 10) continue;
+            // 고점 대비 5% 미만이면 제외
+            if (prices.get(lastdayIndex).getLow() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) continue;
+
+            // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
+            prices = stockInfoService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
 
             // 리스트에 저장
             stock.setPrices(prices);
 
             // 로그
-            System.out.println(String.format("\tsuccess:\t%s", stock.getName()));
+            log.info(String.format("\tsuccess:\t%s", stock.getName()));
         }
 
-        // 가격 정보가 있는 객체만 남긴다.
         return stocks.stream().filter(s -> s.getPrices() != null).collect(Collectors.toList());
     }
 }
