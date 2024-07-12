@@ -20,11 +20,9 @@ import java.util.Set;
 @Service
 public class SecurityService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-    public SecurityService(@Autowired UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String userLoginId) throws UsernameNotFoundException {

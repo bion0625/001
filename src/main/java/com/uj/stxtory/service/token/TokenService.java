@@ -2,6 +2,7 @@ package com.uj.stxtory.service.token;
 
 import com.uj.stxtory.domain.entity.GmailToken;
 import com.uj.stxtory.repository.GmailTokenRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -10,11 +11,9 @@ import java.util.List;
 @Service
 @Transactional
 public class TokenService {
-    private final GmailTokenRepository gmailTokenRepository;
 
-    public TokenService(GmailTokenRepository gmailTokenRepository) {
-        this.gmailTokenRepository = gmailTokenRepository;
-    }
+    @Autowired
+    GmailTokenRepository gmailTokenRepository;
 
     public GmailToken getGmailToken() {
         List<GmailToken> all = gmailTokenRepository.findAll();

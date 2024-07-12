@@ -27,14 +27,16 @@ public class SchedulerService {
         all  = treeDayPriceService.getAll();
     }
 
-    @Scheduled(cron = "0 0 17 ? * MON-FRI")
+    // 월-금: 오후 5시5분마다
+    @Scheduled(cron = "0 5 17 ? * MON-FRI")
     public void treeDaysMailSend() {
-        mailService.treeDaysMailSend();
+        all = treeDayPriceService.saveNewByToday(all);
+        mailService.treeDaysMailSend(all);
     }
 
-    @Scheduled(cron = "0 10 17 ? * MON-FRI")
+    // 월-금 아침 8시 - 오후 4시: 정각 및 30분마다
+    @Scheduled(cron = "0 0/30 8-16 ? * MON-FRI")
     public void treeDaysDataBaseUpdate() {
-        all = treeDayPriceService.saveNewByToday(all);
         all = treeDayPriceService.renewalUpdateByToday(all);
     }
 }

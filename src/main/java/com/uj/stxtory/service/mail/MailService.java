@@ -1,7 +1,7 @@
 package com.uj.stxtory.service.mail;
 
-import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.entity.GmailToken;
+import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.TargetMail;
 import com.uj.stxtory.repository.TargetEailRepository;
 import com.uj.stxtory.service.stock.TreeDayPriceService;
@@ -10,17 +10,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.mail.*;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeMessage;
 
 @Transactional
 @Service
@@ -29,14 +25,11 @@ public class MailService {
     @Autowired
     TokenService tokenService;
 
-    private final TargetEailRepository targetEailRepository;
+    @Autowired
+    TargetEailRepository targetEailRepository;
 
     @Autowired
     TreeDayPriceService treeDayPriceService;
-
-    public MailService(TargetEailRepository targetEailRepository) {
-        this.targetEailRepository = targetEailRepository;
-    }
 
     public void gmailTaretEmailSave(String target) {
         targetEailRepository.save(new TargetMail(target));
@@ -84,11 +77,10 @@ public class MailService {
         }
     }
 
-    public boolean treeDaysMailSend () {
+    public boolean treeDaysMailSend (List<Stock> all) {
         StringBuilder msg = new StringBuilder();
         try {
-            List<StockInfo> stockInfos = treeDayPriceService.start();
-            for (StockInfo info : stockInfos) {
+            for (Stock info : all) {
                 String content = String.format("%s\t%s\n", info.getCode(), info.getName());
                 System.out.print(content);
                 msg.append(content);

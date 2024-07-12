@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,13 +32,22 @@ public class TreeDayPriceService {
     StockRepository stockRepository;
 
     public List<Stock> getAll() {
-        return stockRepository.findAllByDeletedAtIsNull();
+        List<Stock> all = stockRepository.findAllByDeletedAtIsNull();
+        // 갱신된 횟수 기준으로 내림차순 정리
+        all.sort((o1, o2) -> o2.getRenewalCnt() - o1.getRenewalCnt());
+        return all;
     }
 
     public List<Stock> saveNewByToday(List<Stock> all) {
         List<String> codes = all.stream().map(Stock::getCode).collect(Collectors.toList());
-        List<Stock> today = start()
-                .stream().map(StockInfo::toEntity).collect(Collectors.toList());
+        List<Stock> today = new ArrayList<>();
+        try {
+            today = start()
+                    .stream().map(StockInfo::toEntity).collect(Collectors.toList());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         for (Stock stock : today) {
             if (!codes.contains(stock.getCode())) {
                 stockRepository.save(stock);
