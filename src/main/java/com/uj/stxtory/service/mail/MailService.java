@@ -81,7 +81,7 @@ public class MailService {
         StringBuilder msg = new StringBuilder();
         try {
             for (Stock info : all) {
-                String content = String.format("%s\t%s\n", info.getCode(), info.getName());
+                String content = String.format("%s\t%scnt:%d\n", info.getCode(), info.getName(), info.getRenewalCnt());
                 System.out.print(content);
                 msg.append(content);
             }
