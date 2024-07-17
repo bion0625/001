@@ -67,8 +67,10 @@ public class TreeDayPriceService {
             StockPriceInfo price = prices.get(lastdayIndex);
             // 당일 하한가가 하한 매도 가격 대비 같거나 낮으면 삭제
             if (price.getLow() <= stock.getMinimumSellingPrice()) {
-                stock.setDeletedAt(LocalDateTime.now());
                 all.remove(stock);
+                stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
+                if (stock != null) stock.setDeletedAt(LocalDateTime.now());
+                else System.out.println("name: " + stock.getName() + " code: " + stock.getCode() + " => is not exist in db");
                 if (all.isEmpty()) return all;
             }
             // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
@@ -76,12 +78,16 @@ public class TreeDayPriceService {
                 // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 대도 가격 및 기대 매도 가격 갱신
                 while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
                         && price.getHigh() < stock.getExpectedSellingPrice()) {
-                    stock.sellingPriceUpdate(price.getDate());
+                    stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
+                    if (stock != null) stock.sellingPriceUpdate(price.getDate());
+                    else System.out.println("name: " + stock.getName() + " code: " + stock.getCode() + " => is not exist in db");
                 }
                 // 바뀐 하한 매도 가격 기준으로 삭제 여부 재확인
                 if (price.getLow() <= stock.getMinimumSellingPrice()) {
-                    stock.setDeletedAt(LocalDateTime.now());
                     all.remove(stock);
+                    stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
+                    if (stock != null) stock.setDeletedAt(LocalDateTime.now());
+                    else System.out.println("name: " + stock.getName() + " code: " + stock.getCode() + " => is not exist in db");
                     if (all.isEmpty()) return all;
                 }
             }
