@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -135,10 +136,6 @@ public class TreeDayPriceService {
             double diffPercent = (double) (prices.get(lastdayIndex).getDiff() * 100) / (double) prices.get(lastdayIndex + 1).getClose();
             if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15)) continue;
 
-            // 6개월 중 신고가가 아니면 제외
-            checkPrice = prices.stream().reduce((p, c) -> p.getHigh() > c.getHigh() ? p : c).orElse(null);
-            if(checkPrice == null || prices.get(0).getHigh() != checkPrice.getHigh()) continue;
-
             // 3일 연달아 가격 상승이 아니면 제외
             if(prices.get(lastdayIndex).getHigh() <= prices.get(lastdayIndex + 1).getHigh() || prices.get(lastdayIndex + 1).getHigh() <= prices.get(lastdayIndex + 2).getHigh()
                     || prices.get(lastdayIndex).getLow() <= prices.get(lastdayIndex + 1).getLow() || prices.get(lastdayIndex + 1).getLow() <= prices.get(lastdayIndex + 2).getLow()) {
@@ -150,6 +147,10 @@ public class TreeDayPriceService {
 
             // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
             prices = stockInfoService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
+
+            // 조회 기간(6개월) 중 신고가가 아니면 제외
+            checkPrice = prices.stream().max(Comparator.comparingLong(StockPriceInfo::getHigh)).orElse(null);
+            if(checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh()) continue;
 
             // 리스트에 저장
             stock.setPrices(prices);
