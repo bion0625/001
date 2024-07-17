@@ -14,7 +14,6 @@ import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
@@ -85,7 +84,7 @@ public class MailService {
                 System.out.print(content);
                 msg.append(content);
             }
-            sendGmail(new Date() + " - 종목", msg.toString());
+            sendGmail(LocalDateTime.now().toString() + " - 종목", msg.toString());
             return true;
         }catch (Exception e){
             System.out.println("error! to threeDaysMailSend, msg is " + msg.toString());
