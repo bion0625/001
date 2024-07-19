@@ -75,7 +75,7 @@ public class TreeDayPriceService {
             }
             // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
             else if (price.getHigh() > stock.getExpectedSellingPrice()) {
-                // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 대도 가격 및 기대 매도 가격 갱신
+                // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 매도 가격 및 기대 매도 가격 갱신
                 while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
                         && price.getHigh() < stock.getExpectedSellingPrice()) {
                     stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
