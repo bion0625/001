@@ -148,8 +148,8 @@ public class TreeDayPriceService {
                 continue;
             }
 
-            // 고점 대비 5% 미만이면 제외
-            if (prices.get(lastdayIndex).getLow() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) continue;
+            // 고점 대비 5% 미만이면 제외 - 현재가(종가) 기준
+            if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) continue;
 
             // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
             prices = stockInfoService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
