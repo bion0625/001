@@ -42,7 +42,7 @@ public class SchedulerService {
     }
 
     // 월-금 아침 8시 - 오후 4시: 5분 및 35분마다
-    @Scheduled(cron = "0 5/35 8-16 ? * MON-FRI")
+    @Scheduled(cron = "0 5/30 8-16 ? * MON-FRI")
     public void treeDaysDeletedsMailSend() {
         List<Stock> deleted  = treeDayPriceService.getDeleteByDate();
         if (deleted.size() == 0) return;
