@@ -39,6 +39,11 @@ public class TreeDayPriceService {
         return all;
     }
 
+    public List<Stock> getDeleteByDate() {
+        // 최근 1시간 사이에 삭제처리된 정보만 가져오기
+        return stockRepository.findAllByDeletedAtAfter(LocalDateTime.now().minusHours(1));
+    }
+
     public List<Stock> saveNewByToday(List<Stock> all) {
         List<String> codes = all.stream().map(Stock::getCode).collect(Collectors.toList());
         List<Stock> today = new ArrayList<>();
@@ -59,14 +64,15 @@ public class TreeDayPriceService {
     }
 
     public List<Stock> renewalUpdateByToday(List<Stock> all) {
-        for (Stock stock : all) {
+        for (int i = 0; i < all.size(); i++) {
+            Stock stock = all.get(i);
             List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
             // 거래량이 0이면 하루 전으로 계산
             int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
             // 마지막 가격
             StockPriceInfo price = prices.get(lastdayIndex);
-            // 당일 하한가가 하한 매도 가격 대비 같거나 낮으면 삭제
-            if (price.getLow() <= stock.getMinimumSellingPrice()) {
+            // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
+            if (price.getClose() <= stock.getMinimumSellingPrice()) {
                 all.remove(stock);
                 stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
                 if (stock != null) stock.setDeletedAt(LocalDateTime.now());

@@ -23,6 +23,6 @@ public class StockController {
     @GetMapping("/stock")
     public boolean stock() {
         List<Stock> all = treeDayPriceService.getAll();
-        return mailService.treeDaysMailSend(all);
+        return mailService.treeDaysMailSend(all, " - 선택 종목");
     }
 }

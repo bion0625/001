@@ -76,7 +76,7 @@ public class MailService {
         }
     }
 
-    public boolean treeDaysMailSend (List<Stock> all) {
+    public boolean treeDaysMailSend (List<Stock> all, String title) {
         StringBuilder msg = new StringBuilder();
         try {
             for (Stock info : all) {
@@ -84,7 +84,7 @@ public class MailService {
                 System.out.print(content);
                 msg.append(content);
             }
-            sendGmail(LocalDateTime.now().toString() + " - 종목", msg.toString());
+            sendGmail(LocalDateTime.now().toString() + title, msg.toString());
             return true;
         }catch (Exception e){
             System.out.println("error! to threeDaysMailSend, msg is " + msg.toString());
