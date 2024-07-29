@@ -9,7 +9,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -46,9 +45,9 @@ public class Stock extends Base{
     private long expectedSellingPrice;
 
     /** 가격 설정 기준 날짜 */
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "Asia/Seoul")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "pricing_reference_date", nullable = true)
-    private LocalDate pricingReferenceDate = LocalDate.now();
+    private LocalDateTime pricingReferenceDate = LocalDateTime.now();
 
     /** 갱신 횟수 */
     @Column(name = "renewal_cnt", nullable = false)
@@ -82,7 +81,7 @@ public class Stock extends Base{
 
         this.renewalCnt++;
 
-        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 
         this.setUpdatedAt(LocalDateTime.now());
     }
