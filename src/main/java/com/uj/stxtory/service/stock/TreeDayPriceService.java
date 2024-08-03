@@ -41,10 +41,11 @@ public class TreeDayPriceService {
 
     public List<Stock> getDeleteByDate() {
         // 최근 1시간 사이에 삭제처리된 정보만 가져오기
-        return stockRepository.findAllByDeletedAtAfter(LocalDateTime.now().minusHours(1));
+        return stockRepository.findAllByDeletedAtAfter(LocalDateTime.now().minusMinutes(15));
     }
 
-    public List<Stock> saveNewByToday(List<Stock> all) {
+    public List<Stock> saveNewByToday() {
+        List<Stock> all = getAll();
         List<String> codes = all.stream().map(Stock::getCode).collect(Collectors.toList());
         List<Stock> today = new ArrayList<>();
         try {
@@ -63,7 +64,8 @@ public class TreeDayPriceService {
         return all;
     }
 
-    public List<Stock> renewalUpdateByToday(List<Stock> all) {
+    public void renewalUpdateByToday() {
+        List<Stock> all = getAll();
         for (int i = 0; i < all.size(); i++) {
             Stock stock = all.get(i);
             List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
@@ -72,33 +74,16 @@ public class TreeDayPriceService {
             // 마지막 가격
             StockPriceInfo price = prices.get(lastdayIndex);
             // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
-            if (price.getClose() <= stock.getMinimumSellingPrice()) {
-                all.remove(stock);
-                stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
-                if (stock != null) stock.setDeletedAt(LocalDateTime.now());
-                else System.out.println("name: " + stock.getName() + " code: " + stock.getCode() + " => is not exist in db");
-                if (all.isEmpty()) return all;
-            }
+            if (price.getClose() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
             // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
             else if (price.getHigh() > stock.getExpectedSellingPrice()) {
                 // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 매도 가격 및 기대 매도 가격 갱신
                 while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
-                        && price.getHigh() < stock.getExpectedSellingPrice()) {
-                    stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
-                    if (stock != null) stock.sellingPriceUpdate(price.getDate());
-                    else System.out.println("name: " + stock.getName() + " code: " + stock.getCode() + " => is not exist in db");
-                }
+                        && price.getHigh() < stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
                 // 바뀐 하한 매도 가격 기준으로 삭제 여부 재확인
-                if (price.getLow() <= stock.getMinimumSellingPrice()) {
-                    all.remove(stock);
-                    stock = stockRepository.findByCodeAndDeletedAtIsNull(stock.getCode()).orElse(null);
-                    if (stock != null) stock.setDeletedAt(LocalDateTime.now());
-                    else System.out.println("name: " + stock.getName() + " code: " + stock.getCode() + " => is not exist in db");
-                    if (all.isEmpty()) return all;
-                }
+                if (price.getLow() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
             }
         }
-        return all;
     }
 
     public List<StockInfo> start() {
@@ -117,7 +102,7 @@ public class TreeDayPriceService {
 
         List<StockInfo> stocks = stockInfoService.getCompanyInfo();
 
-        return filterByThreeDay(stocks, SEARCH_PAGE);
+        return filterByThreeDay(stocks.subList(1600,1700), SEARCH_PAGE);
     }
 
     private List<StockInfo> filterByThreeDay(List<StockInfo> stocks, int SEARCH_PAGE) {

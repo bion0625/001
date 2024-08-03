@@ -20,29 +20,37 @@ public class SchedulerService {
     @Autowired
     MailService mailService;
 
-    List<Stock> all;
+//    List<Stock> all;
 
-    @PostConstruct
-    public void getAllStock() {
-        all  = treeDayPriceService.getAll();
+//    @PostConstruct
+//    public void getAllStock() {
+//        all  = treeDayPriceService.getAll();
+//    }
+
+    // TEST 주석
+    // @Scheduled(fixedDelay = 60000) // 1분 (60000 milliseconds)
+
+    // 월-금 아침 8시 - 오후 4시: 정각 및 20분, 40분 마다
+    @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
+    public void treeDaysSave() {
+        treeDayPriceService.saveNewByToday();
     }
 
-    // 월-금: 오후 5시5분마다
-    @Scheduled(cron = "0 5 17 ? * MON-FRI")
+    // 월-금 아침 8시 - 오후 4시: 정각 마다
+    @Scheduled(cron = "0 0 8-16 ? * MON-FRI")
     public void treeDaysMailSend() {
-        all = treeDayPriceService.saveNewByToday(all);
+        List<Stock> all = treeDayPriceService.getAll();
         mailService.treeDaysMailSend(all, " - 선택 종목");
     }
 
-    // 월-금 아침 8시 - 오후 4시: 정각 및 30분마다
-    @Scheduled(cron = "0 0/30 8-16 ? * MON-FRI")
+    // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
+    @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void treeDaysDataBaseUpdate() {
-        if (all.size() == 0) return;
-        all = treeDayPriceService.renewalUpdateByToday(all);
+        treeDayPriceService.renewalUpdateByToday();
     }
 
-    // 월-금 아침 8시 - 오후 4시: 5분 및 35분마다
-    @Scheduled(cron = "0 5/30 8-16 ? * MON-FRI")
+    // 월-금 아침 8시 - 오후 4시: 정각 및 10분, 20분, 30분, 40분, 50분 마다
+    @Scheduled(cron = "0 0/10 8-16 ? * MON-FRI")
     public void treeDaysDeletedsMailSend() {
         List<Stock> deleted  = treeDayPriceService.getDeleteByDate();
         if (deleted.size() == 0) return;

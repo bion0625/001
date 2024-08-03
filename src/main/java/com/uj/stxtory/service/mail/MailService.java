@@ -40,6 +40,9 @@ public class MailService {
 
     public void sendGmail(String title, String content) {
         GmailToken gmailToken = tokenService.getGmailToken();
+        // 등록된 토큰 없으면 메일 발송 정지
+        if (gmailToken == null) return;
+
         String from = gmailToken.getFromEmail();
         String password = gmailToken.getGmailToken();
         List<TargetMail> targets = getTargets();

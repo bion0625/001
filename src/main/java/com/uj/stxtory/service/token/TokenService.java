@@ -17,6 +17,7 @@ public class TokenService {
 
     public GmailToken getGmailToken() {
         List<GmailToken> all = gmailTokenRepository.findAll();
+        if (all.size() == 0) return null;
         return all.get(all.size()-1);
     }
 
