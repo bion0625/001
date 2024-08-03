@@ -102,7 +102,7 @@ public class TreeDayPriceService {
 
         List<StockInfo> stocks = stockInfoService.getCompanyInfo();
 
-        return filterByThreeDay(stocks.subList(1600,1700), SEARCH_PAGE);
+        return filterByThreeDay(stocks, SEARCH_PAGE);
     }
 
     private List<StockInfo> filterByThreeDay(List<StockInfo> stocks, int SEARCH_PAGE) {
