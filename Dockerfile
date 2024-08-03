@@ -7,6 +7,8 @@ WORKDIR /app
 # Copy the project JAR file to the container
 COPY target/001-0.0.1-SNAPSHOT.jar app.jar
 
+RUN ./mvnw clean package -DskipTests
+
 # Expose the port the app runs on
 EXPOSE 8080
 
