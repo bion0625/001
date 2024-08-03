@@ -44,7 +44,7 @@ public class TreeDayPriceService {
         return stockRepository.findAllByDeletedAtAfter(LocalDateTime.now().minusMinutes(15));
     }
 
-    public List<Stock> saveNewByToday() {
+    public void saveNewByToday() {
         List<Stock> all = getAll();
         List<String> codes = all.stream().map(Stock::getCode).collect(Collectors.toList());
         List<Stock> today = new ArrayList<>();
@@ -58,10 +58,8 @@ public class TreeDayPriceService {
         for (Stock stock : today) {
             if (!codes.contains(stock.getCode())) {
                 stockRepository.save(stock);
-                all.add(stock);
             }
         }
-        return all;
     }
 
     public void renewalUpdateByToday() {
