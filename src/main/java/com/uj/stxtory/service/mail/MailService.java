@@ -4,7 +4,6 @@ import com.uj.stxtory.domain.entity.GmailToken;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.TargetMail;
 import com.uj.stxtory.repository.TargetEailRepository;
-import com.uj.stxtory.service.stock.TreeDayPriceService;
 import com.uj.stxtory.service.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,9 +25,6 @@ public class MailService {
 
     @Autowired
     TargetEailRepository targetEailRepository;
-
-    @Autowired
-    TreeDayPriceService treeDayPriceService;
 
     public void gmailTaretEmailSave(String target) {
         targetEailRepository.save(new TargetMail(target));
