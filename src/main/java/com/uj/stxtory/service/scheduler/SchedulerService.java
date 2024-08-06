@@ -8,7 +8,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.List;
 
 @Transactional
@@ -19,16 +18,6 @@ public class SchedulerService {
 
     @Autowired
     MailService mailService;
-
-//    List<Stock> all;
-
-//    @PostConstruct
-//    public void getAllStock() {
-//        all  = treeDayPriceService.getAll();
-//    }
-
-    // TEST 주석
-    // @Scheduled(fixedDelay = 60000) // 1분 (60000 milliseconds)
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 20분, 40분 마다
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
@@ -49,11 +38,4 @@ public class SchedulerService {
         treeDayPriceService.renewalUpdateByToday();
     }
 
-    // 월-금 아침 8시 - 오후 4시: 정각 및 10분, 20분, 30분, 40분, 50분 마다
-    @Scheduled(cron = "0 0/10 8-16 ? * MON-FRI")
-    public void treeDaysDeletedsMailSend() {
-        List<Stock> deleted  = treeDayPriceService.getDeleteByDate();
-        if (deleted.size() == 0) return;
-        mailService.treeDaysMailSend(deleted, " - 매도 종목");
-    }
 }

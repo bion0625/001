@@ -4,6 +4,7 @@ import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.repository.StockRepository;
+import com.uj.stxtory.service.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,6 +33,9 @@ public class TreeDayPriceService {
     @Autowired
     StockRepository stockRepository;
 
+    @Autowired
+    MailService mailService;
+
     public List<Stock> getAll() {
         List<Stock> all = stockRepository.findAllByDeletedAtIsNull();
         // 갱신된 횟수 기준으로 내림차순 정리
@@ -39,10 +43,9 @@ public class TreeDayPriceService {
         return all;
     }
 
-    public List<Stock> getDeleteByDate() {
-        // 최근 1시간 사이에 삭제처리된 정보만 가져오기
-        return stockRepository.findAllByDeletedAtAfter(LocalDateTime.now().minusMinutes(15));
-    }
+//    public List<Stock> getDeleteByDate() {
+//        return stockRepository.findAllByDeletedAtAfter(LocalDateTime.now().minusMinutes(15));
+//    }
 
     public void saveNewByToday() {
         List<Stock> all = getAll();
@@ -64,8 +67,7 @@ public class TreeDayPriceService {
 
     public void renewalUpdateByToday() {
         List<Stock> all = getAll();
-        for (int i = 0; i < all.size(); i++) {
-            Stock stock = all.get(i);
+        for (Stock stock : all) {
             List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
             // 거래량이 0이면 하루 전으로 계산
             int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
@@ -73,7 +75,7 @@ public class TreeDayPriceService {
             StockPriceInfo price = prices.get(lastdayIndex);
             // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
             if (price.getClose() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
-            // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
+                // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
             else if (price.getHigh() > stock.getExpectedSellingPrice()) {
                 // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 매도 가격 및 기대 매도 가격 갱신
                 while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
@@ -82,6 +84,9 @@ public class TreeDayPriceService {
                 if (price.getLow() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
             }
         }
+        List<Stock> deleteds = all.stream().filter(s -> s.getDeletedAt() != null).collect(Collectors.toList());
+        if (deleteds.isEmpty()) return;
+        mailService.treeDaysMailSend(deleteds, " - 매도 종목");
     }
 
     public List<StockInfo> start() {
