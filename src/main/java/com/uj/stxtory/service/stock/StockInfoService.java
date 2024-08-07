@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import com.uj.stxtory.util.FormatUtil;
 import org.jsoup.Jsoup;
@@ -36,7 +37,31 @@ public class StockInfoService {
             stocks.add(stock);
         }
 
-        return stocks;
+        return stocks.stream().filter(s -> getStockMarketIdentifier(s.getCode())).collect(Collectors.toList());
+    }
+
+    public Boolean getStockMarketIdentifier (String code) {
+        Document doc = null;
+        try {
+            doc = getDocumentByUrl(String.format("https://finance.naver.com/item/main.naver?code=%s", code));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Elements kospiList = doc.select("img.kospi");
+
+        for (Element img : kospiList) {
+            String altText = img.attr("alt");
+            if ("코스피".equals(altText)) return true;
+        }
+
+        Elements kosdaqList = doc.select("img.kosdaq");
+        for (Element img : kosdaqList) {
+            String altText = img.attr("alt");
+            if ("코스닥".equals(altText)) return true;
+        }
+
+        return false;
     }
 
     public List<StockPriceInfo> getPriceInfoByPage(String code, int from, int to) {

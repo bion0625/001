@@ -68,6 +68,11 @@ public class TreeDayPriceService {
     public void renewalUpdateByToday() {
         List<Stock> all = getAll();
         for (Stock stock : all) {
+            // 코스피나 코스닥이 아니면 삭제 후 제외
+            if (!stockInfoService.getStockMarketIdentifier(stock.getCode())) {
+                stock.setDeletedAt(LocalDateTime.now());
+                continue;
+            }
             List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
             // 거래량이 0이면 하루 전으로 계산
             int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
