@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+// https://apidocs.bithumb.com/reference/%EC%9D%BCday-%EC%BA%94%EB%93%A4
 public class CoinInfoService {
     public static void main(String[] args) {
         CoinInfoService coinInfoService = new CoinInfoService();
