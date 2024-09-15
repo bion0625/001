@@ -49,11 +49,11 @@ public class TreeDayPriceService {
 
     public void saveNewByToday() {
         List<Stock> all = getAll();
-        List<String> codes = all.stream().map(Stock::getCode).collect(Collectors.toList());
+        List<String> codes = all.parallelStream().map(Stock::getCode).collect(Collectors.toList());
         List<Stock> today = new ArrayList<>();
         try {
             today = start()
-                    .stream().map(StockInfo::toEntity).collect(Collectors.toList());
+                    .parallelStream().map(StockInfo::toEntity).collect(Collectors.toList());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -89,7 +89,7 @@ public class TreeDayPriceService {
                 if (price.getLow() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
             }
         }
-        List<Stock> deleteds = all.stream().filter(s -> s.getDeletedAt() != null).collect(Collectors.toList());
+        List<Stock> deleteds = all.parallelStream().filter(s -> s.getDeletedAt() != null).collect(Collectors.toList());
         if (deleteds.isEmpty()) return;
         mailService.treeDaysMailSend(deleteds, " - 매도 종목");
     }
@@ -134,7 +134,7 @@ public class TreeDayPriceService {
             int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
 
             // 최근 3일 중 마지막일이 최고 거래량이면 제외
-            StockPriceInfo checkPrice = prices.subList(lastdayIndex, (lastdayIndex + 3)).stream().reduce((p, c) -> p.getVolume() > c.getVolume() ? p : c).orElse(null);
+            StockPriceInfo checkPrice = prices.subList(lastdayIndex, (lastdayIndex + 3)).parallelStream().reduce((p, c) -> p.getVolume() > c.getVolume() ? p : c).orElse(null);
             if (checkPrice != null && prices.get(0).getVolume() == checkPrice.getVolume()) continue;
 
             // 마지막일 diff가 5% ~ 15% 내에 있지 않으면 제외
@@ -154,7 +154,7 @@ public class TreeDayPriceService {
             prices = stockInfoService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
 
             // 조회 기간(6개월) 중 신고가가 아니면 제외
-            checkPrice = prices.stream().max(Comparator.comparingLong(StockPriceInfo::getHigh)).orElse(null);
+            checkPrice = prices.parallelStream().max(Comparator.comparingLong(StockPriceInfo::getHigh)).orElse(null);
             if(checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh()) continue;
 
             // 리스트에 저장
@@ -164,6 +164,6 @@ public class TreeDayPriceService {
             log.info(String.format("\tsuccess:\t%s", stock.getName()));
         }
 
-        return stocks.stream().filter(s -> s.getPrices() != null).collect(Collectors.toList());
+        return stocks.parallelStream().filter(s -> s.getPrices() != null).collect(Collectors.toList());
     }
 }

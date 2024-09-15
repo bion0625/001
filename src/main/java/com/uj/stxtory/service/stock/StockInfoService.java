@@ -37,7 +37,7 @@ public class StockInfoService {
             stocks.add(stock);
         }
 
-        return stocks.stream().filter(s -> getStockMarketIdentifier(s.getCode())).collect(Collectors.toList());
+        return stocks.parallelStream().filter(s -> getStockMarketIdentifier(s.getCode())).collect(Collectors.toList());
     }
 
     public Boolean getStockMarketIdentifier (String code) {
