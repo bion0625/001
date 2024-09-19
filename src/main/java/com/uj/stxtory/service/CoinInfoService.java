@@ -32,11 +32,12 @@ public class CoinInfoService {
 //                .map(name -> coinInfoService.getPriceInfoByDay(name, 1).get(0))
 //                .collect(Collectors.groupingBy(CoinInfo::getMarket));
 
-        List<CoinInfo> coins = names.stream()
+        final int DAY = 30; // 신고가 기준 일수
+        List<CoinInfo> coins = names.parallelStream()
                 // 오늘 정보
                 .map(name -> coinInfoService.getPriceInfoByDay(name, 1).get(0))
                 .filter(info -> {
-                    List<CoinInfo> priceInfoByDay = coinInfoService.getPriceInfoByDay(info.getMarket(), 60);
+                    List<CoinInfo> priceInfoByDay = coinInfoService.getPriceInfoByDay(info.getMarket(), DAY);
                     // 신고가 여부 확인
                     OptionalDouble high = priceInfoByDay.stream()
                             .mapToDouble(c -> Double.parseDouble(c.getHigh_price()))
