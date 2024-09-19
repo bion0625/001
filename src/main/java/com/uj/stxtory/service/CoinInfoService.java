@@ -2,6 +2,7 @@ package com.uj.stxtory.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.uj.stxtory.domain.dto.CoinInfo;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -9,20 +10,62 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 // https://apidocs.bithumb.com/reference/%EC%9D%BCday-%EC%BA%94%EB%93%A4
 public class CoinInfoService {
     public static void main(String[] args) {
         CoinInfoService coinInfoService = new CoinInfoService();
         Set<String> names = coinInfoService.getNameInfo();
+//        System.out.println("names: " + names);
+//
+//        List<CoinInfo> priceInfoByDay = coinInfoService.getPriceInfoByDay("KRW-MEV", 3);
+//        System.out.println("priceInfoByDay: " + priceInfoByDay);
+//
+//        // 130일 신고가
+//        OptionalDouble max = coinInfoService.getPriceInfoByDay("KRW-MEV", 130).stream().mapToDouble(c -> Double.parseDouble(c.getHigh_price())).max();
+//        System.out.println("max: " + max);
 
-        Map<String, List<Map<String, String>>> priceInfoByDay = new HashMap<>();
-        names.forEach(name -> priceInfoByDay.put(name, coinInfoService.getPriceInfoByDay(name)));
+        // 오늘의 고가 저장
+//        Map<String, List<CoinInfo>> todaies = names.stream()
+//                .map(name -> coinInfoService.getPriceInfoByDay(name, 1).get(0))
+//                .collect(Collectors.groupingBy(CoinInfo::getMarket));
 
-        System.out.println("priceInfoByDay: " + priceInfoByDay);
+        List<CoinInfo> coins = names.stream()
+                // 오늘 정보
+                .map(name -> coinInfoService.getPriceInfoByDay(name, 1).get(0))
+                .filter(info -> {
+                    List<CoinInfo> priceInfoByDay = coinInfoService.getPriceInfoByDay(info.getMarket(), 60);
+                    // 신고가 여부 확인
+                    OptionalDouble high = priceInfoByDay.stream()
+                            .mapToDouble(c -> Double.parseDouble(c.getHigh_price()))
+                            .max();
+                    if (high.isEmpty()) return false;
+                    if (high.getAsDouble() != Double.parseDouble(info.getHigh_price())) return false;
+
+                    // 3연달아 상승여부 확인
+                    List<CoinInfo> threeUp = priceInfoByDay.stream().limit(3).collect(Collectors.toList());
+
+                    return IntStream.range(1, threeUp.size())
+                            .allMatch(upIdx -> Double.parseDouble(threeUp.get(upIdx).getHigh_price()) < Double.parseDouble(threeUp.get(upIdx-1).getHigh_price()))
+                        && IntStream.range(1, threeUp.size())
+                            .allMatch(downIdx -> Double.parseDouble(threeUp.get(downIdx).getLow_price()) < Double.parseDouble(threeUp.get(downIdx-1).getLow_price()));
+                })
+                .collect(Collectors.toList());
+        System.out.println("coins: ");
+        for (CoinInfo coinInfo : coins) {
+            System.out.println(coinInfo);
+        }
+
+
+//        Map<String, List<CoinInfo>> priceInfoByDay = new HashMap<>();
+//        names.forEach(name -> priceInfoByDay.put(name, coinInfoService.getPriceInfoByDay(name)));
+//
+//        System.out.println("priceInfoByDay: " + priceInfoByDay);
     }
 
-    public List<Map<String, String>> getPriceInfoByDay(String name) {
+    public List<CoinInfo> getPriceInfoByDay(String name, int day) {
         String url = "https://api.bithumb.com/v1/candles/days";
 
         LocalDateTime now = LocalDateTime.now();
@@ -31,38 +74,34 @@ public class CoinInfoService {
         JsonNode jsonNode = getJsonNodeByUrl(url,
                 "market", name,
                 "to", now.format(formatter),
-                "count", "200", // 200일치 가져오기
+                "count", String.valueOf(day), // day일치 가져오기
                 "convertingPriceUnit", "KRW"
         );
 
         if (jsonNode.get("error") != null) return new ArrayList<>();
-        List<Map<String, String>> details = new ArrayList<>();
+
+        List<CoinInfo> coins = new ArrayList<>();
         for (JsonNode node : jsonNode) {
-            Map<String, String> detail = new HashMap<>();
-            detail.put("candle_date_time_kst", node.get("candle_date_time_kst").asText());
-            detail.put("high_price", node.get("high_price").asText());
-            detail.put("low_price", node.get("low_price").asText());
-            detail.put("trade_price", node.get("trade_price").asText());
-            details.add(detail);
+            CoinInfo coinInfo = new CoinInfo(
+                    node.get("market").asText(),
+                    node.get("candle_date_time_utc").asText(),
+                    node.get("candle_date_time_kst").asText(),
+                    node.get("opening_price").asText(),
+                    node.get("high_price").asText(),
+                    node.get("low_price").asText(),
+                    node.get("trade_price").asText(),
+                    node.get("timestamp").asText(),
+                    node.get("candle_acc_trade_price").asText(),
+                    node.get("candle_acc_trade_volume").asText(),
+                    node.get("prev_closing_price").asText(),
+                    node.get("change_price").asText(),
+                    node.get("change_rate").asText(),
+                    node.get("converted_trade_price").asText()
+            );
+            coins.add(coinInfo);
         }
-        return details;
-//        for (JsonNode node : jsonNode) {
-//            System.out.println("마켓명: " + node.get("market"));
-//            System.out.println("캔들 기준 시각(UTC 기준): " + node.get("candle_date_time_utc"));
-//            System.out.println("캔들 기준 시각(KST 기준): " + node.get("candle_date_time_kst"));
-//            System.out.println("시가: " + node.get("opening_price"));
-//            System.out.println("고가: " + node.get("high_price"));
-//            System.out.println("저가: " + node.get("low_price"));
-//            System.out.println("종가: " + node.get("trade_price"));
-//            System.out.println("캔들 종료 시각(KST 기준): " + node.get("timestamp"));
-//            System.out.println("누적 거래 금액: " + node.get("candle_acc_trade_price"));
-//            System.out.println("누적 거래량: " + node.get("candle_acc_trade_volume"));
-//            System.out.println("전일 종가(UTC 0시 기준): " + node.get("prev_closing_price"));
-//            System.out.println("전일 종가 대비 변화 금액: " + node.get("change_price"));
-//            System.out.println("전일 종가 대비 변화량: " + node.get("change_rate"));
-//            System.out.println("종가 환산 화폐 단위로 환산된 가격(요청에 convertingPriceUnit 파라미터 없을 시 해당 필드 포함되지 않음.): " + node.get("converted_trade_price"));
-//            System.out.println();
-//        }
+
+        return coins;
     }
 
     public Set<String> getNameInfo() {
