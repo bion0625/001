@@ -44,9 +44,14 @@ public class CoinInfoService {
                     if (high.isEmpty()) return false;
                     if (high.getAsDouble() != Double.parseDouble(info.getHigh_price())) return false;
 
-                    // 3연달아 상승여부 확인
+                    //최근 3일 데이터
                     List<CoinInfo> threeUp = priceInfoByDay.stream().limit(3).collect(Collectors.toList());
 
+                    //최대 거래량이 오늘이면 제외
+                    if (Double.parseDouble(threeUp.get(0).getCandle_acc_trade_volume())
+                            == threeUp.stream().mapToDouble(tu -> Double.parseDouble(tu.getCandle_acc_trade_volume())).max().getAsDouble()) return false;
+
+                    // 3연달아 상승여부 확인
                     return IntStream.range(1, threeUp.size())
                             .allMatch(upIdx -> Double.parseDouble(threeUp.get(upIdx).getHigh_price()) < Double.parseDouble(threeUp.get(upIdx-1).getHigh_price()))
                         && IntStream.range(1, threeUp.size())
