@@ -84,7 +84,7 @@ public class TreeDayPriceService {
             else if (price.getHigh() > stock.getExpectedSellingPrice()) {
                 // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 매도 가격 및 기대 매도 가격 갱신
                 while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
-                        && price.getHigh() < stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
+                        && price.getHigh() >= stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
                 // 바뀐 하한 매도 가격 기준으로 삭제 여부 재확인
                 if (price.getLow() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
             }
