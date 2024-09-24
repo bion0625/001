@@ -74,10 +74,10 @@ public class Stock extends Base{
 
     // 하한 및 기대 매도 가격 업데이트
     public void sellingPriceUpdate(Date pricingDate) {
-        // 기대 매도 가격은 올림
-        this.expectedSellingPrice = (long) Math.ceil(this.expectedSellingPrice * 1.1);
         // 하한 매도 가격은 반올림
         this.minimumSellingPrice = Math.round(this.expectedSellingPrice * 0.95);
+        // 기대 매도 가격은 올림
+        this.expectedSellingPrice = (long) Math.ceil(this.expectedSellingPrice * 1.1);
 
         this.renewalCnt++;
 
