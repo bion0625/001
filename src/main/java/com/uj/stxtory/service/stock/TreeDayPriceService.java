@@ -78,16 +78,12 @@ public class TreeDayPriceService {
             int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
             // 마지막 가격
             StockPriceInfo price = prices.get(lastdayIndex);
+
+            // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
+            while (price.getClose() != 0 && stock.getExpectedSellingPrice() != 0
+                    && price.getClose() >= stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
             // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
             if (price.getClose() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
-                // 당일 상한가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
-            else if (price.getHigh() > stock.getExpectedSellingPrice()) {
-                // 기대 매도 가격이 당일 상한가보다 높을 때까지 계산해서 하한 매도 가격 및 기대 매도 가격 갱신
-                while (price.getHigh() != 0 && stock.getExpectedSellingPrice() != 0
-                        && price.getHigh() >= stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
-                // 바뀐 하한 매도 가격 기준으로 삭제 여부 재확인
-                if (price.getLow() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
-            }
         }
         List<Stock> deleteds = all.parallelStream().filter(s -> s.getDeletedAt() != null).collect(Collectors.toList());
         if (deleteds.isEmpty()) return;
