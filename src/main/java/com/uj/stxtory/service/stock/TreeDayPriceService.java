@@ -67,27 +67,30 @@ public class TreeDayPriceService {
 
     public void renewalUpdateByToday() {
         List<Stock> all = getAll();
-        for (Stock stock : all) {
-            // 코스피나 코스닥이 아니면 삭제 후 제외
-            if (!stockInfoService.getStockMarketIdentifier(stock.getCode())) {
-                stock.setDeletedAt(LocalDateTime.now());
-                continue;
-            }
-            List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
-            // 거래량이 0이면 하루 전으로 계산
-            int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
-            // 마지막 가격
-            StockPriceInfo price = prices.get(lastdayIndex);
+        all.parallelStream()
+                .filter(stock -> {
+                    // 코스피나 코스닥이 아니면 삭제 후 제외
+                    if (!stockInfoService.getStockMarketIdentifier(stock.getCode())) {
+                        stock.setDeletedAt(LocalDateTime.now());
+                        return false;
+                    }
+                    return true;
+                }).forEach(stock -> {
+                    List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
+                    // 거래량이 0이면 하루 전으로 계산
+                    int lastDayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
+                    // 마지막 가격
+                    StockPriceInfo price = prices.get(lastDayIndex);
 
-            // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
-            while (price.getClose() != 0 && stock.getExpectedSellingPrice() != 0
-                    && price.getClose() >= stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
-            // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
-            if (price.getClose() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
-        }
-        List<Stock> deleteds = all.parallelStream().filter(s -> s.getDeletedAt() != null).collect(Collectors.toList());
-        if (deleteds.isEmpty()) return;
-        mailService.treeDaysMailSend(deleteds, " - 매도 종목");
+                    // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
+                    while (price.getClose() != 0 && stock.getExpectedSellingPrice() != 0
+                            && price.getClose() >= stock.getExpectedSellingPrice()) stock.sellingPriceUpdate(price.getDate());
+                    // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
+                    if (price.getClose() <= stock.getMinimumSellingPrice()) stock.setDeletedAt(LocalDateTime.now());
+                });
+        List<Stock> deleted = all.parallelStream().filter(s -> s.getDeletedAt() != null).collect(Collectors.toList());
+        if (deleted.isEmpty()) return;
+        mailService.treeDaysMailSend(deleted, " - 매도 종목");
     }
 
     public List<StockInfo> start() {
