@@ -114,18 +114,10 @@ public class TreeDayPriceService {
 
     private List<StockInfo> filterByThreeDay(List<StockInfo> stocks, int SEARCH_PAGE) {
         // 로그시작
-        final int[] percent = {0};
+        log.info("save log start!");
 
         return stocks.parallelStream()
                 .filter(stock -> {
-                    int cnt = stocks.indexOf(stock)+1;
-
-                    // 로그
-                    if ((cnt * 100) / stocks.size() > percent[0]) {
-                        percent[0] = (cnt * 100) / stocks.size();
-                        log.info(String.format("%d", percent[0]) + "%");
-                    }
-
                     // 부하를 방지하기 위해 일단 1페이지만 확인 후 신고가 설정할 때 다시 구하기
                     List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
 
@@ -159,11 +151,10 @@ public class TreeDayPriceService {
                     // 리스트에 저장
                     stock.setPrices(prices);
 
-                    // 로그
-                    log.info(String.format("\tsuccess:\t%s", stock.getName()));
-
                     return true;
                 })
+                // 로그
+                .peek(stock -> log.info(String.format("\tsuccess:\t%s", stock.getName())))
                 .collect(Collectors.toList());
     }
 }
