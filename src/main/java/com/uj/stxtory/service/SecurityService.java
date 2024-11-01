@@ -16,14 +16,13 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
+@Transactional
 @Service
 public class SecurityService implements UserDetailsService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    UserRepository userRepository;
 
-    public SecurityService(@Autowired UserRepository userRepository){
-        this.userRepository = userRepository;
-    }
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String userLoginId) throws UsernameNotFoundException {
