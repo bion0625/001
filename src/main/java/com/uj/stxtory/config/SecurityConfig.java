@@ -1,5 +1,6 @@
 package com.uj.stxtory.config;
 
+import com.uj.stxtory.service.AuthenticationProviderService;
 import com.uj.stxtory.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -15,7 +16,9 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @Configuration
 public class SecurityConfig implements WebMvcConfigurer {
     @Autowired
-    UserService userService;
+    private UserService userService;
+    @Autowired
+    private AuthenticationProviderService authenticationProviderService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -38,11 +41,9 @@ public class SecurityConfig implements WebMvcConfigurer {
     @Bean
     AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
         return http.getSharedObject(AuthenticationManagerBuilder.class)
+                .authenticationProvider(authenticationProviderService)
                 .userDetailsService(userService)
                 .passwordEncoder(new BCryptPasswordEncoder())
                 .and().build();
     }
-
-
-
 }
