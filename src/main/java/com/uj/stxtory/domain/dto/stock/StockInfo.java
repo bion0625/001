@@ -11,7 +11,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -32,10 +31,7 @@ public class StockInfo {
     }
 
     public DealItem toDealItem() {
-        long high = prices.get(0).getHigh();
-        long minimum = Math.round(high * 0.95);
-        long expected = Math.round(high * 1.1);
-        return new DealItem(code, name, minimum, expected, LocalDateTime.now(), 0);
+        return new DealItem(code, name);
     }
 
     public static List<StockInfo> getCompanyInfo() { // 기본정보 가져오기

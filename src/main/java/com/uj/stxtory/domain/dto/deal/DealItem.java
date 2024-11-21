@@ -28,6 +28,11 @@ public class DealItem {
                 stock.getRenewalCnt());
     }
 
+    public DealItem(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
+
     // 하한 및 기대 매도 가격 업데이트
     public void sellingPriceUpdate(Date pricingDate) {
         // 하한 매도 가격은 반올림
