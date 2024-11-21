@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.util.stream.Collectors;
 
 import com.uj.stxtory.util.FormatUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -19,14 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Service
-public class StockInfoService {
+@Slf4j
+public class StockApiService {
     public List<StockInfo> getCompanyInfo() { // 기본정보 가져오기
         List<StockInfo> stocks = new ArrayList<>();
         Document doc = null;
         try {
             doc = getDocumentByUrl("http://kind.krx.co.kr/corpgeneral/corpList.do?method=download&searchType=13");
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("getCompanyInfo error");
         }
         Elements infoList = doc.select("tr");
         for (int i = 1; i < infoList.size(); i++) {
@@ -45,7 +47,7 @@ public class StockInfoService {
         try {
             doc = getDocumentByUrl(String.format("https://finance.naver.com/item/main.naver?code=%s", code));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("getStockMarketIdentifier error: " + code);
         }
 
         Elements kospiList = doc.select("img.kospi");
@@ -77,7 +79,7 @@ public class StockInfoService {
         try {
             doc = getDocumentByUrl(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page));
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("getPriceInfo error: " + code + ", " + page);
         }
 
         Elements infoList = doc.select("tr");
@@ -117,14 +119,14 @@ public class StockInfoService {
         return prices;
     }
 
-    public int getPriceTotalPage(String code) throws IOException { // 가격 정보 가져올 때, 전체 페이지 가져오기
-        Document doc = getDocumentByUrl(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s", code));
-
-        Element pgRR = doc.select(".pgRR a").get(0);
-        String href = pgRR.attr("href");
-        int totalPage = Integer.valueOf(href.substring(href.indexOf("&page=") + 6).trim());
-        return totalPage;
-    }
+//    public int getPriceTotalPage(String code) throws IOException { // 가격 정보 가져올 때, 전체 페이지 가져오기
+//        Document doc = getDocumentByUrl(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s", code));
+//
+//        Element pgRR = doc.select(".pgRR a").get(0);
+//        String href = pgRR.attr("href");
+//        int totalPage = Integer.valueOf(href.substring(href.indexOf("&page=") + 6).trim());
+//        return totalPage;
+//    }
 
     private Document getDocumentByUrl(String url) throws IOException {
         return Jsoup.connect(url)

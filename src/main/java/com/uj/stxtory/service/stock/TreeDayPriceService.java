@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @Service
 public class TreeDayPriceService {
     @Autowired
-    StockInfoService stockInfoService;
+    StockApiService stockApiService;
 
     @Autowired
     StockRepository stockRepository;
@@ -59,7 +59,7 @@ public class TreeDayPriceService {
             today = start()
                     .parallelStream().map(StockInfo::toEntity).collect(Collectors.toList());
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("saveNewByToday error");
         }
 
         for (Stock stock : today) {
@@ -74,13 +74,13 @@ public class TreeDayPriceService {
         all.parallelStream()
                 .filter(stock -> {
                     // 코스피나 코스닥이 아니면 삭제 후 제외
-                    if (!stockInfoService.getStockMarketIdentifier(stock.getCode())) {
+                    if (!stockApiService.getStockMarketIdentifier(stock.getCode())) {
                         stock.setDeletedAt(LocalDateTime.now());
                         return false;
                     }
                     return true;
                 }).forEach(stock -> {
-                    List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
+                    List<StockPriceInfo> prices = stockApiService.getPriceInfo(stock.getCode(), 1);
                     // 거래량이 0이면 하루 전으로 계산
                     int lastDayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
                     // 마지막 가격
@@ -111,7 +111,7 @@ public class TreeDayPriceService {
         // int SEARCH_PAGE = 2 * MONTH;
         int SEARCH_PAGE = dealPageConfig.getBaseDays(); // 6개월
 
-        List<StockInfo> stocks = stockInfoService.getCompanyInfo();
+        List<StockInfo> stocks = stockApiService.getCompanyInfo();
 
         return filterByThreeDay(stocks, SEARCH_PAGE);
     }
@@ -123,7 +123,7 @@ public class TreeDayPriceService {
         return stocks.parallelStream()
                 .filter(stock -> {
                     // 부하를 방지하기 위해 일단 1페이지만 확인 후 신고가 설정할 때 다시 구하기
-                    List<StockPriceInfo> prices = stockInfoService.getPriceInfo(stock.getCode(), 1);
+                    List<StockPriceInfo> prices = stockApiService.getPriceInfo(stock.getCode(), 1);
 
                     // 거래량이 0이면 하루 전으로 계산
                     int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
@@ -146,7 +146,7 @@ public class TreeDayPriceService {
                     if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) return false;
 
                     // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
-                    prices = stockInfoService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
+                    prices = stockApiService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
                     checkPrice = prices.parallelStream().max(Comparator.comparingLong(StockPriceInfo::getHigh)).orElse(null);
