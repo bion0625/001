@@ -1,6 +1,7 @@
 package com.uj.stxtory.domain.dto.stock;
 
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.util.FormatUtil;
 import lombok.Data;
@@ -12,16 +13,32 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Data
 @Slf4j
-public class StockInfo {
+public class StockInfo implements DealItem {
     private String name; // 종목명
     private String code; // 종목코드
     private int totalPage; // 네이버에서 가져올 전체 페이지
     private List<StockPriceInfo> prices; // 가격정보 리스트
+
+    @Override
+    public long getExpectedSellingPrice() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public long getMinimumSellingPrice() {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public void sellingPriceUpdate(Date pricingDate) {
+        throw new UnsupportedOperationException();
+    }
 
     public Stock toEntity() {
         long high = prices.get(0).getHigh();
@@ -30,11 +47,7 @@ public class StockInfo {
         return new Stock(code, name, minimum, expected, minimum, expected);
     }
 
-    public DealItem toDealItem() {
-        return new DealItem(code, name);
-    }
-
-    public static List<StockInfo> getCompanyInfo() { // 기본정보 가져오기
+    public static List<DealItem> getCompanyInfo() { // 기본정보 가져오기
         List<StockInfo> stocks = new ArrayList<>();
         Document doc = null;
         try {
@@ -78,15 +91,15 @@ public class StockInfo {
         return false;
     }
 
-    public static List<StockPriceInfo> getPriceInfoByPage(String code, int from, int to) {
-        List<StockPriceInfo> prices = new ArrayList<>();
+    public static List<DealPrice> getPriceInfoByPage(String code, int from, int to) {
+        List<DealPrice> prices = new ArrayList<>();
         for (int page = from; page <= to; page++) {
             prices.addAll(getPriceInfo(code, page));
         }
         return prices;
     }
 
-    public static List<StockPriceInfo> getPriceInfo(String code, int page) { // 종목 및 페이지로 가격 정보 가져오기
+    public static List<DealPrice> getPriceInfo(String code, int page) { // 종목 및 페이지로 가격 정보 가져오기
         Document doc = null;
         try {
             doc = getDocumentByUrl(String.format("http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page));
@@ -96,7 +109,7 @@ public class StockInfo {
 
         Elements infoList = doc.select("tr");
 
-        List<StockPriceInfo> prices = new ArrayList<>();
+        List<DealPrice> prices = new ArrayList<>();
 
         for (int i = 2; i < infoList.size() - 2; i++) {
             if (i >= 7 && i <= 9) {
@@ -113,7 +126,7 @@ public class StockInfo {
             price.setLow(formatUtil.stringToLong(info.get(5).text()));
             price.setVolume(formatUtil.stringToLong(info.get(6).text()));
 
-            Boolean minusDiffFlag = info.get(2).text().contains("하한가") || info.get(2).text().contains("하락");
+            boolean minusDiffFlag = info.get(2).text().contains("하한가") || info.get(2).text().contains("하락");
             price.setDiff(formatUtil.stringToLong(info.get(2).text()
                     .replaceAll("상한가","")
                     .replaceAll("하한가","")

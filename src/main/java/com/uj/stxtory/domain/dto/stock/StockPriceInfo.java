@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class StockPriceInfo {
+public class StockPriceInfo implements DealPrice {
     private Date date;
     private long close;
     private long diff;
@@ -14,8 +14,4 @@ public class StockPriceInfo {
     private long high;
     private long low;
     private long volume;
-
-    public DealPrice toDealPrice() {
-        return new DealPrice(this.date, this.close, this.diff, this.open, this.high, this.low, this.volume);
-    }
 }

@@ -3,17 +3,22 @@ package com.uj.stxtory.domain.dto.stock;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
-import com.uj.stxtory.domain.entity.Stock;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 public class StockModel extends DealInfo {
+
+    public static void main(String[] args) {
+        StockModel model = new StockModel(1);
+        List<DealItem> dealItems = model.calculateByThreeDaysByPageForSave();
+        System.out.println(dealItems);
+    }
+
     @Setter
-    List<Stock> oldStock;
+    List<DealItem> oldStock; // 기존 아이템 저장
 
     int SEARCH_PAGE = 13; // 6개월
 
@@ -28,26 +33,22 @@ public class StockModel extends DealInfo {
 
     @Override
     public List<DealItem> getAll() {
-        return StockInfo.getCompanyInfo().stream()
-                .map(StockInfo::toDealItem).collect(Collectors.toList());
+        return StockInfo.getCompanyInfo();
     }
 
     @Override
     public List<DealPrice> getPrice(DealItem item, int page) {
-        return StockInfo.getPriceInfo(item.getCode(), page).stream()
-                .map(StockPriceInfo::toDealPrice).collect(Collectors.toList());
+        return StockInfo.getPriceInfo(item.getCode(), page);
     }
 
     @Override
     public List<DealPrice> getPriceByPage(DealItem item, int from, int to) {
-        return StockInfo.getPriceInfoByPage(item.getCode(), from, to).stream()
-                .map(StockPriceInfo::toDealPrice).collect(Collectors.toList());
+        return StockInfo.getPriceInfoByPage(item.getCode(), from, to);
     }
 
     @Override
     public List<DealItem> getOld() {
-        return this.oldStock.stream()
-                .map(DealItem::fromStock).collect(Collectors.toList());
+        return this.oldStock;
     }
 
     // 코스피나 코스닥이 아니면 삭제 후 제외
