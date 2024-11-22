@@ -110,6 +110,7 @@ public class MailService {
     private final String DELETE = "delete";
 
     public void noticeDelete(List<DealItem> deleted) {
+        if (deleted.size() == 0) return;
         notice(deleted, titleDescriptions.get(DELETE));
     }
 

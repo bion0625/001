@@ -77,9 +77,13 @@ public abstract class DealInfo {
 
                     // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
                     while (price.getClose() != 0 && item.getExpectedSellingPrice() != 0
-                            && price.getClose() >= item.getExpectedSellingPrice()) item.sellingPriceUpdate(price.getDate());
+                            && price.getClose() >= item.getExpectedSellingPrice()) {
+                        item.sellingPriceUpdate(price.getDate());
+                        updateItems.add(item);
+                    }
                     // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
-                    if (price.getClose() <= item.getMinimumSellingPrice()) updateItems.add(item);
+                    if (price.getClose() <= item.getMinimumSellingPrice())
+                        deleteItems.add(item);
                 });
     }
 }

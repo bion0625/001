@@ -10,13 +10,6 @@ import java.util.List;
 @Slf4j
 public class StockModel extends DealInfo {
 
-    // todo del
-    public static void main(String[] args) {
-        StockModel model = new StockModel(1);
-        List<DealItem> dealItems = model.calculateByThreeDaysByPageForSave();
-        System.out.println(dealItems);
-    }
-
     int SEARCH_PAGE; // 6개월
 
     public StockModel(int pageSize) {

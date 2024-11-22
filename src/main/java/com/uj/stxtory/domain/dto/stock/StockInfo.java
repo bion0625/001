@@ -73,8 +73,8 @@ public class StockInfo implements DealItem {
 
     public static StockInfo fromEntity(Stock stock) {
         return new StockInfo(
-                stock.getCode(),
                 stock.getName(),
+                stock.getCode(),
                 stock.getOriginMinimumSellingPrice(),
                 stock.getOriginExpectedSellingPrice(),
                 stock.getMinimumSellingPrice(),
