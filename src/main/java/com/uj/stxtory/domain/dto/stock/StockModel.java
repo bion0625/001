@@ -12,8 +12,8 @@ public class StockModel extends DealInfo {
 
     int SEARCH_PAGE; // 6개월
 
-    public StockModel(int pageSize) {
-        this.SEARCH_PAGE = pageSize;
+    public StockModel(int daySize) {
+        this.SEARCH_PAGE = daySize / 10;
     }
 
     @Override
