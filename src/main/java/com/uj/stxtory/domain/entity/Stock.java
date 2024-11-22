@@ -1,7 +1,6 @@
 package com.uj.stxtory.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.uj.stxtory.domain.dto.deal.DealItem;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +17,7 @@ import java.util.Date;
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-public class Stock extends Base implements DealItem {
+public class Stock extends Base {
     @Id
     @GeneratedValue
     private Long id;

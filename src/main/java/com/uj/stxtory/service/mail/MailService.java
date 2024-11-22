@@ -1,10 +1,12 @@
 package com.uj.stxtory.service.mail;
 
+import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.entity.GmailToken;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.TargetMail;
 import com.uj.stxtory.repository.TargetEailRepository;
 import com.uj.stxtory.service.token.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,10 +16,12 @@ import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 @Transactional
 @Service
+@Slf4j
 public class MailService {
 
     @Autowired
@@ -71,7 +75,7 @@ public class MailService {
 
             Transport.send(msg);
         } catch (Exception e) {
-            e.printStackTrace();
+            log.info("sendMailByGoogle error");
         }
     }
 
@@ -86,7 +90,7 @@ public class MailService {
             sendGmail(LocalDateTime.now().toString() + title, msg.toString());
             return true;
         }catch (Exception e){
-            System.out.println("error! to threeDaysMailSend, msg is " + msg.toString());
+            log.info("threeDaysMailSend error \n1) msg: " + msg + "\n2) error: " + e.getMessage());
             return false;
         }
     }
@@ -98,5 +102,28 @@ public class MailService {
 
         email.setDeletedAt(LocalDateTime.now());
         return true;
+    }
+
+    private final Map<String, String> titleDescriptions =
+            Map.of("select", " - 선택 종목" , "delete", " - 매도 종목");
+    private final String SELECT = "select";
+    private final String DELETE = "delete";
+
+    public void noticeDelete(List<DealItem> deleted) {
+        notice(deleted, titleDescriptions.get(DELETE));
+    }
+
+    private void notice (List<DealItem> all, String title) {
+        StringBuilder msg = new StringBuilder();
+        try {
+            for (DealItem info : all) {
+                String content = String.format("%s\t%s\tcnt:%d\n", info.getCode(), info.getName(), info.getRenewalCnt());
+                System.out.print(content);
+                msg.append(content);
+            }
+            sendGmail(LocalDateTime.now() + title, msg.toString());
+        }catch (Exception e){
+            log.info("notice error \n1) msg: " + msg + "\n2) error: " + e.getMessage());
+        }
     }
 }

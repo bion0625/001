@@ -1,5 +1,6 @@
 package com.uj.stxtory.service.scheduler;
 
+import com.uj.stxtory.service.deal.StockService;
 import com.uj.stxtory.service.mail.MailService;
 import com.uj.stxtory.service.stock.TreeDayPriceService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,12 +21,21 @@ public class SchedulerService {
     @Autowired
     MailService mailService;
 
+
+    @Autowired
+    StockService stockService;
+
     // 월-금 아침 8시 - 오후 4시: 정각 및 20분, 40분 마다
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void treeDaysSave() {
+//        CompletableFuture.supplyAsync(() -> {
+//            treeDayPriceService.saveNewByToday();
+//            return "treeDaysSave complete";
+//        }).thenAccept(log::info);
+
         CompletableFuture.supplyAsync(() -> {
-            treeDayPriceService.saveNewByToday();
-            return "treeDaysSave complete";
+            stockService.save();
+            return "stock save complete";
         }).thenAccept(log::info);
     }
 
@@ -41,10 +51,16 @@ public class SchedulerService {
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void treeDaysDataBaseUpdate() {
-        CompletableFuture.supplyAsync(() -> {
-            treeDayPriceService.renewalUpdateByToday();
-            return "treeDaysDataBaseUpdate complete";
-        }).thenAccept(log::info);
-    }
+//        CompletableFuture.supplyAsync(() -> {
+//            treeDayPriceService.renewalUpdateByToday();
+//            return "treeDaysDataBaseUpdate complete";
+//        }).thenAccept(log::info);
 
+        CompletableFuture.supplyAsync(() -> stockService.update().getDeleteItems())
+                .thenApplyAsync(deleted ->
+                        CompletableFuture.supplyAsync(() -> {
+                            mailService.noticeDelete(deleted);
+                            return "stock update complete";
+                        }).thenAccept(log::info));
+    }
 }

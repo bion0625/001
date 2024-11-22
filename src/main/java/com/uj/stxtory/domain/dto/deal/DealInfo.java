@@ -1,5 +1,6 @@
 package com.uj.stxtory.domain.dto.deal;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
@@ -7,6 +8,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Getter
 @Slf4j
 public abstract class DealInfo {
     public List<DealItem> deleteItems = new ArrayList<>();// 업데이트 작업 후 매도 종목
@@ -17,7 +19,6 @@ public abstract class DealInfo {
     public abstract List<DealPrice> getPrice(DealItem item, int page);
     public abstract List<DealPrice> getPriceByPage(DealItem item, int from, int to);
 
-    public abstract List<DealItem> getOld();
     public abstract boolean CustomCheck(DealItem item);
 
     public List<DealItem> calculateByThreeDaysByPageForSave() {
@@ -52,17 +53,15 @@ public abstract class DealInfo {
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
                     checkPrice = prices.parallelStream().max(Comparator.comparingLong(DealPrice::getHigh)).orElse(null);
-                    if(checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh()) return false;
-                    return true;
+                    return checkPrice != null && prices.get(lastdayIndex).getHigh() == checkPrice.getHigh();
                 })
                 // 로그
                 .peek(item -> log.info(String.format("\tsuccess:\t%s", item.getName())))
                 .collect(Collectors.toList());
     }
 
-    public void calculateForTodayUpdate() {
-        List<DealItem> all = getOld();
-        all.parallelStream()
+    public void calculateForTodayUpdate(List<DealItem> savedItem) {
+        savedItem.parallelStream()
                 .filter(item -> {
                     if (CustomCheck(item)) {
                         deleteItems.add(item);
