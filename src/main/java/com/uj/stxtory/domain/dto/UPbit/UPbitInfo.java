@@ -15,14 +15,17 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @Data
 public class UPbitInfo implements DealItem {
 
     // todo del
     public static void main(String[] args) {
-        List<UPbitPriceInfo> priceInfo = UPbitInfo.getPriceInfo("BTC-NMR", 130);
-        System.out.println(priceInfo);
+        List<UPbitPriceInfo> priceInfoByDay = UPbitInfo.getPriceInfoByDay("KRW-XRP", 130);
+        for (UPbitPriceInfo uPbitPriceInfo : priceInfoByDay) {
+            System.out.println(uPbitPriceInfo);
+        }
     }
 
     private String market;
@@ -81,7 +84,7 @@ public class UPbitInfo implements DealItem {
         return coins;
     }
 
-    public static List<UPbitPriceInfo> getPriceInfo(String market, int days) {
+    public static List<UPbitPriceInfo> getPriceInfoByDay(String market, int days) {
 
         String url = String.format("https://api.upbit.com/v1/candles/days?count=%d&market=%s", days, market);
 
@@ -89,25 +92,46 @@ public class UPbitInfo implements DealItem {
 
         if (jsonNode.get("error") != null) return Collections.emptyList();
 
-        FormatUtil formatUtil = new FormatUtil();
         List<UPbitPriceInfo> prices = new ArrayList<>();
+
         for (JsonNode node : jsonNode) {
             UPbitPriceInfo price = new UPbitPriceInfo();
-            price.setDate(formatUtil.stringToDate(node.get("candle_date_time_kst").asText().substring(0, 10).replaceAll("-",".")));
-            price.setClose(Double.parseDouble(node.get("trade_price").asText()));
-            price.setOpen(Double.parseDouble(node.get("opening_price").asText()));
-            price.setHigh(Double.parseDouble(node.get("high_price").asText()));
-            price.setLow(Double.parseDouble(node.get("low_price").asText()));
-            price.setDiff(Double.parseDouble(node.get("change_price").asText()));
-            price.setVolume(Double.parseDouble(node.get("candle_acc_trade_volume").asText()));
+            price.setDate(FormatUtil.stringToDate(node.get("candle_date_time_kst").asText().substring(0, 10).replaceAll("-",".")));
+            price.setClose(FormatUtil.StringToDouble(node.get("trade_price").asText()));
+            price.setOpen(FormatUtil.StringToDouble(node.get("opening_price").asText()));
+            price.setHigh(FormatUtil.StringToDouble(node.get("high_price").asText()));
+            price.setLow(FormatUtil.StringToDouble(node.get("low_price").asText()));
+            price.setDiff(FormatUtil.StringToDouble(node.get("change_price").asText()));
+            price.setVolume(FormatUtil.StringToDouble(node.get("candle_acc_trade_volume").asText()));
             prices.add(price);
         }
 
         return prices;
     }
 
+    public static Optional<UPbitPriceInfo> getPriceInfoByToday(String market) {
+
+        String url = String.format("https://api.upbit.com/v1/ticker?markets=%s", market);
+
+        JsonNode jsonNode = getJsonNodeByUrl(url);
+
+        if (jsonNode.get("error") != null) return Optional.empty();
+
+        return Optional.ofNullable(jsonNode.get(0)).map(node -> {
+            UPbitPriceInfo price = new UPbitPriceInfo();
+            price.setDate(new Date());
+            price.setClose(FormatUtil.StringToDouble(node.get("trade_price").asText()));
+            price.setOpen(FormatUtil.StringToDouble(node.get("opening_price").asText()));
+            price.setHigh(FormatUtil.StringToDouble(node.get("high_price").asText()));
+            price.setLow(FormatUtil.StringToDouble(node.get("low_price").asText()));
+            price.setDiff(FormatUtil.StringToDouble(node.get("change_price").asText()));
+            price.setVolume(FormatUtil.StringToDouble(node.get("acc_trade_volume").asText()));
+            return price;
+        });
+    }
+
     private static JsonNode getJsonNodeByUrl(String url) {
-        Document doc = null;
+        Document doc;
         JsonNode jsonNode = null;
         try {
             doc = getDocumentByUrl(url);
