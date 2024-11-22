@@ -63,7 +63,7 @@ public abstract class DealInfo {
     public void calculateForTodayUpdate(List<DealItem> savedItem) {
         savedItem.parallelStream()
                 .filter(item -> {
-                    if (CustomCheck(item)) {
+                    if (!CustomCheck(item)) {
                         deleteItems.add(item);
                         return false;
                     }

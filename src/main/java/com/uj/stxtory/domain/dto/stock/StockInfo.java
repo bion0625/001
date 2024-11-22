@@ -36,16 +36,6 @@ public class StockInfo implements DealItem {
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
 
-    @Override
-    public long getExpectedSellingPrice() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public long getMinimumSellingPrice() {
-        throw new UnsupportedOperationException();
-    }
-
     // 하한 및 기대 매도 가격 업데이트
     @Override
     public void sellingPriceUpdate(Date pricingDate) {
@@ -110,10 +100,10 @@ public class StockInfo implements DealItem {
             stocks.add(stock);
         }
 
-        return stocks.parallelStream().filter(s -> getStockMarketIdentifier(s.getCode())).collect(Collectors.toList());
+        return stocks.parallelStream().filter(s -> isIdentifier(s.getCode())).collect(Collectors.toList());
     }
 
-    public static Boolean getStockMarketIdentifier (String code) {
+    public static Boolean isIdentifier(String code) {
         Document doc;
         try {
             doc = getDocumentByUrl(String.format("https://finance.naver.com/item/main.naver?code=%s", code));

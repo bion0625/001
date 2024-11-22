@@ -46,6 +46,6 @@ public class StockModel extends DealInfo {
     // 코스피나 코스닥이 아니면 삭제 후 제외
     @Override
     public boolean CustomCheck(DealItem item) {
-        return !StockInfo.getStockMarketIdentifier(item.getCode());
+        return StockInfo.isIdentifier(item.getCode());
     }
 }
