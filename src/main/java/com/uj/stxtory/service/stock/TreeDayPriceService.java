@@ -149,7 +149,7 @@ public class TreeDayPriceService {
                     prices = stockApiService.getPriceInfoByPage(stock.getCode(), 1, SEARCH_PAGE);
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
-                    checkPrice = prices.parallelStream().max(Comparator.comparingLong(StockPriceInfo::getHigh)).orElse(null);
+                    checkPrice = prices.parallelStream().max(Comparator.comparingDouble(StockPriceInfo::getHigh)).orElse(null);
                     if(checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh()) return false;
 
                     // 리스트에 저장

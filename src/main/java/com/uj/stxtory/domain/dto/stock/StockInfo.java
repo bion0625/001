@@ -29,10 +29,10 @@ public class StockInfo implements DealItem {
     private String code; // 종목코드
     private int totalPage; // 네이버에서 가져올 전체 페이지
     private List<StockPriceInfo> prices; // 가격정보 리스트
-    private long originMinimumSellingPrice;
-    private long originExpectedSellingPrice;
-    private long minimumSellingPrice;
-    private long expectedSellingPrice;
+    private double originMinimumSellingPrice;
+    private double originExpectedSellingPrice;
+    private double minimumSellingPrice;
+    private double expectedSellingPrice;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
 
@@ -48,10 +48,10 @@ public class StockInfo implements DealItem {
     }
 
     public StockInfo(String name, String code,
-                     long originMinimumSellingPrice,
-                     long originExpectedSellingPrice,
-                     long minimumSellingPrice,
-                     long expectedSellingPrice,
+                     double originMinimumSellingPrice,
+                     double originExpectedSellingPrice,
+                     double minimumSellingPrice,
+                     double expectedSellingPrice,
                      LocalDateTime pricingReferenceDate,
                      int renewalCnt)  {
         this.name = name;
@@ -65,9 +65,9 @@ public class StockInfo implements DealItem {
     }
 
     public Stock toEntity() {
-        long high = prices.get(0).getHigh();
-        long minimum = Math.round(high * 0.95);
-        long expected = Math.round(high * 1.1);
+        double high = prices.get(0).getHigh();
+        double minimum = Math.round(high * 0.95);
+        double expected = Math.round(high * 1.1);
         return new Stock(code, name, minimum, expected, minimum, expected);
     }
 

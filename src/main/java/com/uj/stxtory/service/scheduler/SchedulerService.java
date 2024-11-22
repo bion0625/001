@@ -49,7 +49,8 @@ public class SchedulerService {
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
-    @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
+//    @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
+    @Scheduled(fixedDelay = 60000)
     public void treeDaysDataBaseUpdate() {
 //        CompletableFuture.supplyAsync(() -> {
 //            treeDayPriceService.renewalUpdateByToday();

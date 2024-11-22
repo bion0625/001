@@ -9,7 +9,7 @@ public interface DealItem {
 
     String getCode();
     String getName();
-    long getExpectedSellingPrice();
-    long getMinimumSellingPrice();
+    double getExpectedSellingPrice();
+    double getMinimumSellingPrice();
     int getRenewalCnt();
 }

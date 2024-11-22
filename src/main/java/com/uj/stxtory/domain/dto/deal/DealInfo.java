@@ -52,7 +52,7 @@ public abstract class DealInfo {
                     prices = getPriceByPage(item, 1, getPage());
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
-                    checkPrice = prices.parallelStream().max(Comparator.comparingLong(DealPrice::getHigh)).orElse(null);
+                    checkPrice = prices.parallelStream().max(Comparator.comparingDouble(DealPrice::getHigh)).orElse(null);
                     return checkPrice != null && prices.get(lastdayIndex).getHigh() == checkPrice.getHigh();
                 })
                 // 로그

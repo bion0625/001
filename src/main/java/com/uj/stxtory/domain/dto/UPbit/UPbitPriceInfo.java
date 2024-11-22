@@ -1,4 +1,4 @@
-package com.uj.stxtory.domain.dto.stock;
+package com.uj.stxtory.domain.dto.UPbit;
 
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 import java.util.Date;
 
 @Data
-public class StockPriceInfo implements DealPrice {
+public class UPbitPriceInfo implements DealPrice {
     private Date date;
     private double close;
     private double diff;

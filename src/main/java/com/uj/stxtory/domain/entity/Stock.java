@@ -30,19 +30,19 @@ public class Stock extends Base {
 
     /** 타깃 최초 하한 매도 가격 */
     @Column(name = "origin_minimum_selling_price", nullable = false)
-    private long originMinimumSellingPrice;
+    private double originMinimumSellingPrice;
 
     /** 타깃 최초 기대 매도 가격 */
     @Column(name = "origin_expected_selling_price", nullable = false)
-    private long originExpectedSellingPrice;
+    private double originExpectedSellingPrice;
 
     /** 타깃 하한 매도 가격 */
     @Column(name = "minimum_selling_price", nullable = false)
-    private long minimumSellingPrice;
+    private double minimumSellingPrice;
 
     /** 타깃 기대 매도 가격 */
     @Column(name = "expected_selling_price", nullable = false)
-    private long expectedSellingPrice;
+    private double expectedSellingPrice;
 
     /** 가격 설정 기준 날짜 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
@@ -56,10 +56,10 @@ public class Stock extends Base {
     public Stock(
             String code,
             String name,
-            long originMinimumSellingPrice,
-            long originExpectedSellingPrice,
-            long minimumSellingPrice,
-            long expectedSellingPrice
+            double originMinimumSellingPrice,
+            double originExpectedSellingPrice,
+            double minimumSellingPrice,
+            double expectedSellingPrice
     ) {
         this.code = code;
         this.name = name;
