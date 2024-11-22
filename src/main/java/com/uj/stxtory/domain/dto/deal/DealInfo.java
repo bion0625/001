@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Getter
 @Slf4j
@@ -19,7 +20,9 @@ public abstract class DealInfo {
         return 13;
     }
     public abstract List<DealPrice> getPrice(DealItem item, int page);
-    public abstract List<DealPrice> getPriceByPage(DealItem item, int from, int to);
+    public List<DealPrice> getPriceByPage(DealItem item, int from, int to) {
+        return getPrice(item, 1);
+    }
 
     public boolean CustomCheckForDelete(DealItem item) {
         return true;
@@ -32,11 +35,17 @@ public abstract class DealInfo {
     public boolean isUseSize() {
         return false;
     }
+    public boolean useParallel() {
+        return false;
+    }
 
     public List<DealItem> calculateByThreeDaysByPageForSave() {
         log.info("save log start!");
 
-        return getAll().parallelStream()
+        Stream<DealItem> stream = getAll().stream();
+        if (useParallel()) stream = getAll().parallelStream();
+
+        return stream
                 .filter(item -> {
                     List<DealPrice> prices = getPrice(item, 1);
 
@@ -77,7 +86,7 @@ public abstract class DealInfo {
     }
 
     public void calculateForTodayUpdate(List<DealItem> savedItem) {
-        savedItem.parallelStream()
+        savedItem.stream()
                 .filter(item -> {
                     if (!CustomCheckForDelete(item)) {
                         deleteItems.add(item);

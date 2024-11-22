@@ -32,6 +32,11 @@ public class StockModel extends DealInfo {
     }
 
     @Override
+    public boolean useParallel() {
+        return true;
+    }
+
+    @Override
     public List<DealItem> getAll() {
         return StockInfo.getCompanyInfo();
     }
