@@ -15,11 +15,23 @@ public abstract class DealInfo {
     public List<DealItem> updateItems = new ArrayList<>();// 업데이트 작업 후 갱신 종목
 
     public abstract List<DealItem> getAll();
-    public abstract int getPage();
+    public int getPage() {
+        return 13;
+    }
     public abstract List<DealPrice> getPrice(DealItem item, int page);
     public abstract List<DealPrice> getPriceByPage(DealItem item, int from, int to);
 
-    public abstract boolean CustomCheck(DealItem item);
+    public boolean CustomCheckForDelete(DealItem item) {
+        return true;
+    }
+
+    public boolean isUsePage() {
+        return false;
+    }
+
+    public boolean isUseSize() {
+        return false;
+    }
 
     public List<DealItem> calculateByThreeDaysByPageForSave() {
         log.info("save log start!");
@@ -36,8 +48,10 @@ public abstract class DealInfo {
                     if (checkPrice != null && prices.get(0).getVolume() == checkPrice.getVolume()) return false;
 
                     // 마지막일 diff가 5% ~ 15% 내에 있지 않으면 제외
-                    double diffPercent = (double) (prices.get(lastdayIndex).getDiff() * 100) / (double) prices.get(lastdayIndex + 1).getClose();
-                    if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15)) return false;
+                    if (isUseSize()) {
+                        double diffPercent = (prices.get(lastdayIndex).getDiff() * 100) / prices.get(lastdayIndex + 1).getClose();
+                        if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15)) return false;
+                    }
 
                     // 3일 연달아 가격 상승이 아니면 제외
                     if(prices.get(lastdayIndex).getHigh() <= prices.get(lastdayIndex + 1).getHigh() || prices.get(lastdayIndex + 1).getHigh() <= prices.get(lastdayIndex + 2).getHigh()
@@ -49,7 +63,9 @@ public abstract class DealInfo {
                     if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) return false;
 
                     // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
-                    prices = getPriceByPage(item, 1, getPage());
+                    if (isUsePage()) {
+                        prices = getPriceByPage(item, 1, getPage());
+                    }
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
                     checkPrice = prices.parallelStream().max(Comparator.comparingDouble(DealPrice::getHigh)).orElse(null);
@@ -63,7 +79,7 @@ public abstract class DealInfo {
     public void calculateForTodayUpdate(List<DealItem> savedItem) {
         savedItem.parallelStream()
                 .filter(item -> {
-                    if (!CustomCheck(item)) {
+                    if (!CustomCheckForDelete(item)) {
                         deleteItems.add(item);
                         return false;
                     }

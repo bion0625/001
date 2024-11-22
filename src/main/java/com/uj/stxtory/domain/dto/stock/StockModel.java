@@ -22,6 +22,16 @@ public class StockModel extends DealInfo {
     }
 
     @Override
+    public boolean isUsePage() {
+        return true;
+    }
+
+    @Override
+    public boolean isUseSize() {
+        return true;
+    }
+
+    @Override
     public List<DealItem> getAll() {
         return StockInfo.getCompanyInfo();
     }
@@ -38,7 +48,7 @@ public class StockModel extends DealInfo {
 
     // 코스피나 코스닥이 아니면 삭제 후 제외
     @Override
-    public boolean CustomCheck(DealItem item) {
+    public boolean CustomCheckForDelete(DealItem item) {
         return StockInfo.isIdentifier(item.getCode());
     }
 }
