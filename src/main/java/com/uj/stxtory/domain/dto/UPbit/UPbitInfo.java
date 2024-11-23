@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
-import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import com.uj.stxtory.domain.entity.UPbit;
 import com.uj.stxtory.util.ApiDelayUtil;
 import com.uj.stxtory.util.FormatUtil;

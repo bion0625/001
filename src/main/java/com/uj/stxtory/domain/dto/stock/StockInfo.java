@@ -1,6 +1,5 @@
 package com.uj.stxtory.domain.dto.stock;
 
-import com.uj.stxtory.domain.dto.UPbit.UPbitPriceInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.entity.Stock;
