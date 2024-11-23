@@ -23,11 +23,6 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .user-info {
-            display: flex;
-            align-items: center;
-        }
-
         .user-info span {
             margin-right: 15px;
             font-weight: bold;
@@ -153,11 +148,7 @@
 </head>
 <body>
 <div class="header">
-    <div class="user-info">
-        <span th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'" th:text="${loginUser.name}">유저 이름</span>
-        <span th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'">님, 로그인 성공하셨습니다.</span>
-        <a th:if="${loginUser}!=null and ${loginUser.loginCheck}=='SUCCESS'" href="/logout" class="logout">로그아웃</a>
-    </div>
+    <a href="/" class="logout">MAIN</a>
     <a href="/logout" class="logout">로그아웃</a>
 </div>
 
