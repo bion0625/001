@@ -163,8 +163,8 @@ public class UPbitInfo implements DealItem {
     }
 
     private static Document getDocumentByUrl(String url) throws IOException {
-        // 업비트 요청 수 제한으로 시간 제한 초 걸기
-        ApiDelayUtil.setDelay(3);
+        // 업비트 요청 수 제한으로 시간 제한 [초] 걸기
+        ApiDelayUtil.setDelay(10);
 
         return Jsoup.connect(url)
                 .userAgent("Mozilla/5.0")

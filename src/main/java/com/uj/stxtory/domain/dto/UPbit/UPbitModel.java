@@ -11,12 +11,6 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UPbitModel extends DealInfo {
 
-    public static void main(String[] args) {
-        UPbitModel model = new UPbitModel(10);
-        List<DealItem> dealItems = model.calculateByThreeDaysByPageForSave();
-        System.out.println(dealItems);
-    }
-
     int SEARCH_DAYS; // 6개월
 
     public UPbitModel(int daySize) {
