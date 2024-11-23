@@ -44,6 +44,10 @@ public class Stock extends Base {
     @Column(name = "expected_selling_price", nullable = false)
     private double expectedSellingPrice;
 
+    /** 타깃 설정시 가격 */
+    @Column(name = "temp_price", nullable = false)
+    private double tempPrice;
+
     /** 가격 설정 기준 날짜 */
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "Asia/Seoul")
     @Column(name = "pricing_reference_date", nullable = true)
@@ -59,7 +63,8 @@ public class Stock extends Base {
             double originMinimumSellingPrice,
             double originExpectedSellingPrice,
             double minimumSellingPrice,
-            double expectedSellingPrice
+            double expectedSellingPrice,
+            double tempPrice
     ) {
         this.code = code;
         this.name = name;
@@ -67,6 +72,7 @@ public class Stock extends Base {
         this.originExpectedSellingPrice = originExpectedSellingPrice;
         this.minimumSellingPrice = minimumSellingPrice;
         this.expectedSellingPrice = expectedSellingPrice;
+        this.tempPrice = tempPrice;
         this.renewalCnt = 0;
         // 날짜만 남기고 나머지 오후 5시로 설정
         this.setCreatedAt(LocalDateTime.now());

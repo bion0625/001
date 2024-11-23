@@ -72,9 +72,10 @@ public class StockInfo implements DealItem {
     @Override
     public Stock toEntity() {
         double high = prices.get(0).getHigh();
+        double temp = prices.get(0).getClose();
         double minimum = Math.round(high * 0.95);
         double expected = Math.round(high * 1.1);
-        return new Stock(code, name, minimum, expected, minimum, expected);
+        return new Stock(code, name, minimum, expected, minimum, expected, temp);
     }
 
     public static StockInfo fromEntity(Stock stock) {
