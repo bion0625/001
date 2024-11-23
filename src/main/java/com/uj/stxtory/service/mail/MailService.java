@@ -109,14 +109,14 @@ public class MailService {
     private final String SELECT = "select";
     private final String DELETE = "delete";
 
-    public void noticeSelect(List<DealItem> deleted) {
+    public void noticeSelect(List<DealItem> deleted, String title) {
         if (deleted.size() == 0) return;
-        notice(deleted, titleDescriptions.get(SELECT));
+        notice(deleted, title + titleDescriptions.get(SELECT));
     }
 
-    public void noticeDelete(List<DealItem> deleted) {
+    public void noticeDelete(List<DealItem> deleted, String title) {
         if (deleted.size() == 0) return;
-        notice(deleted, titleDescriptions.get(DELETE));
+        notice(deleted, title + titleDescriptions.get(DELETE));
     }
 
     private void notice (List<DealItem> all, String title) {
