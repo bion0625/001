@@ -26,12 +26,16 @@ public class StockService {
     @Autowired
     private DealDaysConfig dealDaysConfig;
 
-    public List<Stock> getSaved() {
+    public List<StockInfo> getSaved() {
+        return callSaved().stream().map(StockInfo::fromEntity).collect(Collectors.toList());
+    }
+
+    private List<Stock> callSaved() {
         return stockRepository.findAllByDeletedAtIsNull();
     }
 
     public void save() {
-        List<Stock> saved = getSaved();
+        List<Stock> saved = callSaved();
 
         StockModel stockModel = new StockModel(dealDaysConfig.getBaseDays());
 
@@ -45,7 +49,7 @@ public class StockService {
     }
 
     public DealInfo update() {
-        List<Stock> saved = getSaved();
+        List<Stock> saved = callSaved();
 
         List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 

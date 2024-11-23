@@ -14,7 +14,7 @@ public class AdminController {
     @GetMapping(value = "/admin")
     public String admin(Model model){
         model.addAttribute("targets", mailService.getTargets());
-        return "/main";
+        return "/admin";
     }
 
     @GetMapping(value = "/admin/test")

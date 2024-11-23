@@ -26,12 +26,16 @@ public class UPbitService {
     @Autowired
     private DealDaysConfig dealDaysConfig;
 
-    public List<UPbit> getSaved() {
+    public List<UPbitInfo> getSaved() {
+        return callSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
+    }
+
+    private List<UPbit> callSaved() {
         return uPbitRepository.findAllByDeletedAtIsNull();
     }
 
     public void save() {
-        List<UPbit> saved = getSaved();
+        List<UPbit> saved = callSaved();
 
         DealInfo model = new UPbitModel(dealDaysConfig.getBaseDays());
 
@@ -45,7 +49,7 @@ public class UPbitService {
     }
 
     public DealInfo update() {
-        List<UPbit> saved = getSaved();
+        List<UPbit> saved = callSaved();
 
         List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 

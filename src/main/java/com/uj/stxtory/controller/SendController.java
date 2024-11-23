@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 public class SendController {
@@ -27,7 +26,7 @@ public class SendController {
     @ResponseBody
     @GetMapping("/stock")
     public boolean stock() {
-        List<StockInfo> all = stockService.getSaved().stream().map(StockInfo::fromEntity).collect(Collectors.toList());
+        List<StockInfo> all = stockService.getSaved();
         mailService.noticeSelect(new ArrayList<>(all), " - 선택 종목");
         return true;
     }
@@ -35,7 +34,7 @@ public class SendController {
     @ResponseBody
     @GetMapping("/upbit")
     public boolean upbit() {
-        List<UPbitInfo> all = uPbitService.getSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
+        List<UPbitInfo> all = uPbitService.getSaved();
         mailService.noticeSelect(new ArrayList<>(all), " - 선택 종목");
         return true;
     }

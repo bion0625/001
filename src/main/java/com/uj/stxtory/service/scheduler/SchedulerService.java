@@ -1,6 +1,5 @@
 package com.uj.stxtory.service.scheduler;
 
-import com.uj.stxtory.domain.dto.UPbit.UPbitInfo;
 import com.uj.stxtory.service.deal.StockService;
 import com.uj.stxtory.service.deal.UPbitService;
 import com.uj.stxtory.service.mail.MailService;
@@ -13,7 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.concurrent.CompletableFuture;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional
@@ -84,7 +82,7 @@ public class SchedulerService {
     // 매일 정각마다
     @Scheduled(cron = "0 0 * ? * *")
     public void uPbitMailSend() {
-        CompletableFuture.supplyAsync(() -> uPbitService.getSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList()))
+        CompletableFuture.supplyAsync(() -> uPbitService.getSaved())
                 .thenCompose(all -> CompletableFuture.supplyAsync(
                         () -> {
                             mailService.noticeSelect(new ArrayList<>(all), "upbit");
