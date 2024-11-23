@@ -50,6 +50,7 @@ public class UPbitService {
         List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 
         DealInfo model = new UPbitModel(dealDaysConfig.getBaseDays());
+        if (saved.size() == 0) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
         List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> deleteItems = model.getDeleteItems();

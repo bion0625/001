@@ -50,6 +50,7 @@ public class StockService {
         List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 
         DealInfo model = new StockModel(dealDaysConfig.getBaseDays());
+        if (saved.size() == 0) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
         List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> deleteItems = model.getDeleteItems();
