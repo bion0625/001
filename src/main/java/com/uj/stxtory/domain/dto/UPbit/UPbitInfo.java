@@ -68,6 +68,14 @@ public class UPbitInfo implements DealItem {
         this.renewalCnt = renewalCnt;
     }
 
+    @Override
+    public UPbit toEntity() {
+        double high = prices.get(0).getHigh();
+        double minimum = Math.round(high * 0.95);
+        double expected = Math.round(high * 1.1);
+        return new UPbit(code, name, minimum, expected, minimum, expected);
+    }
+
     public static UPbitInfo fromEntity(UPbit uPbit) {
         return new UPbitInfo(
                 uPbit.getName(),

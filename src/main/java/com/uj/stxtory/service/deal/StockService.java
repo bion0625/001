@@ -39,7 +39,7 @@ public class StockService {
 
         List<Stock> save = saveItems.stream()
                 .filter(item -> saved.stream().noneMatch(s -> s.getCode().equals(item.getCode())))
-                .map(item -> new Stock(item.getCode(), item.getName(), item.getMinimumSellingPrice(), item.getExpectedSellingPrice(), item.getMinimumSellingPrice(), item.getExpectedSellingPrice()))
+                .map(item -> (Stock) item.toEntity())
                 .collect(Collectors.toList());
         stockRepository.saveAll(save);
     }

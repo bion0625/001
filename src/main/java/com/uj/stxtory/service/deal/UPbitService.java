@@ -39,7 +39,7 @@ public class UPbitService {
 
         List<UPbit> save = saveItems.stream()
                 .filter(item -> saved.stream().noneMatch(s -> s.getCode().equals(item.getCode())))
-                .map(item -> new UPbit(item.getCode(), item.getName(), item.getMinimumSellingPrice(), item.getExpectedSellingPrice(), item.getMinimumSellingPrice(), item.getExpectedSellingPrice()))
+                .map(item -> (UPbit) item.toEntity())
                 .collect(Collectors.toList());
         uPbitRepository.saveAll(save);
     }

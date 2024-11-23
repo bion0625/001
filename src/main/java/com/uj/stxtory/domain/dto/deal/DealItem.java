@@ -12,4 +12,6 @@ public interface DealItem {
     double getExpectedSellingPrice();
     double getMinimumSellingPrice();
     int getRenewalCnt();
+
+    Object toEntity();
 }

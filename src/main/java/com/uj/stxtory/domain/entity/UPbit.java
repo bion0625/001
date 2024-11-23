@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 @Data
 @Entity
@@ -29,19 +27,19 @@ public class UPbit extends Base {
     private String name;
 
     /** 타깃 최초 하한 매도 가격 */
-    @Column(name = "origin_minimum_selling_price", nullable = false)
+    @Column(name = "origin_minimum_selling_price", nullable = false, precision = 10, scale = 6)
     private double originMinimumSellingPrice;
 
     /** 타깃 최초 기대 매도 가격 */
-    @Column(name = "origin_expected_selling_price", nullable = false)
+    @Column(name = "origin_expected_selling_price", nullable = false, precision = 10, scale = 6)
     private double originExpectedSellingPrice;
 
     /** 타깃 하한 매도 가격 */
-    @Column(name = "minimum_selling_price", nullable = false)
+    @Column(name = "minimum_selling_price", nullable = false, precision = 10, scale = 6)
     private double minimumSellingPrice;
 
     /** 타깃 기대 매도 가격 */
-    @Column(name = "expected_selling_price", nullable = false)
+    @Column(name = "expected_selling_price", nullable = false, precision = 10, scale = 6)
     private double expectedSellingPrice;
 
     /** 가격 설정 기준 날짜 */

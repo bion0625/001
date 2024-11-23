@@ -64,6 +64,7 @@ public class StockInfo implements DealItem {
         this.renewalCnt = renewalCnt;
     }
 
+    @Override
     public Stock toEntity() {
         double high = prices.get(0).getHigh();
         double minimum = Math.round(high * 0.95);
