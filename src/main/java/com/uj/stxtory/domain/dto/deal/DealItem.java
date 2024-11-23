@@ -1,6 +1,7 @@
 package com.uj.stxtory.domain.dto.deal;
 
 import java.util.Date;
+import java.util.List;
 
 public interface DealItem {
 
@@ -14,4 +15,5 @@ public interface DealItem {
     int getRenewalCnt();
 
     Object toEntity();
+    void setPrices(List<DealPrice> prices);
 }

@@ -1,9 +1,12 @@
 package com.uj.stxtory.domain.dto.deal;
 
+import com.uj.stxtory.domain.dto.UPbit.UPbitInfo;
+import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,7 +80,12 @@ public abstract class DealInfo {
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
                     checkPrice = prices.parallelStream().max(Comparator.comparingDouble(DealPrice::getHigh)).orElse(null);
-                    return checkPrice != null && prices.get(lastdayIndex).getHigh() == checkPrice.getHigh();
+                    if(checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh()) return false;
+
+                    // 리스트에 저장
+                    item.setPrices(prices);
+
+                    return true;
                 })
                 // 로그
                 .peek(item -> log.info(String.format("\tsuccess:\t%s(%s)", item.getName(), item.getCode())))

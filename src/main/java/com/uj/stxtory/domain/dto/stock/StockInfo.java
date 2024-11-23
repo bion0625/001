@@ -1,5 +1,6 @@
 package com.uj.stxtory.domain.dto.stock;
 
+import com.uj.stxtory.domain.dto.UPbit.UPbitPriceInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.entity.Stock;
@@ -35,6 +36,11 @@ public class StockInfo implements DealItem {
     private double expectedSellingPrice;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
+
+    @Override
+    public void setPrices(List<DealPrice> prices) {
+        this.prices = prices.stream().map(p -> (StockPriceInfo) p).collect(Collectors.toList());
+    }
 
     // 하한 및 기대 매도 가격 업데이트
     @Override

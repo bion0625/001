@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
+import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import com.uj.stxtory.domain.entity.UPbit;
 import com.uj.stxtory.util.ApiDelayUtil;
 import com.uj.stxtory.util.FormatUtil;
@@ -20,6 +21,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -40,6 +42,11 @@ public class UPbitInfo implements DealItem {
     private double expectedSellingPrice;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
+
+    @Override
+    public void setPrices(List<DealPrice> prices) {
+        this.prices = prices.stream().map(p -> (UPbitPriceInfo) p).collect(Collectors.toList());
+    }
 
     @Override
     public void sellingPriceUpdate(Date pricingDate) {

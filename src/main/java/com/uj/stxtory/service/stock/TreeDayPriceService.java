@@ -153,7 +153,7 @@ public class TreeDayPriceService {
                     if(checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh()) return false;
 
                     // 리스트에 저장
-                    stock.setPrices(prices);
+                    stock.setPrices(new ArrayList<>(prices));
 
                     return true;
                 })
