@@ -17,7 +17,7 @@ public abstract class DealInfo {
 
     public abstract List<DealItem> getAll();
     public int getPage() {
-        return 13;
+        return 130;
     }
     public abstract List<DealPrice> getPrice(DealItem item, int page);
     public List<DealPrice> getPriceByPage(DealItem item, int from, int to) {
@@ -28,17 +28,16 @@ public abstract class DealInfo {
         return true;
     }
 
-    public boolean isUsePage() {
+    public boolean usePage() {
         return false;
     }
 
-    public boolean isUseSize() {
+    public boolean useSize() {
         return false;
     }
     public boolean useParallel() {
         return false;
     }
-
     public List<DealItem> calculateByThreeDaysByPageForSave() {
         log.info("save log start!");
 
@@ -57,7 +56,7 @@ public abstract class DealInfo {
                     if (checkPrice != null && prices.get(0).getVolume() == checkPrice.getVolume()) return false;
 
                     // 마지막일 diff가 5% ~ 15% 내에 있지 않으면 제외
-                    if (isUseSize()) {
+                    if (useSize()) {
                         double diffPercent = (prices.get(lastdayIndex).getDiff() * 100) / prices.get(lastdayIndex + 1).getClose();
                         if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15)) return false;
                     }
@@ -72,7 +71,7 @@ public abstract class DealInfo {
                     if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) return false;
 
                     // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
-                    if (isUsePage()) {
+                    if (usePage()) {
                         prices = getPriceByPage(item, 1, getPage());
                     }
 
@@ -81,7 +80,7 @@ public abstract class DealInfo {
                     return checkPrice != null && prices.get(lastdayIndex).getHigh() == checkPrice.getHigh();
                 })
                 // 로그
-                .peek(item -> log.info(String.format("\tsuccess:\t%s", item.getName())))
+                .peek(item -> log.info(String.format("\tsuccess:\t%s(%s)", item.getName(), item.getCode())))
                 .collect(Collectors.toList());
     }
 

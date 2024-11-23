@@ -1,6 +1,6 @@
 package com.uj.stxtory.service.stock;
 
-import com.uj.stxtory.config.DealPageConfig;
+import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import com.uj.stxtory.domain.entity.Stock;
@@ -38,7 +38,7 @@ public class TreeDayPriceService {
     MailService mailService;
 
     @Autowired
-    DealPageConfig dealPageConfig;
+    DealDaysConfig dealDaysConfig;
 
     public List<Stock> getAll() {
         List<Stock> all = stockRepository.findAllByDeletedAtIsNull();
@@ -109,7 +109,7 @@ public class TreeDayPriceService {
          * ..
          */
         // int SEARCH_PAGE = 2 * MONTH;
-        int SEARCH_PAGE = dealPageConfig.getBaseDays(); // 6개월
+        int SEARCH_PAGE = dealDaysConfig.getBaseDays(); // 6개월
 
         List<StockInfo> stocks = stockApiService.getCompanyInfo();
 

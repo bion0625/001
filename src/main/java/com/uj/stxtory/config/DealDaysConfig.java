@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
-public class DealPageConfig {
+public class DealDaysConfig {
     private final AtomicInteger baseDays = new AtomicInteger(130);
 
     public int getBaseDays() {

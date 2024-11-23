@@ -1,6 +1,9 @@
 package com.uj.stxtory.service.scheduler;
 
+import com.uj.stxtory.domain.dto.UPbit.UPbitInfo;
+import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.service.deal.StockService;
+import com.uj.stxtory.service.deal.UPbitService;
 import com.uj.stxtory.service.mail.MailService;
 import com.uj.stxtory.service.stock.TreeDayPriceService;
 import lombok.extern.slf4j.Slf4j;
@@ -9,7 +12,10 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Transactional
@@ -24,6 +30,8 @@ public class SchedulerService {
 
     @Autowired
     StockService stockService;
+    @Autowired
+    UPbitService uPbitService;
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 20분, 40분 마다
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
@@ -61,6 +69,40 @@ public class SchedulerService {
                         CompletableFuture.supplyAsync(() -> {
                             mailService.noticeDelete(deleted);
                             return "stock update complete";
+                        }).thenAccept(log::info));
+    }
+
+    // UPbit!
+
+    // 매일 1시간마다
+    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+    public void uPbitSave() {
+        CompletableFuture.supplyAsync(() -> {
+            uPbitService.save();
+            return "UPbit save complete";
+        }).thenAccept(log::info);
+    }
+
+    // 매일 정각마다
+    @Scheduled(cron = "0 0 * ? * *")
+    public void uPbitMailSend() {
+        CompletableFuture.supplyAsync(() -> uPbitService.getSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList()))
+                .thenCompose(all -> CompletableFuture.supplyAsync(
+                        () -> {
+                            mailService.noticeSelect(new ArrayList<>(all));
+                            return "UPbit main send Complete";
+                        })
+                        .thenAccept(log::info));
+    }
+
+    // 매일 5분마다
+    @Scheduled(fixedDelay = 1000 * 60 * 5)
+    public void uPbitUpdate() {
+        CompletableFuture.supplyAsync(() -> uPbitService.update().getDeleteItems())
+                .thenApplyAsync(deleted ->
+                        CompletableFuture.supplyAsync(() -> {
+                            mailService.noticeDelete(deleted);
+                            return "upbit update complete";
                         }).thenAccept(log::info));
     }
 }

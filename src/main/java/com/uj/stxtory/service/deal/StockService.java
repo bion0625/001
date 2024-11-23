@@ -1,6 +1,6 @@
 package com.uj.stxtory.service.deal;
 
-import com.uj.stxtory.config.DealPageConfig;
+import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.stock.StockInfo;
@@ -24,12 +24,16 @@ public class StockService {
     private StockRepository stockRepository;
 
     @Autowired
-    private DealPageConfig dealPageConfig;
+    private DealDaysConfig dealDaysConfig;
+
+    public List<Stock> getSaved() {
+        return stockRepository.findAllByDeletedAtIsNull();
+    }
 
     public void save() {
-        List<Stock> saved = stockRepository.findAllByDeletedAtIsNull();
+        List<Stock> saved = getSaved();
 
-        StockModel stockModel = new StockModel(dealPageConfig.getBaseDays());
+        StockModel stockModel = new StockModel(dealDaysConfig.getBaseDays());
 
         List<DealItem> saveItems = stockModel.calculateByThreeDaysByPageForSave();
 
@@ -41,11 +45,11 @@ public class StockService {
     }
 
     public DealInfo update() {
-        List<Stock> saved = stockRepository.findAllByDeletedAtIsNull();
+        List<Stock> saved = getSaved();
 
         List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 
-        DealInfo model = new StockModel(dealPageConfig.getBaseDays());
+        DealInfo model = new StockModel(dealDaysConfig.getBaseDays());
         model.calculateForTodayUpdate(new ArrayList<>(items));
         List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> deleteItems = model.getDeleteItems();

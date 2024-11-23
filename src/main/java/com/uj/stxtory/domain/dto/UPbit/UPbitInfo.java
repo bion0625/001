@@ -1,12 +1,16 @@
 package com.uj.stxtory.domain.dto.UPbit;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealPrice;
+import com.uj.stxtory.domain.entity.UPbit;
+import com.uj.stxtory.util.ApiDelayUtil;
 import com.uj.stxtory.util.FormatUtil;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import com.fasterxml.jackson.databind.JsonNode;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -18,15 +22,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Data
+@NoArgsConstructor
 public class UPbitInfo implements DealItem {
-
-    // todo del
-    public static void main(String[] args) {
-        List<UPbitPriceInfo> priceInfoByDay = UPbitInfo.getPriceInfoByDay("KRW-XRP", 130);
-        for (UPbitPriceInfo uPbitPriceInfo : priceInfoByDay) {
-            System.out.println(uPbitPriceInfo);
-        }
-    }
 
     private String market;
     private String koreanName;
@@ -54,22 +51,43 @@ public class UPbitInfo implements DealItem {
         this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    //TODO
-//    public Stock toEntity() {
-//        double high = prices.get(0).getHigh();
-//        double minimum = Math.round(high * 0.95);
-//        double expected = Math.round(high * 1.1);
-//        return new Stock(code, name, minimum, expected, minimum, expected);
-//    }
+    public UPbitInfo(String name, String code,
+                     double originMinimumSellingPrice,
+                     double originExpectedSellingPrice,
+                     double minimumSellingPrice,
+                     double expectedSellingPrice,
+                     LocalDateTime pricingReferenceDate,
+                     int renewalCnt)  {
+        this.name = name;
+        this.code = code;
+        this.originMinimumSellingPrice = originMinimumSellingPrice;
+        this.originExpectedSellingPrice = originExpectedSellingPrice;
+        this.minimumSellingPrice = minimumSellingPrice;
+        this.expectedSellingPrice = expectedSellingPrice;
+        this.pricingReferenceDate = pricingReferenceDate;
+        this.renewalCnt = renewalCnt;
+    }
 
-    public static List<UPbitInfo> getAll() {
+    public static UPbitInfo fromEntity(UPbit uPbit) {
+        return new UPbitInfo(
+                uPbit.getName(),
+                uPbit.getCode(),
+                uPbit.getOriginMinimumSellingPrice(),
+                uPbit.getOriginExpectedSellingPrice(),
+                uPbit.getMinimumSellingPrice(),
+                uPbit.getExpectedSellingPrice(),
+                uPbit.getPricingReferenceDate(),
+                uPbit.getRenewalCnt());
+    }
+
+    public static List<DealItem> getAll() {
         String url = "https://api.upbit.com/v1/market/all";
 
         JsonNode jsonNode = getJsonNodeByUrl(url);
 
         if (jsonNode.get("error") != null) return Collections.emptyList();
 
-        List<UPbitInfo> coins = new ArrayList<>();
+        List<DealItem> coins = new ArrayList<>();
         for (JsonNode node : jsonNode) {
             UPbitInfo coin = new UPbitInfo();
             coin.setCode(node.get("market").asText());
@@ -84,7 +102,7 @@ public class UPbitInfo implements DealItem {
         return coins;
     }
 
-    public static List<UPbitPriceInfo> getPriceInfoByDay(String market, int days) {
+    public static List<DealPrice> getPriceInfoByDay(String market, int days) {
 
         String url = String.format("https://api.upbit.com/v1/candles/days?count=%d&market=%s", days, market);
 
@@ -92,7 +110,7 @@ public class UPbitInfo implements DealItem {
 
         if (jsonNode.get("error") != null) return Collections.emptyList();
 
-        List<UPbitPriceInfo> prices = new ArrayList<>();
+        List<DealPrice> prices = new ArrayList<>();
 
         for (JsonNode node : jsonNode) {
             UPbitPriceInfo price = new UPbitPriceInfo();
@@ -145,6 +163,9 @@ public class UPbitInfo implements DealItem {
     }
 
     private static Document getDocumentByUrl(String url) throws IOException {
+        // 업비트 요청 수 제한으로 시간 제한 초 걸기
+        ApiDelayUtil.setDelay(3);
+
         return Jsoup.connect(url)
                 .userAgent("Mozilla/5.0")
                 .ignoreContentType(true)
