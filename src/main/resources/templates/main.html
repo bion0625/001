@@ -164,7 +164,8 @@
 <div class="content">
     <h1>주식 분석 및 전송</h1>
     <p>1. 배치 작업 전에 송신</p>
-    <button id="stockInfoStart" class="button">송신:START</button>
+    <button id="stockInfoStart" class="button">STOCK 송신:START</button>
+    <button id="upbitInfoStart" class="button">UPBIT 송신:START</button>
 
     <h1>Targets List</h1>
     <ul>
@@ -191,6 +192,13 @@
         document.querySelector("#stockInfoStart").disabled = true;
         fetch("stock", {method: "GET"}).then(res => res.json()).then(data => {
             if(data) document.querySelector("#stockInfoStart").disabled = false;
+        })
+    });
+
+    document.querySelector("#upbitInfoStart").addEventListener("click", () => {
+        document.querySelector("#upbitInfoStart").disabled = true;
+        fetch("upbit", {method: "GET"}).then(res => res.json()).then(data => {
+            if(data) document.querySelector("#upbitInfoStart").disabled = false;
         })
     });
 

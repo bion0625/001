@@ -109,9 +109,9 @@ public class MailService {
     private final String SELECT = "select";
     private final String DELETE = "delete";
 
-    public void noticeSelect(List<DealItem> deleted, String title) {
-        if (deleted.size() == 0) return;
-        notice(deleted, title + titleDescriptions.get(SELECT));
+    public void noticeSelect(List<DealItem> select, String title) {
+        if (select.size() == 0) return;
+        notice(select, title + titleDescriptions.get(SELECT));
     }
 
     public void noticeDelete(List<DealItem> deleted, String title) {
