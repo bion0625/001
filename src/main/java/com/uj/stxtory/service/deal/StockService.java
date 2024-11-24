@@ -30,8 +30,12 @@ public class StockService {
         return callSaved().stream().map(StockInfo::fromEntity).collect(Collectors.toList());
     }
 
-    private List<Stock> callSaved() {
-        return stockRepository.findAllByDeletedAtIsNull();
+    private List<Stock> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
+        return stockRepository.findAllByDeletedAtIsNull().stream()
+                .sorted((u1, u2) -> Double.compare(
+                        ((u2.getExpectedSellingPrice() - u2.getTempPrice())/u2.getExpectedSellingPrice()),
+                        ((u1.getExpectedSellingPrice() - u1.getTempPrice())/u1.getExpectedSellingPrice())
+                )).collect(Collectors.toList());
     }
 
     public void save() {

@@ -30,8 +30,12 @@ public class UPbitService {
         return callSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
     }
 
-    private List<UPbit> callSaved() {
-        return uPbitRepository.findAllByDeletedAtIsNull();
+    private List<UPbit> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
+        return uPbitRepository.findAllByDeletedAtIsNull().stream()
+                .sorted((u1, u2) -> Double.compare(
+                        ((u2.getExpectedSellingPrice() - u2.getTempPrice())/u2.getExpectedSellingPrice()),
+                        ((u1.getExpectedSellingPrice() - u1.getTempPrice())/u1.getExpectedSellingPrice())
+                )).collect(Collectors.toList());
     }
 
     public void save() {
