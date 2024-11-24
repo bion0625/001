@@ -63,7 +63,7 @@ public class SchedulerService {
         CompletableFuture.supplyAsync(() -> stockService.update().getDeleteItems())
                 .thenApplyAsync(deleted ->
                         CompletableFuture.supplyAsync(() -> {
-                            mailService.noticeDelete(deleted, "stock");
+                            mailService.noticeDelete(deleted, "STOCK");
                             return "stock update complete";
                         }).thenAccept(log::info));
     }
@@ -85,7 +85,7 @@ public class SchedulerService {
         CompletableFuture.supplyAsync(() -> uPbitService.getSaved())
                 .thenCompose(all -> CompletableFuture.supplyAsync(
                         () -> {
-                            mailService.noticeSelect(new ArrayList<>(all), "upbit");
+                            mailService.noticeSelect(new ArrayList<>(all), "UPbit");
                             return "UPbit main send Complete";
                         })
                         .thenAccept(log::info));
@@ -97,7 +97,7 @@ public class SchedulerService {
         CompletableFuture.supplyAsync(() -> uPbitService.update().getDeleteItems())
                 .thenApplyAsync(deleted ->
                         CompletableFuture.supplyAsync(() -> {
-                            mailService.noticeDelete(deleted, "upbit");
+                            mailService.noticeDelete(deleted, "UPbit");
                             return "upbit update complete";
                         }).thenAccept(log::info));
     }

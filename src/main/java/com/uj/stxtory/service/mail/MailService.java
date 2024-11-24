@@ -8,10 +8,19 @@ import com.uj.stxtory.repository.TargetEailRepository;
 import com.uj.stxtory.service.token.TokenService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.javamail.JavaMailSenderImpl;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.Context;
 
-import javax.mail.*;
+import javax.mail.Authenticator;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
@@ -25,10 +34,13 @@ import java.util.Properties;
 public class MailService {
 
     @Autowired
-    TokenService tokenService;
+    private TokenService tokenService;
 
     @Autowired
-    TargetEailRepository targetEailRepository;
+    private TargetEailRepository targetEailRepository;
+
+    @Autowired
+    private TemplateEngine templateEngine;
 
     public void gmailTaretEmailSave(String target) {
         targetEailRepository.save(new TargetMail(target));
@@ -120,16 +132,51 @@ public class MailService {
     }
 
     private void notice (List<DealItem> all, String title) {
-        StringBuilder msg = new StringBuilder();
         try {
-            for (DealItem info : all) {
-                String content = String.format("%s\t%s\tcnt:%d\n", info.getCode(), info.getName(), info.getRenewalCnt());
-                System.out.print(content);
-                msg.append(content);
-            }
-            sendGmail(LocalDateTime.now() + title, msg.toString());
+            Context context = new Context();
+            context.setVariable("items", all);
+            context.setVariable("subject", title);
+
+            String htmlContent = templateEngine.process("/gmail", context);
+
+            sendGmailWithHtml(title + ": " + LocalDateTime.now(), htmlContent);
         }catch (Exception e){
-            log.info("notice error \n1) msg: " + msg + "\n2) error: " + e.getMessage());
+            log.info("notice error \n1) title: " + title + "\n2) error: " + e.getMessage());
+        }
+    }
+
+    public void sendGmailWithHtml(String title, String htmlContent) throws MessagingException {
+        GmailToken gmailToken = tokenService.getGmailToken();
+        // 등록된 토큰 없으면 메일 발송 정지
+        if (gmailToken == null) return;
+
+        String from = gmailToken.getFromEmail();
+        String password = gmailToken.getGmailToken();
+        List<TargetMail> targets = getTargets();
+        for (TargetMail to : targets) {
+            // 메일 서버 설정
+            JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
+            mailSender.setHost("smtp.gmail.com");
+            mailSender.setPort(Integer.parseInt("587"));
+            mailSender.setUsername(from);
+            mailSender.setPassword(password);
+
+            Properties props = mailSender.getJavaMailProperties();
+            props.put("mail.smtp.auth", "true");
+            props.put("mail.smtp.starttls.enable", "true");
+
+            // MimeMessage 생성
+            MimeMessage message = mailSender.createMimeMessage();
+
+            // MimeMessageHelper 사용하여 이메일 설정
+            MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8"); // true: HTML 형식으로 전송
+            helper.setFrom(from);
+            helper.setTo(to.getEmail());
+            helper.setSubject(title);
+            helper.setText(htmlContent, true); // HTML 콘텐츠로 설정
+
+            // 메일 전송
+            mailSender.send(message);
         }
     }
 }

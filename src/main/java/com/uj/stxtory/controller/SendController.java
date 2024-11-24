@@ -27,7 +27,7 @@ public class SendController {
     @GetMapping("/stock")
     public boolean stock() {
         List<StockInfo> all = stockService.getSaved();
-        mailService.noticeSelect(new ArrayList<>(all), " - 선택 종목");
+        mailService.noticeSelect(new ArrayList<>(all), "STOCK");
         return true;
     }
 
@@ -35,7 +35,7 @@ public class SendController {
     @GetMapping("/upbit")
     public boolean upbit() {
         List<UPbitInfo> all = uPbitService.getSaved();
-        mailService.noticeSelect(new ArrayList<>(all), " - 선택 종목");
+        mailService.noticeSelect(new ArrayList<>(all), "UPbit");
         return true;
     }
 }
