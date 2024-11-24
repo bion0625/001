@@ -1,10 +1,10 @@
 package com.uj.stxtory.service.deal;
 
 import com.uj.stxtory.config.DealDaysConfig;
-import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
-import com.uj.stxtory.domain.dto.upbit.UPbitModel;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
+import com.uj.stxtory.domain.dto.upbit.UPbitModel;
 import com.uj.stxtory.domain.entity.UPbit;
 import com.uj.stxtory.repository.UPbitRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,10 +34,8 @@ public class UPbitService {
     private List<UPbit> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
         return uPbitRepository.findAllByDeletedAtIsNull().stream()
                 .filter(u -> u.getExpectedSellingPrice() != u.getMinimumSellingPrice())
-                .sorted((u1, u2) -> Double.compare(
-                        ((u2.getExpectedSellingPrice() - u2.getTempPrice())/u2.getExpectedSellingPrice()),
-                        ((u1.getExpectedSellingPrice() - u1.getTempPrice())/u1.getExpectedSellingPrice())
-                )).collect(Collectors.toList());
+                .sorted(Comparator.comparingDouble(u -> (u.getExpectedSellingPrice() - u.getTempPrice())/u.getExpectedSellingPrice()))
+                .collect(Collectors.toList());
     }
 
     public void save() {

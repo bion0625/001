@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,10 +34,8 @@ public class StockService {
     private List<Stock> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
         return stockRepository.findAllByDeletedAtIsNull().stream()
                 .filter(s -> s.getExpectedSellingPrice() != s.getMinimumSellingPrice())
-                .sorted((s1, s2) -> Double.compare(
-                        ((s2.getExpectedSellingPrice() - s2.getTempPrice())/s2.getExpectedSellingPrice()),
-                        ((s1.getExpectedSellingPrice() - s1.getTempPrice())/s1.getExpectedSellingPrice())
-                )).collect(Collectors.toList());
+                .sorted(Comparator.comparingDouble(s -> (s.getExpectedSellingPrice() - s.getTempPrice())/s.getExpectedSellingPrice()))
+                .collect(Collectors.toList());
     }
 
     public void save() {

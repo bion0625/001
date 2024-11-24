@@ -141,7 +141,9 @@
             <th>name</th>
             <th>code</th>
             <th>손절가</th>
-            <th>갱신 가</th>
+            <th>갱신가</th>
+            <th>설정시가</th>
+            <th>타겟 %</th>
             <th>갱신 레벨</th>
             <th>갱신 날짜</th>
         </tr>
@@ -152,6 +154,8 @@
             <td th:text="${item.code}"></td>
             <td th:text="${item.minimumSellingPrice}"></td>
             <td th:text="${item.expectedSellingPrice}"></td>
+            <td th:text="${item.tempPrice}"></td>
+            <td th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0)}"></td>
             <td th:text="${item.renewalCnt}"></td>
             <td th:text="${item.pricingReferenceDate}"></td>
         </tr>

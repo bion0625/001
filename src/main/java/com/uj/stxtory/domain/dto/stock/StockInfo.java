@@ -59,6 +59,7 @@ public class StockInfo implements DealItem {
                      double minimumSellingPrice,
                      double expectedSellingPrice,
                      LocalDateTime pricingReferenceDate,
+                     double tempPrice,
                      int renewalCnt)  {
         this.name = name;
         this.code = code;
@@ -67,6 +68,7 @@ public class StockInfo implements DealItem {
         this.minimumSellingPrice = minimumSellingPrice;
         this.expectedSellingPrice = expectedSellingPrice;
         this.pricingReferenceDate = pricingReferenceDate;
+        this.tempPrice = tempPrice;
         this.renewalCnt = renewalCnt;
     }
 
@@ -88,6 +90,7 @@ public class StockInfo implements DealItem {
                 stock.getMinimumSellingPrice(),
                 stock.getExpectedSellingPrice(),
                 stock.getPricingReferenceDate(),
+                stock.getTempPrice(),
                 stock.getRenewalCnt());
     }
 

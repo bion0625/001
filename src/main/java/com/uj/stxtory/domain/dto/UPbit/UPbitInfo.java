@@ -63,6 +63,7 @@ public class UPbitInfo implements DealItem {
                      double originExpectedSellingPrice,
                      double minimumSellingPrice,
                      double expectedSellingPrice,
+                     double tempPrice,
                      LocalDateTime pricingReferenceDate,
                      int renewalCnt)  {
         this.name = name;
@@ -72,6 +73,7 @@ public class UPbitInfo implements DealItem {
         this.minimumSellingPrice = minimumSellingPrice;
         this.expectedSellingPrice = expectedSellingPrice;
         this.pricingReferenceDate = pricingReferenceDate;
+        this.tempPrice = tempPrice;
         this.renewalCnt = renewalCnt;
     }
 
@@ -92,6 +94,7 @@ public class UPbitInfo implements DealItem {
                 uPbit.getOriginExpectedSellingPrice(),
                 uPbit.getMinimumSellingPrice(),
                 uPbit.getExpectedSellingPrice(),
+                uPbit.getTempPrice(),
                 uPbit.getPricingReferenceDate(),
                 uPbit.getRenewalCnt());
     }
