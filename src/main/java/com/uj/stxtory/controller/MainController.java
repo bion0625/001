@@ -20,20 +20,20 @@ public class MainController{
     @GetMapping(value = "/")
     public String main(Model model){
         model.addAttribute("targets", mailService.getTargets());
-        return "/main";
+        return "main";
     }
 
     @GetMapping(value = "/select/stock")
     public String stocks(Model model){
         model.addAttribute("items", stockService.getSaved());
         model.addAttribute("subject", "STOCK SELECT");
-        return "/main";
+        return "main";
     }
 
     @GetMapping(value = "/select/upbit")
     public String upbits(Model model){
         model.addAttribute("items", uPbitService.getSaved());
         model.addAttribute("subject", "UPBIT SELECT");
-        return "/main";
+        return "main";
     }
 }

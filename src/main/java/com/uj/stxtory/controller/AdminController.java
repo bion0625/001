@@ -14,12 +14,12 @@ public class AdminController {
     @GetMapping(value = "/admin")
     public String admin(Model model){
         model.addAttribute("targets", mailService.getTargets());
-        return "/admin";
+        return "admin";
     }
 
     @GetMapping(value = "/admin/test")
     public String adminTest(Model model){
         model.addAttribute("targets", mailService.getTargets());
-        return "/main";
+        return "main";
     }
 }
