@@ -137,7 +137,7 @@ public class MailService {
             context.setVariable("items", all);
             context.setVariable("subject", title);
 
-            String htmlContent = templateEngine.process("/gmail", context);
+            String htmlContent = templateEngine.process("gmail", context);
 
             sendGmailWithHtml(title + ": " + LocalDateTime.now(), htmlContent);
         }catch (Exception e){
