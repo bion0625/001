@@ -157,7 +157,7 @@
             <td th:text="${item.tempPrice}"></td>
             <td th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0)}"></td>
             <td th:text="${item.renewalCnt}"></td>
-            <td th:text="${item.pricingReferenceDate}"></td>
+            <td th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></td>
         </tr>
         </tbody>
     </table>
