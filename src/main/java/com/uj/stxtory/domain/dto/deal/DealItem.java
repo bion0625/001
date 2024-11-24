@@ -12,6 +12,8 @@ public interface DealItem {
     String getName();
     double getExpectedSellingPrice();
     double getMinimumSellingPrice();
+    void setTempPrice(double price);
+    double getTempPrice();
     int getRenewalCnt();
 
     Object toEntity();

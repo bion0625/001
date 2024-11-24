@@ -1,4 +1,4 @@
-package com.uj.stxtory.domain.dto.UPbit;
+package com.uj.stxtory.domain.dto.upbit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,6 +39,7 @@ public class UPbitInfo implements DealItem {
     private double originExpectedSellingPrice;
     private double minimumSellingPrice;
     private double expectedSellingPrice;
+    private double tempPrice;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
 

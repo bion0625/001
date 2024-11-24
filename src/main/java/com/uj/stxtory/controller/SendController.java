@@ -1,6 +1,6 @@
 package com.uj.stxtory.controller;
 
-import com.uj.stxtory.domain.dto.UPbit.UPbitInfo;
+import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
 import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.service.deal.StockService;
 import com.uj.stxtory.service.deal.UPbitService;

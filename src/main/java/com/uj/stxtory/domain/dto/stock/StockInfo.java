@@ -33,6 +33,7 @@ public class StockInfo implements DealItem {
     private double originExpectedSellingPrice;
     private double minimumSellingPrice;
     private double expectedSellingPrice;
+    private double tempPrice;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
 

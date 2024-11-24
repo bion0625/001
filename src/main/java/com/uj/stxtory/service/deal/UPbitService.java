@@ -1,8 +1,8 @@
 package com.uj.stxtory.service.deal;
 
 import com.uj.stxtory.config.DealDaysConfig;
-import com.uj.stxtory.domain.dto.UPbit.UPbitInfo;
-import com.uj.stxtory.domain.dto.UPbit.UPbitModel;
+import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
+import com.uj.stxtory.domain.dto.upbit.UPbitModel;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.entity.UPbit;
@@ -72,6 +72,7 @@ public class UPbitService {
                         uPbit.setExpectedSellingPrice(item.getExpectedSellingPrice());
                         uPbit.setMinimumSellingPrice(item.getMinimumSellingPrice());
                         uPbit.setRenewalCnt(item.getRenewalCnt());
+                        uPbit.setTempPrice(item.getTempPrice());
                         uPbit.setUpdatedAt(LocalDateTime.now());
                         return uPbit;
                     });

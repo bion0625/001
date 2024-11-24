@@ -1,12 +1,9 @@
 package com.uj.stxtory.domain.dto.deal;
 
-import com.uj.stxtory.domain.dto.UPbit.UPbitInfo;
-import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -111,6 +108,7 @@ public abstract class DealInfo {
                     while (price.getClose() != 0 && item.getExpectedSellingPrice() != 0
                             && price.getClose() >= item.getExpectedSellingPrice()) {
                         item.sellingPriceUpdate(price.getDate());
+                        item.setTempPrice(price.getClose());
                         updateItems.add(item);
                     }
                     // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제

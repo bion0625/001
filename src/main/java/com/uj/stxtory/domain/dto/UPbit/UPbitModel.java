@@ -1,4 +1,4 @@
-package com.uj.stxtory.domain.dto.UPbit;
+package com.uj.stxtory.domain.dto.upbit;
 
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
