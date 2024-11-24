@@ -4,7 +4,6 @@ import com.uj.stxtory.service.token.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -28,10 +27,7 @@ public class TokenController {
     @PostMapping("/gmail/token")
     public boolean gmailTokenSave(@RequestBody Map<String, String> map) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-            tokenService.saveGmailToken(map.get("token"), userDetails.getUsername(), map.get("fromEmail"));
-            return true;
-        } else return false;
+        tokenService.saveGmailToken(map.get("token"), authentication.getPrincipal().toString(), map.get("fromEmail"));
+        return true;
     }
 }
