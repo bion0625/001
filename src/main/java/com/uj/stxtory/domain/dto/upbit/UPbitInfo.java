@@ -134,12 +134,12 @@ public class UPbitInfo implements DealItem {
         for (JsonNode node : jsonNode) {
             UPbitPriceInfo price = new UPbitPriceInfo();
             price.setDate(FormatUtil.stringToDate(node.get("candle_date_time_kst").asText().substring(0, 10).replaceAll("-",".")));
-            price.setClose(FormatUtil.StringToDouble(node.get("trade_price").asText()));
-            price.setOpen(FormatUtil.StringToDouble(node.get("opening_price").asText()));
-            price.setHigh(FormatUtil.StringToDouble(node.get("high_price").asText()));
-            price.setLow(FormatUtil.StringToDouble(node.get("low_price").asText()));
-            price.setDiff(FormatUtil.StringToDouble(node.get("change_price").asText()));
-            price.setVolume(FormatUtil.StringToDouble(node.get("candle_acc_trade_volume").asText()));
+            price.setClose(FormatUtil.stringToDouble(node.get("trade_price").asText()));
+            price.setOpen(FormatUtil.stringToDouble(node.get("opening_price").asText()));
+            price.setHigh(FormatUtil.stringToDouble(node.get("high_price").asText()));
+            price.setLow(FormatUtil.stringToDouble(node.get("low_price").asText()));
+            price.setDiff(FormatUtil.stringToDouble(node.get("change_price").asText()));
+            price.setVolume(FormatUtil.stringToDouble(node.get("candle_acc_trade_volume").asText()));
             prices.add(price);
         }
 
@@ -157,12 +157,12 @@ public class UPbitInfo implements DealItem {
         return Optional.ofNullable(jsonNode.get(0)).map(node -> {
             UPbitPriceInfo price = new UPbitPriceInfo();
             price.setDate(new Date());
-            price.setClose(FormatUtil.StringToDouble(node.get("trade_price").asText()));
-            price.setOpen(FormatUtil.StringToDouble(node.get("opening_price").asText()));
-            price.setHigh(FormatUtil.StringToDouble(node.get("high_price").asText()));
-            price.setLow(FormatUtil.StringToDouble(node.get("low_price").asText()));
-            price.setDiff(FormatUtil.StringToDouble(node.get("change_price").asText()));
-            price.setVolume(FormatUtil.StringToDouble(node.get("acc_trade_volume").asText()));
+            price.setClose(FormatUtil.stringToDouble(node.get("trade_price").asText()));
+            price.setOpen(FormatUtil.stringToDouble(node.get("opening_price").asText()));
+            price.setHigh(FormatUtil.stringToDouble(node.get("high_price").asText()));
+            price.setLow(FormatUtil.stringToDouble(node.get("low_price").asText()));
+            price.setDiff(FormatUtil.stringToDouble(node.get("change_price").asText()));
+            price.setVolume(FormatUtil.stringToDouble(node.get("acc_trade_volume").asText()));
             return price;
         });
     }

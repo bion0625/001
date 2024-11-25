@@ -39,7 +39,7 @@ public class SchedulerService {
 
         CompletableFuture.supplyAsync(() -> {
             stockService.save();
-            return "stock save complete";
+            return "\n\n\nstock save complete";
         }).thenAccept(log::info);
     }
 
@@ -50,7 +50,7 @@ public class SchedulerService {
                 .thenCompose(all -> CompletableFuture.supplyAsync(
                                 () -> {
                                     mailService.noticeSelect(new ArrayList<>(all), "STOCK");
-                                    return "STOCK mail send Complete";
+                                    return "\n\n\nSTOCK mail send Complete";
                                 })
                         .thenAccept(log::info));
     }
@@ -67,7 +67,7 @@ public class SchedulerService {
                 .thenApplyAsync(deleted ->
                         CompletableFuture.supplyAsync(() -> {
                             mailService.noticeDelete(deleted, "STOCK");
-                            return "stock update & mail send complete";
+                            return "\n\n\nstock update & mail send complete";
                         }).thenAccept(log::info));
     }
 
@@ -78,7 +78,7 @@ public class SchedulerService {
     public void uPbitSave() {
         CompletableFuture.supplyAsync(() -> {
             uPbitService.save();
-            return "UPbit save complete";
+            return "\n\n\nUPbit save complete";
         }).thenAccept(log::info);
     }
 
@@ -89,7 +89,7 @@ public class SchedulerService {
                 .thenCompose(all -> CompletableFuture.supplyAsync(
                         () -> {
                             mailService.noticeSelect(new ArrayList<>(all), "UPbit");
-                            return "UPbit mail send Complete";
+                            return "\n\n\nUPbit mail send Complete";
                         })
                         .thenAccept(log::info));
     }
@@ -101,7 +101,7 @@ public class SchedulerService {
                 .thenApplyAsync(deleted ->
                         CompletableFuture.supplyAsync(() -> {
                             mailService.noticeDelete(deleted, "UPbit");
-                            return "upbit update & mail send complete";
+                            return "\n\n\nupbit update & mail send complete";
                         }).thenAccept(log::info));
     }
 }

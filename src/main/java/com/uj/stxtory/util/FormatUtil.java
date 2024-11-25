@@ -3,6 +3,8 @@ package com.uj.stxtory.util;
 import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
 @Slf4j
@@ -12,7 +14,7 @@ public class FormatUtil {
         Date date = null;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy.MM.dd");
-            date = str.equals("") ? null : sdf.parse(str);
+            date = str.isEmpty() ? null : sdf.parse(str);
         } catch (Exception e) {
             log.info(String.format("stringToDate : str >>>> %s", str));
         }
@@ -21,7 +23,7 @@ public class FormatUtil {
 
     public static long stringToLong(String str) {
         long result = 0L;
-        str = str.equals("") ? "0" : str;
+        str = str.isEmpty() ? "0" : str;
         try {
             str = str.replaceAll(",", "");
             result = Long.parseLong(str);
@@ -31,10 +33,10 @@ public class FormatUtil {
         return result;
     }
 
-    public static double StringToDouble(String str) {
+    public static double stringToDouble(String str) {
         double result = 0;
         if ("null".equals(str) || str == null) return result;
-        str = str.equals("") ? "0" : str;
+        str = str.isEmpty() ? "0" : str;
         try {
             str = str.replaceAll(",", "");
             result = Double.parseDouble(str);
@@ -42,5 +44,27 @@ public class FormatUtil {
             log.info(String.format("StringToDouble : str >>>> %s", str));
         }
         return result;
+    }
+
+    public static String dateToString(LocalDateTime date) {
+        String str = null;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            str = date == null ? null : date.format(formatter);
+        } catch (Exception e) {
+            log.info(String.format("dateToString : date >>>> %s", date));
+        }
+        return str;
+    }
+
+    public static String shortDateToString(LocalDateTime date) {
+        String str = null;
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yy-MM-dd HH:mm:ss");
+            str = date == null ? null : date.format(formatter);
+        } catch (Exception e) {
+            log.info(String.format("dateToString : date >>>> %s", date));
+        }
+        return str;
     }
 }

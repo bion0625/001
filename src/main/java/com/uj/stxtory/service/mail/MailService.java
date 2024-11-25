@@ -6,6 +6,7 @@ import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.TargetMail;
 import com.uj.stxtory.repository.TargetEailRepository;
 import com.uj.stxtory.service.token.TokenService;
+import com.uj.stxtory.util.FormatUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -15,12 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.mail.Authenticator;
-import javax.mail.Message;
-import javax.mail.MessagingException;
-import javax.mail.PasswordAuthentication;
-import javax.mail.Session;
-import javax.mail.Transport;
+import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
@@ -139,7 +135,7 @@ public class MailService {
 
             String htmlContent = templateEngine.process("gmail", context);
 
-            sendGmailWithHtml(title + ": " + LocalDateTime.now(), htmlContent);
+            sendGmailWithHtml(title + ": " + FormatUtil.shortDateToString(LocalDateTime.now()), htmlContent);
         }catch (Exception e){
             log.info("notice error \n1) title: " + title + "\n2) error: " + e.getMessage());
         }
