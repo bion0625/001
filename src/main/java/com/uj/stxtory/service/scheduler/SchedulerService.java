@@ -46,10 +46,13 @@ public class SchedulerService {
     // 월-금 아침 8시 - 오후 4시: 정각 마다
     @Scheduled(cron = "0 0 8-16 ? * MON-FRI")
     public void treeDaysMailSend() {
-        CompletableFuture.supplyAsync(() -> treeDayPriceService.getAll())
+        CompletableFuture.supplyAsync(() -> stockService.getSaved())
                 .thenCompose(all -> CompletableFuture.supplyAsync(
-                        () -> mailService.treeDaysMailSend(all, " - 선택 종목"))
-                        .thenAccept(result -> log.info("treeDaysMailSend Complete")));
+                                () -> {
+                                    mailService.noticeSelect(new ArrayList<>(all), "STOCK");
+                                    return "STOCK main send Complete";
+                                })
+                        .thenAccept(log::info));
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
