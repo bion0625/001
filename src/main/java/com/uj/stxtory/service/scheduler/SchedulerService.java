@@ -50,7 +50,7 @@ public class SchedulerService {
                 .thenCompose(all -> CompletableFuture.supplyAsync(
                                 () -> {
                                     mailService.noticeSelect(new ArrayList<>(all), "STOCK");
-                                    return "STOCK main send Complete";
+                                    return "STOCK mail send Complete";
                                 })
                         .thenAccept(log::info));
     }
@@ -67,7 +67,7 @@ public class SchedulerService {
                 .thenApplyAsync(deleted ->
                         CompletableFuture.supplyAsync(() -> {
                             mailService.noticeDelete(deleted, "STOCK");
-                            return "stock update complete";
+                            return "stock update & mail send complete";
                         }).thenAccept(log::info));
     }
 
@@ -89,7 +89,7 @@ public class SchedulerService {
                 .thenCompose(all -> CompletableFuture.supplyAsync(
                         () -> {
                             mailService.noticeSelect(new ArrayList<>(all), "UPbit");
-                            return "UPbit main send Complete";
+                            return "UPbit mail send Complete";
                         })
                         .thenAccept(log::info));
     }
@@ -101,7 +101,7 @@ public class SchedulerService {
                 .thenApplyAsync(deleted ->
                         CompletableFuture.supplyAsync(() -> {
                             mailService.noticeDelete(deleted, "UPbit");
-                            return "upbit update complete";
+                            return "upbit update & mail send complete";
                         }).thenAccept(log::info));
     }
 }
