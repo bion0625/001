@@ -38,24 +38,15 @@ public class StockSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void update() {
-        CompletableFuture.supplyAsync(() -> stockNotifyService.update().getDeleteItems())
-                .thenApplyAsync(deleted ->
-                        CompletableFuture.supplyAsync(() -> {
-                            mailService.noticeDelete(deleted, "STOCK");
-                            return "\n\n\nstock update & mail send complete";
-                        }).thenAccept(log::info));
+        mailService.noticeDelete(stockNotifyService.update().getDeleteItems(), "STOCK");
+        log.info("\n\n\nstock update & mail send complete");
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 마다
     @Override
     @Scheduled(cron = "0 0 8-16 ? * MON-FRI")
     public void mail() {
-        CompletableFuture.supplyAsync(() -> stockNotifyService.getSaved())
-                .thenCompose(all -> CompletableFuture.supplyAsync(
-                                () -> {
-                                    mailService.noticeSelect(new ArrayList<>(all), "STOCK");
-                                    return "\n\n\nSTOCK mail send Complete";
-                                })
-                        .thenAccept(log::info));
+        mailService.noticeSelect(new ArrayList<>(stockNotifyService.getSaved()), "STOCK");
+        log.info("\n\n\nSTOCK mail send Complete");
     }
 }

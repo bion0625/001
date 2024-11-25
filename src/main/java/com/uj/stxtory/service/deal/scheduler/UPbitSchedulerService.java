@@ -35,24 +35,15 @@ public class UPbitSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(fixedDelay = 1000 * 60 * 5)
     public void update() {
-        CompletableFuture.supplyAsync(() -> uPbitNotifyService.update().getDeleteItems())
-                .thenApplyAsync(deleted ->
-                        CompletableFuture.supplyAsync(() -> {
-                            mailService.noticeDelete(deleted, "UPbit");
-                            return "\n\n\nupbit update & mail send complete";
-                        }).thenAccept(log::info));
+        mailService.noticeDelete(uPbitNotifyService.update().getDeleteItems(), "UPbit");
+        log.info("\n\n\nstock update & mail send complete");
     }
 
     // 매일 정각마다
     @Override
     @Scheduled(cron = "0 0 * ? * *")
     public void mail() {
-        CompletableFuture.supplyAsync(() -> uPbitNotifyService.getSaved())
-                .thenCompose(all -> CompletableFuture.supplyAsync(
-                        () -> {
-                            mailService.noticeSelect(new ArrayList<>(all), "UPbit");
-                            return "\n\n\nUPbit mail send Complete";
-                        })
-                        .thenAccept(log::info));
+        mailService.noticeSelect(new ArrayList<>(uPbitNotifyService.getSaved()), "UPbit");
+        log.info("\n\n\nSTOCK mail send Complete");
     }
 }
