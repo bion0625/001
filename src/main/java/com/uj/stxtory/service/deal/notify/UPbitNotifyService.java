@@ -1,4 +1,4 @@
-package com.uj.stxtory.service.deal;
+package com.uj.stxtory.service.deal.notify;
 
 import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
@@ -7,6 +7,7 @@ import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitModel;
 import com.uj.stxtory.domain.entity.UPbit;
 import com.uj.stxtory.repository.UPbitRepository;
+import com.uj.stxtory.service.deal.DealNotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Transactional
 @Service
-public class UPbitService {
+public class UPbitNotifyService implements DealNotifyService {
 
     @Autowired
     private UPbitRepository uPbitRepository;
@@ -38,6 +39,7 @@ public class UPbitService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public void save() {
         List<UPbit> saved = callSaved();
 
@@ -52,13 +54,14 @@ public class UPbitService {
         uPbitRepository.saveAll(save);
     }
 
+    @Override
     public DealInfo update() {
         List<UPbit> saved = callSaved();
 
         List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 
         DealInfo model = new UPbitModel(dealDaysConfig.getBaseDays());
-        if (saved.size() == 0) return model;
+        if (saved.isEmpty()) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
         List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> deleteItems = model.getDeleteItems();

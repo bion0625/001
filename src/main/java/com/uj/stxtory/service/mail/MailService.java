@@ -2,7 +2,6 @@ package com.uj.stxtory.service.mail;
 
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.entity.GmailToken;
-import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.TargetMail;
 import com.uj.stxtory.repository.TargetEailRepository;
 import com.uj.stxtory.service.token.TokenService;
@@ -16,8 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.mail.*;
-import javax.mail.internet.InternetAddress;
+import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,12 +29,15 @@ public class MailService {
 
     @Autowired
     private TokenService tokenService;
-
     @Autowired
     private TargetEailRepository targetEailRepository;
-
     @Autowired
     private TemplateEngine templateEngine;
+
+    private final Map<String, String> titleDescriptions =
+            Map.of("select", " - 선택 종목" , "delete", " - 매도 종목");
+    private final String SELECT = "select";
+    private final String DELETE = "delete";
 
     public void gmailTaretEmailSave(String target) {
         targetEailRepository.save(new TargetMail(target));
@@ -44,63 +45,6 @@ public class MailService {
 
     public List<TargetMail> getTargets() {
         return targetEailRepository.findAllByDeletedAtIsNull();
-    }
-
-    public void sendGmail(String title, String content) {
-        GmailToken gmailToken = tokenService.getGmailToken();
-        // 등록된 토큰 없으면 메일 발송 정지
-        if (gmailToken == null) return;
-
-        String from = gmailToken.getFromEmail();
-        String password = gmailToken.getGmailToken();
-        List<TargetMail> targets = getTargets();
-        for (TargetMail to : targets) {
-            sendMailByGoogle(from, to.getEmail(), password, title, content);
-        }
-    }
-
-    public void sendMailByGoogle(String from, String to, String password, String title, String content) {
-        String host = "smtp.gmail.com";
-
-        Properties props = new Properties();
-        props.setProperty("mail.smtp.host", host);
-        props.setProperty("mail.smtp.port", "587");
-        props.setProperty("mail.smtp.auth", "true");
-        props.setProperty("mail.smtp.starttls.enable", "true");
-
-        Session session = Session.getInstance(props, new Authenticator() {
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(from, password);
-            }
-        });
-
-        Message msg = new MimeMessage(session);
-        try {
-            msg.setFrom(new InternetAddress(from));
-            msg.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to));
-            msg.setSubject(title);
-            msg.setText(content);
-
-            Transport.send(msg);
-        } catch (Exception e) {
-            log.info("sendMailByGoogle error");
-        }
-    }
-
-    public boolean treeDaysMailSend (List<Stock> all, String title) {
-        StringBuilder msg = new StringBuilder();
-        try {
-            for (Stock info : all) {
-                String content = String.format("%s\t%s\tcnt:%d\n", info.getCode(), info.getName(), info.getRenewalCnt());
-                System.out.print(content);
-                msg.append(content);
-            }
-            sendGmail(LocalDateTime.now().toString() + title, msg.toString());
-            return true;
-        }catch (Exception e){
-            log.info("threeDaysMailSend error \n1) msg: " + msg + "\n2) error: " + e.getMessage());
-            return false;
-        }
     }
 
     public boolean gmailTaretEmailDelete(String target) {
@@ -112,22 +56,16 @@ public class MailService {
         return true;
     }
 
-    private final Map<String, String> titleDescriptions =
-            Map.of("select", " - 선택 종목" , "delete", " - 매도 종목");
-    private final String SELECT = "select";
-    private final String DELETE = "delete";
-
     public void noticeSelect(List<DealItem> select, String title) {
-        if (select.size() == 0) return;
         notice(select, title + titleDescriptions.get(SELECT));
     }
 
     public void noticeDelete(List<DealItem> deleted, String title) {
-        if (deleted.size() == 0) return;
+        if (deleted.isEmpty()) return;
         notice(deleted, title + titleDescriptions.get(DELETE));
     }
 
-    private void notice (List<DealItem> all, String title) {
+    private void notice(List<DealItem> all, String title) {
         try {
             Context context = new Context();
             context.setVariable("items", all);

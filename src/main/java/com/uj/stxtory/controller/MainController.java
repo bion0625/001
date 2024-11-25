@@ -1,7 +1,7 @@
 package com.uj.stxtory.controller;
 
-import com.uj.stxtory.service.deal.StockService;
-import com.uj.stxtory.service.deal.UPbitService;
+import com.uj.stxtory.service.deal.notify.StockNotifyService;
+import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
 import com.uj.stxtory.service.mail.MailService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -13,26 +13,26 @@ public class MainController{
     @Autowired
     MailService mailService;
     @Autowired
-    StockService stockService;
+    StockNotifyService stockNotifyService;
     @Autowired
-    UPbitService uPbitService;
+    UPbitNotifyService uPbitNotifyService;
 
     @GetMapping(value = "/")
-    public String main(Model model){
+    public String mainPage(Model model){
         model.addAttribute("targets", mailService.getTargets());
         return "main";
     }
 
     @GetMapping(value = "/select/stock")
     public String stocks(Model model){
-        model.addAttribute("items", stockService.getSaved());
+        model.addAttribute("items", stockNotifyService.getSaved());
         model.addAttribute("subject", "STOCK SELECT");
         return "main";
     }
 
     @GetMapping(value = "/select/upbit")
     public String upbits(Model model){
-        model.addAttribute("items", uPbitService.getSaved());
+        model.addAttribute("items", uPbitNotifyService.getSaved());
         model.addAttribute("subject", "UPBIT SELECT");
         return "main";
     }
