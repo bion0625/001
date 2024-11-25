@@ -3,6 +3,7 @@ package com.uj.stxtory.service.deal.scheduler;
 import com.uj.stxtory.service.deal.DealSchedulerService;
 import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
 import com.uj.stxtory.service.mail.MailService;
+import com.uj.stxtory.util.ApiUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -27,7 +28,7 @@ public class UPbitSchedulerService implements DealSchedulerService {
     public void save() {
         CompletableFuture.supplyAsync(() -> {
             uPbitNotifyService.save();
-            return "\n\n\nUPbit save complete";
+            return "\nUPbit save complete\n\n\n";
         }).thenAccept(log::info);
     }
 
@@ -35,15 +36,17 @@ public class UPbitSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(fixedDelay = 1000 * 60 * 5)
     public void update() {
-        mailService.noticeDelete(uPbitNotifyService.update().getDeleteItems(), "UPbit");
-        log.info("\n\n\nstock update & mail send complete");
+        ApiUtil.runWithException(
+                () -> mailService.noticeDelete(uPbitNotifyService.update().getDeleteItems(), "UPbit"));
+        log.info("\nstock update & mail send complete\n\n\n");
     }
 
     // 매일 정각마다
     @Override
     @Scheduled(cron = "0 0 * ? * *")
     public void mail() {
-        mailService.noticeSelect(new ArrayList<>(uPbitNotifyService.getSaved()), "UPbit");
-        log.info("\n\n\nSTOCK mail send Complete");
+        ApiUtil.runWithException(
+                () -> mailService.noticeSelect(new ArrayList<>(uPbitNotifyService.getSaved()), "UPbit"));
+        log.info("\nSTOCK mail send Complete\n\n\n");
     }
 }

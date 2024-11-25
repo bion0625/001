@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.entity.UPbit;
-import com.uj.stxtory.util.ApiDelayUtil;
+import com.uj.stxtory.util.ApiUtil;
 import com.uj.stxtory.util.FormatUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -169,21 +169,21 @@ public class UPbitInfo implements DealItem {
 
     private static JsonNode getJsonNodeByUrl(String url) {
         Document doc;
-        JsonNode jsonNode = null;
+        JsonNode jsonNode;
         try {
             doc = getDocumentByUrl(url);
             String jsonData = doc.select("body").text();
             ObjectMapper mapper = new ObjectMapper();
             jsonNode = mapper.readTree(jsonData);
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
         return jsonNode;
     }
 
     private static Document getDocumentByUrl(String url) throws IOException {
         // 업비트 요청 수 제한으로 시간 제한 [초] 걸기
-        ApiDelayUtil.setDelay(3);
+        ApiUtil.setDelay(3);
 
         return Jsoup.connect(url)
                 .userAgent("Mozilla/5.0")
