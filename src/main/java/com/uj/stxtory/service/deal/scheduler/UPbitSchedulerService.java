@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Transactional
@@ -26,10 +25,8 @@ public class UPbitSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
     public void save() {
-        CompletableFuture.supplyAsync(() -> {
-            uPbitNotifyService.save();
-            return "\nUPbit save complete\n\n\n";
-        }).thenAccept(log::info);
+    	uPbitNotifyService.save();
+    	log.info("\nUPbit save complete\n\n\n");
     }
 
     // 매일 5분마다

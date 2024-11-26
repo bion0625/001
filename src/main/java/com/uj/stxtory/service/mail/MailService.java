@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
@@ -56,10 +57,12 @@ public class MailService {
         return true;
     }
 
+    @Async
     public void noticeSelect(List<DealItem> select, String title) {
         notice(select, title + titleDescriptions.get(SELECT));
     }
 
+    @Async
     public void noticeDelete(List<DealItem> deleted, String title) {
         if (deleted.isEmpty()) return;
         notice(deleted, title + titleDescriptions.get(DELETE));

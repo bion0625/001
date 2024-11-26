@@ -9,6 +9,7 @@ import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.service.deal.DealNotifyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,6 +40,7 @@ public class StockNotifyService implements DealNotifyService {
                 .collect(Collectors.toList());
     }
 
+    @Async
     @Override
     public void save() {
         List<Stock> saved = callSaved();

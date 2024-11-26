@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @Transactional
@@ -29,10 +28,8 @@ public class StockSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void save() {
-        CompletableFuture.supplyAsync(() -> {
-            stockNotifyService.save();
-            return "\nstock save complete\n\n\n";
-        }).thenAccept(log::info);
+    	stockNotifyService.save();
+    	log.info("\nstock save complete\n\n\n");
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
