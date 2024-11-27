@@ -23,6 +23,7 @@ public class UserService implements UserDetailsService {
     public void save(TbUser user) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setUserPassword(encoder.encode(user.getUserPassword()));
+        if (userRepository.findAll().size() == 0) user.setUserRole("ADMIN");
         userRepository.save(user);
     }
 
