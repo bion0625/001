@@ -54,6 +54,12 @@ public class StockNotifyService implements DealNotifyService {
                 .map(item -> (Stock) item.toEntity())
                 .collect(Collectors.toList());
         stockRepository.saveAll(save);
+        
+        List<StockInfo> deleteList = saved.stream()
+        		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
+        		.map(StockInfo::fromEntity)
+        		.collect(Collectors.toList());        
+        delete(saved, new ArrayList<>(deleteList));
     }
 
     @Override
@@ -68,12 +74,13 @@ public class StockNotifyService implements DealNotifyService {
         List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 
-        update(saved, updateItems, deleteItems);
+        update(saved, updateItems);
+        delete(saved, deleteItems);
 
         return model;
     }
 
-    private void update(List<Stock> saved, List<DealItem> updateItems, List<DealItem> deleteItems) {
+    private void update(List<Stock> saved, List<DealItem> updateItems) {
         saved.forEach(stock -> {
             updateItems.stream()
                     .filter(pItem -> pItem.getCode().equals(stock.getCode()))
@@ -85,8 +92,13 @@ public class StockNotifyService implements DealNotifyService {
                         stock.setUpdatedAt(LocalDateTime.now());
                         return stock;
                     });
+        });
+    }
+    
+    private void delete(List<Stock> saved, List<DealItem> deleteItems) {
+    	saved.forEach(stock -> {
             deleteItems.stream().filter(pItem -> pItem.getCode().equals(stock.getCode())).findFirst().map(item -> {
-                stock.setDeletedAt(LocalDateTime.now());
+            	stock.setDeletedAt(LocalDateTime.now());
                 return stock;
             });
         });

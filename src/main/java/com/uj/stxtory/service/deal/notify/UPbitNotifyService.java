@@ -54,6 +54,12 @@ public class UPbitNotifyService implements DealNotifyService {
                 .map(item -> (UPbit) item.toEntity())
                 .collect(Collectors.toList());
         uPbitRepository.saveAll(save);
+        
+        List<UPbitInfo> deleteList = saved.stream()
+        		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
+        		.map(UPbitInfo::fromEntity)
+        		.collect(Collectors.toList());        
+        delete(saved, new ArrayList<>(deleteList));
     }
 
     @Override
@@ -68,12 +74,13 @@ public class UPbitNotifyService implements DealNotifyService {
         List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 
-        update(saved, updateItems, deleteItems);
+        update(saved, updateItems);
+        delete(saved, deleteItems);
 
         return model;
     }
 
-    private void update(List<UPbit> saved, List<DealItem> updateItems, List<DealItem> deleteItems) {
+    private void update(List<UPbit> saved, List<DealItem> updateItems) {
         saved.forEach(uPbit -> {
             updateItems.stream()
                     .filter(pItem -> pItem.getCode().equals(uPbit.getCode()))
@@ -85,6 +92,11 @@ public class UPbitNotifyService implements DealNotifyService {
                         uPbit.setUpdatedAt(LocalDateTime.now());
                         return uPbit;
                     });
+        });
+    }
+    
+    private void delete(List<UPbit> saved, List<DealItem> deleteItems) {
+    	saved.forEach(uPbit -> {
             deleteItems.stream().filter(pItem -> pItem.getCode().equals(uPbit.getCode())).findFirst().map(item -> {
                 uPbit.setDeletedAt(LocalDateTime.now());
                 return uPbit;
