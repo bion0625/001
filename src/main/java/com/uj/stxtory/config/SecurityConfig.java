@@ -32,7 +32,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         http
                 .authorizeRequests(request -> request
                         .mvcMatchers("/join").permitAll()
-                        .mvcMatchers("/admin/**").hasRole("ADMIN")
+                        .mvcMatchers("/admin/**", "/sql_stock/**", "/sql_upbit/**").hasRole("ADMIN")
                         .anyRequest().authenticated());
 
         return http.build();
