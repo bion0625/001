@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <title>STOCK</title>
     <style>
         body {
@@ -11,6 +11,7 @@
             padding: 0;
             background-color: #f0f2f5;
             color: #333;
+            overflow-x: hidden; /* 수평 스크롤 방지 */
         }
 
         .header {
@@ -50,6 +51,7 @@
             padding: 40px 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow-x: auto; /* content 영역에서 수평 스크롤 */
         }
 
         .content h1 {
@@ -86,102 +88,95 @@
             cursor: not-allowed;
             box-shadow: none;
         }
+
         .no-data {
             text-align: center;
             font-size: 1.2em;
             color: #7f8c8d;
             margin-top: 20px;
         }
-        .stock-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 20px 0;
-            font-size: 1em;
-            text-align: left;
+
+        .stock-cards-container {
+            display: flex;
+            flex-wrap: nowrap;
+            overflow-x: auto; /* 스크롤 가능하게 설정 */
+            gap: 20px;
+            padding: 20px 0;
+            margin-bottom: 20px;
+            width: 100%; /* 전체 너비를 사용하도록 설정 */
         }
 
-        .stock-table thead {
-            background-color: #2980b9;
-            color: white;
-        }
-
-        .stock-table th, .stock-table td {
-            padding: 10px 15px;
+        .stock-card {
+            min-width: 250px;
+            background-color: #ffffff;
             border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
         }
 
-        .stock-table tr:nth-child(even) {
-            background-color: #f9f9f9;
+        .stock-card:hover {
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
 
-        .stock-table tr:hover {
-            background-color: #dfe6e9;
+        .stock-card h3 {
+            margin-top: 0;
+            font-size: 1.2em;
+            color: #2c3e50;
         }
 
-        .stock-table th {
-            font-weight: bold;
+        .stock-card p {
+            font-size: 0.9em;
+            color: #7f8c8d;
         }
-		
-		/* 반응형 스타일 추가 */
-	    @media (max-width: 768px) {
-	        .header {
-	            flex-direction: column;
-	            align-items: flex-start;
-	            padding: 10px 15px;
-	        }
 
-	        .header a {
-	            margin: 5px 0;
-	        }
+        /* 반응형 스타일 추가 */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                padding: 10px 15px;
+            }
 
-	        .content {
-	            margin: 20px 10px;
-	            padding: 20px 10px;
-	        }
+            .header a {
+                margin: 5px 0;
+            }
 
-	        .stock-table {
-	            font-size: 0.9em;
-	            overflow-x: auto;
-	            display: block;
-	        }
+            .content {
+                margin: 20px 10px;
+                padding: 20px 10px;
+            }
 
-	        .stock-table thead {
-	            display: none;
-	        }
+            .stock-cards-container {
+                gap: 10px;
+            }
 
-	        .stock-table tr {
-	            display: block;
-	            margin-bottom: 10px;
-	            border: 1px solid #ddd;
-	            padding: 10px;
-	            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
-	        }
+            .stock-card {
+                min-width: 200px;  /* 카드 크기를 모바일에 맞게 조정 */
+                padding: 10px;
+            }
+        }
 
-	        .stock-table td {
-	            display: flex;
-	            justify-content: space-between;
-	            padding: 8px;
-	            border: none;
-	        }
+        @media (max-width: 480px) {
+            body {
+                font-size: 0.85em;
+            }
 
-	        .stock-table td::before {
-	            content: attr(data-label);
-	            font-weight: bold;
-	            color: #2980b9;
-	        }
-	    }
+            .button {
+                width: 100%;
+                padding: 10px;
+                font-size: 0.9em;
+            }
 
-	    @media (max-width: 480px) {
-	        body {
-	            font-size: 0.85em;
-	        }
+            .stock-cards-container {
+                gap: 10px;
+            }
 
-	        .button {
-	            width: 100%;
-	            padding: 10px;
-	            font-size: 0.9em;
-	        }
-	    }
+            .stock-card {
+                min-width: 160px;  /* 매우 작은 화면에서 카드 크기 추가 조정 */
+            }
+        }
     </style>
 </head>
 <body>
@@ -196,32 +191,20 @@
     <button id="home" class="button">HOME</button>
     <button id="goStockList" class="button">STOCK SELECT 목록</button>
     <button id="goUpbitList" class="button">UPBIT SELECT 목록</button>
-    <table class="stock-table">
-        <thead>
-        <tr>
-            <th>name</th>
-            <th>code</th>
-            <th>손절가</th>
-            <th>갱신가</th>
-            <th>설정시가</th>
-            <th>타겟 %</th>
-            <th>갱신 레벨</th>
-            <th>갱신 날짜</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="item : ${items}">
-            <td data-label="name" th:text="${item.name}"></td>
-            <td data-label="code" th:text="${item.code}"></td>
-            <td data-label="손절가" th:text="${item.minimumSellingPrice}"></td>
-            <td data-label="갱신가" th:text="${item.expectedSellingPrice}"></td>
-            <td data-label="설정시가" th:text="${item.tempPrice}"></td>
-            <td data-label="타겟 %" th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0)}"></td>
-            <td data-label="갱신 레벨" th:text="${item.renewalCnt}"></td>
-            <td data-label="갱신 날짜" th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></td>
-        </tr>
-        </tbody>
-    </table>
+
+    <div class="stock-cards-container">
+        <div class="stock-card" th:each="item : ${items}">
+            <h3 th:text="${item.name}"></h3>
+            <p>Code: <span th:text="${item.code}"></span></p>
+            <p>손절가: <span th:text="${item.minimumSellingPrice}"></span></p>
+            <p>갱신가: <span th:text="${item.expectedSellingPrice}"></span></p>
+            <p>설정시가: <span th:text="${item.tempPrice}"></span></p>
+            <p>타겟 %: <span th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0)}"></span></p>
+            <p>갱신 레벨: <span th:text="${item.renewalCnt}"></span></p>
+            <p>갱신 날짜: <span th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></span></p>
+        </div>
+    </div>
+
     <div th:if="${items == null || items.size() == 0}" class="no-data">
         <p>현재 표시할 데이터가 없습니다.</p>
     </div>
