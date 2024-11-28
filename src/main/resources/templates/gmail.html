@@ -74,6 +74,73 @@
         .stock-table th {
             font-weight: bold;
         }
+		
+		/* 반응형 스타일 추가 */
+		@media (max-width: 768px) {
+	        .header {
+	            flex-direction: column;
+	            align-items: flex-start;
+	            padding: 10px 15px;
+	        }
+
+	        .header a {
+	            margin: 5px 0;
+	        }
+
+	        .content {
+	            margin: 20px 10px;
+	            padding: 20px 10px;
+	        }
+
+	        .stock-table {
+	            font-size: 0.9em;
+	            overflow-x: auto;
+	            display: block;
+	        }
+
+	        .stock-table thead {
+	            display: none;
+	        }
+
+	        .stock-table tr {
+	            display: block;
+	            margin-bottom: 10px;
+	            border: 1px solid #ddd;
+	            padding: 10px;
+	            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+	        }
+
+	        .stock-table td {
+	            display: flex;
+	            justify-content: space-between;
+	            padding: 8px;
+	            border: none;
+	        }
+
+	        .stock-table td::before {
+	            content: attr(data-label);
+	            font-weight: bold;
+	            color: #2980b9;
+	        }
+	    }
+
+	    @media (max-width: 480px) {
+	        body {
+	            font-size: 0.85em;
+	        }
+
+	        .button {
+	            width: 100%;
+	            padding: 10px;
+	            font-size: 0.9em;
+	        }
+	    }
+		table { width: 100%; }
+	    th, td { display: block; width: 100%; }
+	    td { padding: 10px 0; }
+	    @media (min-width: 600px) {
+	        th, td { display: table-cell; }
+	    }
     </style>
 </head>
 <body>
@@ -94,14 +161,30 @@
         </thead>
         <tbody>
         <tr th:each="item : ${items}">
-            <td th:text="${item.name}"></td>
-            <td th:text="${item.code}"></td>
-            <td th:text="${item.minimumSellingPrice}"></td>
-            <td th:text="${item.expectedSellingPrice}"></td>
-            <td th:text="${item.tempPrice}"></td>
-            <td th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0)}"></td>
-            <td th:text="${item.renewalCnt}"></td>
-            <td th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></td>
+			<td>
+		        <strong>name:</strong> <span th:text="${item.name}">이름</span>
+		    </td>
+		    <td>
+		        <strong>code:</strong> <span th:text="${item.code}">코드</span>
+		    </td>
+		    <td>
+		        <strong>손절가:</strong> <span th:text="${item.minimumSellingPrice}">손절가</span>
+		    </td>
+		    <td>
+		        <strong>갱신가:</strong> <span th:text="${item.expectedSellingPrice}">갱신가</span>
+		    </td>
+		    <td>
+		        <strong>설정시가:</strong> <span th:text="${item.tempPrice}">설정시가</span>
+		    </td>
+		    <td>
+		        <strong>타겟 %:</strong> <span th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0)}">% 목표</span>
+		    </td>
+		    <td>
+		        <strong>갱신 레벨:</strong> <span th:text="${item.renewalCnt}">레벨</span>
+		    </td>
+		    <td>
+		        <strong>갱신 날짜:</strong> <span th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}">날짜</span>
+		    </td>
         </tr>
         </tbody>
     </table>
