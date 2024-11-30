@@ -177,7 +177,7 @@
 		        <strong>설정시가:</strong> <span th:text="${item.tempPrice}">설정시가</span>
 		    </td>
 		    <td>
-		        <strong>타겟 %:</strong> <span th:text="${T(java.lang.Math).floor((((item.expectedSellingPrice - item.tempPrice) / item.expectedSellingPrice * 100.0) * 100) / 100)}">% 목표</span>
+		        <strong>타겟 %:</strong> <span th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) * 100.0 / item.expectedSellingPrice)}">% 목표</span>
 		    </td>
 		    <td>
 		        <strong>갱신 레벨:</strong> <span th:text="${item.renewalCnt}">레벨</span>
