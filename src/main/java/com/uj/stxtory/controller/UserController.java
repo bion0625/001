@@ -2,7 +2,10 @@ package com.uj.stxtory.controller;
 
 import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.service.UserService;
+import com.uj.stxtory.service.account.UPbitAccountService;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,8 +19,13 @@ import org.springframework.web.bind.support.SessionStatus;
 @SessionAttributes("user")
 public class UserController {
 
-    @Autowired
-    UserService userService;
+    private UserService userService;
+    private UPbitAccountService uPbitAccountService;
+    
+    public UserController(UserService userService, UPbitAccountService uPbitAccountService) {
+		this.userService = userService;
+		this.uPbitAccountService = uPbitAccountService;
+	}
 
     @GetMapping(value = "/login")
     public String loginPage(){
@@ -44,7 +52,9 @@ public class UserController {
     }
     
     @GetMapping("/my")
-    public String my() {
+    public String my(Model model, Authentication authentication) {
+    	String userLoginId = authentication.getPrincipal().toString();
+    	model.addAttribute("upbit", uPbitAccountService.getKeyByLoginId(userLoginId).isPresent());
     	return "user/my";
     }
 }

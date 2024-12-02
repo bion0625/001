@@ -2,21 +2,25 @@ package com.uj.stxtory.service.account;
 
 import java.util.Optional;
 
-import javax.transaction.Transactional;
-
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.uj.stxtory.domain.dto.key.UPbitKey;
 import com.uj.stxtory.domain.entity.TbUPbitKey;
 import com.uj.stxtory.repository.TbUPbitKeyRepository;
 
 @Service
+@Transactional(readOnly = true)
 public class UPbitAccountService {
 	
 	private TbUPbitKeyRepository keyRepository;
 	
 	public UPbitAccountService(TbUPbitKeyRepository keyRepository) {
 		this.keyRepository = keyRepository;
+	}
+	
+	public Optional<UPbitKey> getKeyByLoginId(String loginId) {
+		return keyRepository.findByUserLoginId(loginId).map(e -> UPbitKey.fromEntity(e));
 	}
 
 	@Transactional

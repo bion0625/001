@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="ko">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-    <title>STOCK</title>
+    <title>My Page</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -11,7 +12,7 @@
             padding: 0;
             background-color: #f0f2f5;
             color: #333;
-            overflow-x: hidden; /* 수평 스크롤 방지 */
+            overflow-x: hidden;
         }
 
         .header {
@@ -24,21 +25,16 @@
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        .user-info span {
-            margin-right: 15px;
-            font-weight: bold;
-        }
-
-        .logout {
-            background-color: #e74c3c;
+        .header a {
             color: white;
-            padding: 8px 15px;
             text-decoration: none;
+            padding: 8px 15px;
+            background-color: #e74c3c;
             border-radius: 3px;
             transition: background-color 0.3s, box-shadow 0.3s;
         }
 
-        .logout:hover {
+        .header a:hover {
             background-color: #c0392b;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
@@ -51,7 +47,7 @@
             padding: 40px 20px;
             border-radius: 10px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            overflow-x: auto; /* content 영역에서 수평 스크롤 */
+            overflow-x: auto;
         }
 
         .content h1 {
@@ -66,6 +62,16 @@
             margin-bottom: 15px;
         }
 
+        .upbit-registered {
+            color: #27ae60; /* 초록색 */
+            font-weight: bold;
+        }
+
+        .upbit-not-registered {
+            color: #e74c3c; /* 빨간색 */
+            font-weight: bold;
+        }
+
         .button {
             background-color: #2980b9;
             color: white;
@@ -75,7 +81,7 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background-color 0.3s, box-shadow 0.3s;
-            margin-top: 10px;
+            margin-top: 20px;
         }
 
         .button:hover {
@@ -89,63 +95,17 @@
             box-shadow: none;
         }
 
-        .no-data {
-            text-align: center;
-            font-size: 1.2em;
-            color: #7f8c8d;
-            margin-top: 20px;
-        }
-
-        .stock-cards-container {
-            display: flex;
-            flex-wrap: nowrap;
-            overflow-x: auto; /* 스크롤 가능하게 설정 */
-            gap: 20px;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            width: 100%; /* 전체 너비를 사용하도록 설정 */
-        }
-
-        .stock-card {
-            min-width: 250px;
-            background-color: #ffffff;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            transition: box-shadow 0.3s ease;
-        }
-
-        .stock-card:hover {
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-        .stock-card h3 {
-            margin-top: 0;
-            font-size: 1.2em;
-            color: #2c3e50;
-        }
-
-        .stock-card p {
-            font-size: 0.9em;
-            color: #7f8c8d;
-        }
-
-        /* 반응형 스타일 추가 */
+        /* 반응형 스타일 */
         @media (max-width: 768px) {
-
             .content {
                 margin: 20px 10px;
                 padding: 20px 10px;
             }
 
-            .stock-cards-container {
-                gap: 10px;
-            }
-
-            .stock-card {
-                min-width: 200px;  /* 카드 크기를 모바일에 맞게 조정 */
-                padding: 10px;
+            .button {
+                width: 100%;
+                padding: 12px;
+                font-size: 1.1em;
             }
         }
 
@@ -156,43 +116,35 @@
 
             .button {
                 width: 100%;
-                padding: 10px;
-                font-size: 0.9em;
-            }
-
-            .stock-cards-container {
-                gap: 10px;
-            }
-
-            .stock-card {
-                min-width: 160px;  /* 매우 작은 화면에서 카드 크기 추가 조정 */
+                padding: 12px;
+                font-size: 1em;
             }
         }
     </style>
 </head>
+
 <body>
-<div class="header">
-    <a href="/admin" class="logout">ADMIN</a>
-	<a href="/" class="logout">MAIN</a>
-    <a href="/logout" class="logout">로그아웃</a>
-</div>
+    <div class="header">
+        <a href="/admin">ADMIN</a>
+        <a href="/">MAIN</a>
+        <a href="/logout">로그아웃</a>
+    </div>
 
-<div class="content">
-    <button id="upbitKey" class="button">UPBIT KEY</button>
-</div>
+    <div class="content">
+        <div th:if="${upbit}">
+            <p class="upbit-registered">UPbit 키가 등록되어 있습니다.</p>
+        </div>
+        <div th:unless="${upbit}">
+            <p class="upbit-not-registered">UPbit 키가 등록되지 않습니다.</p>
+        </div>
+        <button id="upbitKey" class="button">UPBIT KEY</button>
+    </div>
 
-<script>
-    document.querySelector("#upbitKey").addEventListener("click", () => {
-        location.href = "/upbit/key";
-    });
-
-    document.querySelector("#goStockList").addEventListener("click", () => {
-        location.href = "/select/stock";
-    });
-
-    document.querySelector("#goUpbitList").addEventListener("click", () => {
-        location.href = "/select/upbit";
-    });
-</script>
+    <script>
+        document.querySelector("#upbitKey").addEventListener("click", () => {
+            location.href = "/upbit/key";
+        });
+    </script>
 </body>
+
 </html>
