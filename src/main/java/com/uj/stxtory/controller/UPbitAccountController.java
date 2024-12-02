@@ -19,12 +19,12 @@ public class UPbitAccountController {
 
 	@GetMapping("/upbit/key")
 	public String getUpbitKey() {
-		return "/upbit/key.html";
+		return "upbit/key";
 	}
 	
 	@PostMapping("/upbit/key")
 	public String insertUpbitKey(UPbitKey key, Authentication authentication) {
 		accountService.insertKey(key, authentication.getPrincipal().toString());
-		return "/upbit/key.html";
+		return "upbit/key";
 	}
 }
