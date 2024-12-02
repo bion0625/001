@@ -1,17 +1,33 @@
 package com.uj.stxtory.service.account;
 
+import java.util.Optional;
+
+import javax.transaction.Transactional;
+
 import org.springframework.stereotype.Service;
 
 import com.uj.stxtory.domain.dto.key.UPbitKey;
+import com.uj.stxtory.domain.entity.TbUPbitKey;
+import com.uj.stxtory.repository.TbUPbitKeyRepository;
 
-import lombok.extern.slf4j.Slf4j;
-
-@Slf4j
 @Service
 public class UPbitAccountService {
+	
+	private TbUPbitKeyRepository keyRepository;
+	
+	public UPbitAccountService(TbUPbitKeyRepository keyRepository) {
+		this.keyRepository = keyRepository;
+	}
 
-	public void insertKey(UPbitKey key) {
-		log.info("access: " + key.getAccess());
-		log.info("secret: " + key.getSecret());
+	@Transactional
+	public void insertKey(UPbitKey key, String loginId) {
+		Optional<TbUPbitKey> entity = keyRepository.findByUserLoginId(loginId).map(e -> {
+			e.setAccessKey(key.getAccess());
+			e.setSecretKey(key.getSecret());
+			return e;
+		});
+		if (entity.isEmpty()) {
+			keyRepository.save(key.toEntity(loginId));
+		}
 	}
 }

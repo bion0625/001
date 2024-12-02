@@ -1,5 +1,6 @@
 package com.uj.stxtory.controller;
 
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -22,8 +23,8 @@ public class UPbitAccountController {
 	}
 	
 	@PostMapping("/upbit/key")
-	public String insertUpbitKey(UPbitKey key) {
-		accountService.insertKey(key);
+	public String insertUpbitKey(UPbitKey key, Authentication authentication) {
+		accountService.insertKey(key, authentication.getPrincipal().toString());
 		return "/upbit/key.html";
 	}
 }
