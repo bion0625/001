@@ -188,6 +188,8 @@
 	<div class="content">
 		<div th:if="${upbitAccounts.size > 0}">
 			<p class="upbit-registered">UPbit 키가 등록되어 있습니다.</p>
+			<p class="upbit-registered">AUTO TRADE: <input type="checkbox" id="upbitAutoOn"></p>
+			<input type="hidden" th:value="${isAuto}" id="isAuto"/>
 		</div>
 		<div th:unless="${upbitAccounts.size > 0}">
 			<p class="upbit-not-registered">UPbit 키가 등록되지 않습니다.</p>
@@ -206,8 +208,20 @@
 	</div>
 
 	<script>
+		if (document.querySelector("#isAuto").value == 'true') document.querySelector("#upbitAutoOn").checked = true;
+		else document.querySelector("#upbitAutoOn").checked = false;
 		document.querySelector("#upbitKey").addEventListener("click", () => {
 			location.href = "/upbit/key";
+		});
+		document.querySelector("#upbitAutoOn").addEventListener("change", (e) => {
+			const auto = e.target.checked;
+			fetch("/upbit/auto", {
+				method: "PUT",
+				headers: {
+					"Content-Type": "application/json",
+				},
+				body: JSON.stringify({auto}) // boolean 값을 JSON으로 변환하여 전송
+			})
 		});
 	</script>
 </body>

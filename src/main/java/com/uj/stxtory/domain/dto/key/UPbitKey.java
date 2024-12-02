@@ -15,6 +15,7 @@ public class UPbitKey {
 		TbUPbitKey entity = new TbUPbitKey();
 		entity.setAccessKey(this.access);
 		entity.setSecretKey(this.secret);
+		entity.setAutoOn(false);
 		entity.setUserLoginId(userLoginId);
 		return entity;
 	}

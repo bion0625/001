@@ -44,6 +44,18 @@ public class UPbitAccountService {
 			keyRepository.save(key.toEntity(loginId));
 		}
 	}
+	
+	@Transactional
+	public void updateAuto(String loginId, boolean auto) {
+		keyRepository.findByUserLoginId(loginId).map(e -> {
+			e.setAutoOn(auto);
+			return e;
+		}).orElseThrow();
+	}
+	
+	public boolean isAuto(String loginId) {
+		return keyRepository.findByUserLoginId(loginId).map(e -> e.getAutoOn()).orElse(false);
+	}
 
 	private Optional<UPbitKey> getKeyByLoginId(String loginId) {
 		return keyRepository.findByUserLoginId(loginId).map(e -> UPbitKey.fromEntity(e));
@@ -70,6 +82,8 @@ public class UPbitAccountService {
 		String serverUrl = "https://api.upbit.com/v1/accounts";
 
 		String authenticationToken = getAuthenticationToken(loginId);
+		
+		if (authenticationToken.isEmpty()) return accounts;
 
 		// 요청 헤더 설정
 		HttpHeaders headers = new HttpHeaders();

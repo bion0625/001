@@ -24,4 +24,7 @@ public class TbUPbitKey {
 	
 	@Column(name = "secret_key", nullable = false)
 	private String secretKey;
+	
+	@Column(name = "auto_on", nullable = false)
+	private Boolean autoOn = true;
 }

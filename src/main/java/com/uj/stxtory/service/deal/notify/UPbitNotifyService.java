@@ -55,11 +55,11 @@ public class UPbitNotifyService implements DealNotifyService {
                 .collect(Collectors.toList());
         uPbitRepository.saveAll(save);
         
-        List<UPbitInfo> deleteList = saved.stream()
-        		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
-        		.map(UPbitInfo::fromEntity)
-        		.collect(Collectors.toList());        
-        delete(saved, new ArrayList<>(deleteList));
+//        List<UPbitInfo> deleteList = saved.stream()
+//        		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
+//        		.map(UPbitInfo::fromEntity)
+//        		.collect(Collectors.toList());        
+//        delete(saved, new ArrayList<>(deleteList));
     }
 
     @Override

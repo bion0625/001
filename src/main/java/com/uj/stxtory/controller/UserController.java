@@ -57,6 +57,7 @@ public class UserController {
 
     	var upbitAccounts = uPbitAccountService.getAccount(userLoginId);
     	model.addAttribute("upbitAccounts", upbitAccounts);
+    	model.addAttribute("isAuto", uPbitAccountService.isAuto(userLoginId));
 
     	return "user/my";
     }
