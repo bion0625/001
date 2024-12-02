@@ -1,12 +1,19 @@
 package com.uj.stxtory.service.order;
 
+import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
@@ -22,7 +29,14 @@ public class UPbitOrderService {
 		String secretKey = "";
 
 		UPbitOrderService order = new UPbitOrderService();
-		order.getNow(accessKey, secretKey);
+//		order.getNow(accessKey, secretKey);
+		try {
+			order.execute("KRW-ETH", "0.38168799", "bid", accessKey, secretKey);// 매수 TODO 최소주문금액 이상으로 주문해주세요 에러까지 확인: 진짜 테스트 해봐야 함
+//			order.execute("KRW-XRP", "242.91667581", "ask", accessKey, secretKey);// 매도 TODO 테스트 해야 함; 현재 매도하기엔 이익을 보는 중이라 될 때 예정
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -63,5 +77,70 @@ public class UPbitOrderService {
             // 기타 필요한 정보 출력
         });
 	}
+	
+	/**
+	 * 매수 주문하기 GUIDE:
+	 * https://docs.upbit.com/reference/%EC%A3%BC%EB%AC%B8%ED%95%98%EA%B8%B0
+	 * 
+	 * 시장가 매도 매수 예정
+	 */
+	public void execute(String market, String priceOrVolume, String side, String accessKey, String secretKey) throws NoSuchAlgorithmException {
+        String serverUrl = "https://api.upbit.com";
+
+        // 요청 파라미터 설정
+        Map<String, String> params = new HashMap<>();
+        params.put("market", market);
+        params.put("side", side);// 매수 bid, 매도 ask
+        
+        if ("bid".equals(side)) params.put("price", priceOrVolume);// 지정가, 시장가 매수 시에만 필수
+        if ("ask".equals(side)) params.put("volume", priceOrVolume);//지정가, 시장가 매도 시에만 필수
+        
+        if ("bid".equals(side)) params.put("ord_type", "price");// price : 시장가 주문(매수), market : 시장가 주문(매도)
+        if ("ask".equals(side)) params.put("ord_type", "market");// market : 시장가 주문(매도)
+        
+
+        // 쿼리 해시 생성
+        String queryString = params.entrySet().stream()
+                .map(entry -> entry.getKey() + "=" + entry.getValue())
+                .reduce((p1, p2) -> p1 + "&" + p2)
+                .orElse("");
+
+        MessageDigest md = MessageDigest.getInstance("SHA-512");
+        md.update(queryString.getBytes());
+        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+        // JWT 토큰 생성
+        Algorithm algorithm = Algorithm.HMAC256(secretKey);
+        String jwtToken = JWT.create()
+                .withClaim("access_key", accessKey)
+                .withClaim("nonce", UUID.randomUUID().toString())
+                .withClaim("query_hash", queryHash)
+                .withClaim("query_hash_alg", "SHA512")
+                .sign(algorithm);
+
+        String authenticationToken = "Bearer " + jwtToken;
+
+        // RestTemplate 설정 및 요청 전송
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("Authorization", authenticationToken);
+
+        HttpEntity<Map<String, String>> requestEntity = new HttpEntity<>(params, headers);
+
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(
+                    serverUrl + "/v1/orders",
+                    HttpMethod.POST,
+                    requestEntity,
+                    String.class
+            );
+            System.out.println("Response: " + response.getBody());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+	}
+	
+	// TODO -> 미체결 주문 자동 취소로직 상기
 
 }
