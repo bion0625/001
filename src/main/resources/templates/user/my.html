@@ -193,6 +193,8 @@
 		</div>
 		<div th:unless="${upbitAccounts.size > 0}">
 			<p class="upbit-not-registered">UPbit 키가 등록되지 않습니다.</p>
+			<p class="upbit-registered">AUTO TRADE: <input type="checkbox" id="upbitAutoOn" disabled></p>
+			<input type="hidden" th:value="${isAuto}" id="isAuto"/>
 		</div>
 		<button id="upbitKey" class="button">UPBIT KEY</button>
 
