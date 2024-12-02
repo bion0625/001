@@ -54,7 +54,10 @@ public class UserController {
     @GetMapping("/my")
     public String my(Model model, Authentication authentication) {
     	String userLoginId = authentication.getPrincipal().toString();
-    	model.addAttribute("upbit", uPbitAccountService.getKeyByLoginId(userLoginId).isPresent());
+
+    	var upbitAccounts = uPbitAccountService.getAccount(userLoginId);
+    	model.addAttribute("upbitAccounts", upbitAccounts);
+
     	return "user/my";
     }
 }

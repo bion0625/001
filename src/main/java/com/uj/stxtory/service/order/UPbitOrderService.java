@@ -54,6 +54,7 @@ public class UPbitOrderService {
 				.exchange(serverUrl, HttpMethod.GET, entity, new ParameterizedTypeReference<List<UPbitAccount>>() {});
 		
 		List<UPbitAccount> accounts = response.getBody();
+		System.out.println(accounts);
 		// 응답 출력
 		accounts.forEach(account -> {
             System.out.println("Currency: " + account.getCurrency());
