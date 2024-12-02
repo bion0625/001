@@ -173,38 +173,17 @@
 <body>
 <div class="header">
     <a href="/admin" class="logout">ADMIN</a>
-	<a href="/my" class="logout">myPage</a>
+	<a href="/" class="logout">MAIN</a>
     <a href="/logout" class="logout">로그아웃</a>
 </div>
 
 <div class="content">
-    <h1 th:if="${subject == null}">주식 및 코인 SELECT</h1>
-    <h1 th:if="${subject != null}" th:text="${subject}">주식 및 코인 SELECT</h1>
-    <button id="home" class="button">HOME</button>
-    <button id="goStockList" class="button">STOCK SELECT 목록</button>
-    <button id="goUpbitList" class="button">UPBIT SELECT 목록</button>
-
-    <div class="stock-cards-container">
-        <div class="stock-card" th:each="item : ${items}">
-            <h3 th:text="${item.name}"></h3>
-            <p>Code: <span th:text="${item.code}"></span></p>
-            <p>손절가: <span th:text="${item.minimumSellingPrice}"></span></p>
-            <p>갱신가: <span th:text="${item.expectedSellingPrice}"></span></p>
-            <p>설정시가: <span th:text="${item.tempPrice}"></span></p>
-            <p>타겟 %: <span th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) * 100.0 / item.expectedSellingPrice)}"></span></p>
-            <p>갱신 레벨: <span th:text="${item.renewalCnt}"></span></p>
-            <p>갱신 날짜: <span th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></span></p>
-        </div>
-    </div>
-
-    <div th:if="${items == null || items.size() == 0}" class="no-data">
-        <p>현재 표시할 데이터가 없습니다.</p>
-    </div>
+    <button id="upbitKey" class="button">UPBIT KEY</button>
 </div>
 
 <script>
-    document.querySelector("#home").addEventListener("click", () => {
-        location.href = "/";
+    document.querySelector("#upbitKey").addEventListener("click", () => {
+        location.href = "/upbit/key";
     });
 
     document.querySelector("#goStockList").addEventListener("click", () => {

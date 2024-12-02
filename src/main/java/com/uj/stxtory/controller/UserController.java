@@ -42,4 +42,9 @@ public class UserController {
         status.setComplete();
         return "user/login";
     }
+    
+    @GetMapping("/my")
+    public String my() {
+    	return "user/my";
+    }
 }
