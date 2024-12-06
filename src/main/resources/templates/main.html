@@ -191,7 +191,7 @@
             <p>손절가: <span th:text="${item.minimumSellingPrice}"></span></p>
             <p>갱신가: <span th:text="${item.expectedSellingPrice}"></span></p>
             <p>설정시가: <span th:text="${item.tempPrice}"></span></p>
-            <p>타겟 %: <span th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) * 100.0 / item.expectedSellingPrice)}"></span></p>
+            <p>타겟 %: <span th:text="${T(java.lang.Math).floor((item.expectedSellingPrice - item.tempPrice) * 100.0 / (item.expectedSellingPrice - item.minimumSellingPrice))}"></span></p>
             <p>갱신 레벨: <span th:text="${item.renewalCnt}"></span></p>
             <p>갱신 날짜: <span th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></span></p>
         </div>

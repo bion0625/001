@@ -8,5 +8,5 @@ import java.util.List;
 
 @RepositoryRestResource(path = "sql_stock")
 public interface StockRepository extends JpaRepository<Stock, Long> {
-    List<Stock> findAllByDeletedAtIsNull();
+    List<Stock> findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc();
 }
