@@ -23,7 +23,7 @@ public class UPbitSchedulerService implements DealSchedulerService {
 
     // 매일 1시간마다
     @Override
-    @Scheduled(fixedDelay = 1000 * 60 * 60 * 24)
+    @Scheduled(fixedRate = 1000 * 60 * 60)
     public void save() {
     	uPbitNotifyService.save();
     	log.info("\nUPbit save complete\n\n\n");
