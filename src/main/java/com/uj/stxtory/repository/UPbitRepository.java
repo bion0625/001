@@ -8,5 +8,5 @@ import java.util.List;
 
 @RepositoryRestResource(path = "sql_upbit")
 public interface UPbitRepository extends JpaRepository<UPbit, Long> {
-    List<UPbit> findAllByDeletedAtIsNull();
+    List<UPbit> findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc();
 }
