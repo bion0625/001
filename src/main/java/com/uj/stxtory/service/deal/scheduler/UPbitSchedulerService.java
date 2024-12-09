@@ -21,9 +21,9 @@ public class UPbitSchedulerService implements DealSchedulerService {
     @Autowired
     UPbitNotifyService uPbitNotifyService;
 
-    // 매일 1시간마다
+    // 매일 15분마다
     @Override
-    @Scheduled(fixedRate = 1000 * 60 * 60)
+    @Scheduled(fixedRate = 1000 * 60 * 15)
     public void save() {
     	uPbitNotifyService.save();
     	log.info("\nUPbit save complete\n\n\n");
