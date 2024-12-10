@@ -47,7 +47,7 @@ public abstract class DealInfo {
         return stream
                 .filter(item -> {
                     List<DealPrice> prices = getPrice(item, 1);
-                    if (prices.isEmpty()) return false;
+                    if (prices.size() < 3) return false;
 
                     // 거래량이 0이면 하루 전으로 계산
                     int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
@@ -74,7 +74,7 @@ public abstract class DealInfo {
                     // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
                     if (usePage()) {
                         prices = getPriceByPage(item, 1, getPage());
-                        if (prices.isEmpty()) return false;
+                        if (prices.size() < 3) return false;
                     }
 
                     // 조회 기간(6개월) 중 신고가가 아니면 제외
