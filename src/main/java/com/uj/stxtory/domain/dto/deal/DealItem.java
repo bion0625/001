@@ -1,5 +1,6 @@
 package com.uj.stxtory.domain.dto.deal;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -18,4 +19,5 @@ public interface DealItem {
 
     Object toEntity();
     void setPrices(List<DealPrice> prices);
+    LocalDateTime getPricingReferenceDate();
 }
