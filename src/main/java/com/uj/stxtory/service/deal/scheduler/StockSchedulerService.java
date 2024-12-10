@@ -29,7 +29,7 @@ public class StockSchedulerService implements DealSchedulerService {
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void save() {
     	stockNotifyService.save();
-    	log.info("\nstock save complete\n\n\n");
+    	log.info("\n\n\nstock save complete\n\n\n");
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
@@ -38,7 +38,7 @@ public class StockSchedulerService implements DealSchedulerService {
     public void update() {
         ApiUtil.runWithException(
                 () -> mailService.noticeDelete(stockNotifyService.update().getDeleteItems(), "STOCK"));
-        log.info("\nstock update & mail send complete\n\n\n");
+        log.info("\n\n\nstock update & mail send complete\n\n\n");
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 마다
@@ -47,6 +47,6 @@ public class StockSchedulerService implements DealSchedulerService {
     public void mail() {
         ApiUtil.runWithException(
                 () -> mailService.noticeSelect(new ArrayList<>(stockNotifyService.getSaved()), "STOCK"));
-        log.info("\nSTOCK mail send Complete\n\n\n");
+        log.info("\n\n\nSTOCK mail send Complete\n\n\n");
     }
 }
