@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 
 @Data
 @Entity
@@ -76,19 +74,5 @@ public class Stock extends Base {
         this.renewalCnt = 0;
         // 날짜만 남기고 나머지 오후 5시로 설정
         this.setCreatedAt(LocalDateTime.now());
-    }
-
-    // 하한 및 기대 매도 가격 업데이트
-    public void sellingPriceUpdate(Date pricingDate) {
-        // 하한 매도 가격은 반올림
-        this.minimumSellingPrice = Math.round(this.expectedSellingPrice * 0.95);
-        // 기대 매도 가격은 올림
-        this.expectedSellingPrice = (long) Math.ceil(this.expectedSellingPrice * 1.1);
-
-        this.renewalCnt++;
-
-        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-
-        this.setUpdatedAt(LocalDateTime.now());
     }
 }

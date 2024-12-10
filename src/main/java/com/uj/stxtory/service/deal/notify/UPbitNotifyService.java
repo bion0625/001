@@ -85,6 +85,7 @@ public class UPbitNotifyService implements DealNotifyService {
             updateItems.stream()
                     .filter(pItem -> pItem.getCode().equals(uPbit.getCode()))
                     .findFirst().map(item -> {
+                    	uPbit.setPricingReferenceDate(item.getPricingReferenceDate());
                         uPbit.setExpectedSellingPrice(item.getExpectedSellingPrice());
                         uPbit.setMinimumSellingPrice(item.getMinimumSellingPrice());
                         uPbit.setRenewalCnt(item.getRenewalCnt());

@@ -85,6 +85,7 @@ public class StockNotifyService implements DealNotifyService {
             updateItems.stream()
                     .filter(pItem -> pItem.getCode().equals(stock.getCode()))
                     .findFirst().map(item -> {
+                    	stock.setPricingReferenceDate(item.getPricingReferenceDate());
                         stock.setExpectedSellingPrice(item.getExpectedSellingPrice());
                         stock.setMinimumSellingPrice(item.getMinimumSellingPrice());
                         stock.setRenewalCnt(item.getRenewalCnt());

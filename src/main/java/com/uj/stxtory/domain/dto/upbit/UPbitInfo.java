@@ -55,8 +55,8 @@ public class UPbitInfo implements DealItem {
         // 기대 매도 가격은 올림
         this.expectedSellingPrice = (long) Math.ceil(this.expectedSellingPrice * 1.1);
         this.renewalCnt++;
-//        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        this.pricingReferenceDate = LocalDateTime.now();
+        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+//        this.pricingReferenceDate = LocalDateTime.now();
     }
 
     public UPbitInfo(String name, String code,
