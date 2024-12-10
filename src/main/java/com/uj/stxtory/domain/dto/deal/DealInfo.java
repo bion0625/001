@@ -39,7 +39,7 @@ public abstract class DealInfo {
         return false;
     }
     public List<DealItem> calculateByThreeDaysByPageForSave() {
-        log.info("save log start!");
+        log.info("\n\n\nsave log start!\n\n\n");
 
         Stream<DealItem> stream = getAll().stream();
         if (useParallel()) stream = getAll().parallelStream();

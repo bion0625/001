@@ -26,7 +26,7 @@ public class UPbitSchedulerService implements DealSchedulerService {
     @Scheduled(fixedRate = 1000 * 60 * 15)
     public void save() {
     	uPbitNotifyService.save();
-    	log.info("\nUPbit save complete\n\n\n");
+    	log.info("\n\n\nUPbit save complete\n\n\n");
     }
 
     // 매일 5분마다
@@ -35,7 +35,7 @@ public class UPbitSchedulerService implements DealSchedulerService {
     public void update() {
         ApiUtil.runWithException(
                 () -> mailService.noticeDelete(uPbitNotifyService.update().getDeleteItems(), "UPbit"));
-        log.info("\nstock update & mail send complete\n\n\n");
+        log.info("\n\n\nstock update & mail send complete\n\n\n");
     }
 
     // 매일 정각마다
@@ -44,6 +44,6 @@ public class UPbitSchedulerService implements DealSchedulerService {
     public void mail() {
         ApiUtil.runWithException(
                 () -> mailService.noticeSelect(new ArrayList<>(uPbitNotifyService.getSaved()), "UPbit"));
-        log.info("\nSTOCK mail send Complete\n\n\n");
+        log.info("\n\n\nSTOCK mail send Complete\n\n\n");
     }
 }
