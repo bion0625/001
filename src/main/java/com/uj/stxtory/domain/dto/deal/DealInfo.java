@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -14,6 +15,7 @@ import java.util.stream.Stream;
 public abstract class DealInfo {
     public List<DealItem> deleteItems = new ArrayList<>();// 업데이트 작업 후 매도 종목
     public List<DealItem> updateItems = new ArrayList<>();// 업데이트 작업 후 갱신 종목
+    public List<DealItem> nowItems = new ArrayList<>();// 갱신 포함 현재 활성화 종목
 
     public abstract List<DealItem> getAll();
     public int getPage() {
@@ -109,13 +111,17 @@ public abstract class DealInfo {
                     // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
                     while (price.getClose() != 0 && item.getExpectedSellingPrice() != 0
                             && price.getClose() >= item.getExpectedSellingPrice()) {
-                        item.sellingPriceUpdate(price.getDate());
+                        item.sellingPriceUpdate(new Date());
                         item.setTempPrice(price.getClose());
                         updateItems.add(item);
                     }
                     // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
-                    if (price.getClose() <= item.getMinimumSellingPrice())
-                        deleteItems.add(item);
+                    if (price.getClose() <= item.getMinimumSellingPrice()) deleteItems.add(item);
+                    else {
+                    	item.setTempPrice(price.getClose());
+                    	nowItems.add(item);
+                    }
+                        
                 });
     }
 }

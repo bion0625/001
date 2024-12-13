@@ -71,7 +71,8 @@ public class StockNotifyService implements DealNotifyService {
         DealInfo model = new StockModel(dealDaysConfig.getBaseDays());
         if (saved.isEmpty()) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
-        List<DealItem> updateItems = model.getUpdateItems();
+//        List<DealItem> updateItems = model.getUpdateItems();
+        List<DealItem> updateItems = model.getNowItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 
         update(saved, updateItems);
@@ -85,7 +86,7 @@ public class StockNotifyService implements DealNotifyService {
             updateItems.stream()
                     .filter(pItem -> pItem.getCode().equals(stock.getCode()))
                     .findFirst().map(item -> {
-                    	stock.setPricingReferenceDate(item.getPricingReferenceDate());
+                    	stock.setPricingReferenceDate(LocalDateTime.now());
                         stock.setExpectedSellingPrice(item.getExpectedSellingPrice());
                         stock.setMinimumSellingPrice(item.getMinimumSellingPrice());
                         stock.setRenewalCnt(item.getRenewalCnt());

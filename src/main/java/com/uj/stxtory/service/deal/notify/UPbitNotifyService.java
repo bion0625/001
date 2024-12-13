@@ -71,7 +71,8 @@ public class UPbitNotifyService implements DealNotifyService {
         DealInfo model = new UPbitModel(dealDaysConfig.getBaseDays());
         if (saved.isEmpty()) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
-        List<DealItem> updateItems = model.getUpdateItems();
+//        List<DealItem> updateItems = model.getUpdateItems();
+        List<DealItem> updateItems = model.getNowItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 
         update(saved, updateItems);
@@ -85,7 +86,7 @@ public class UPbitNotifyService implements DealNotifyService {
             updateItems.stream()
                     .filter(pItem -> pItem.getCode().equals(uPbit.getCode()))
                     .findFirst().map(item -> {
-                    	uPbit.setPricingReferenceDate(item.getPricingReferenceDate());
+                    	uPbit.setPricingReferenceDate(LocalDateTime.now());
                         uPbit.setExpectedSellingPrice(item.getExpectedSellingPrice());
                         uPbit.setMinimumSellingPrice(item.getMinimumSellingPrice());
                         uPbit.setRenewalCnt(item.getRenewalCnt());
