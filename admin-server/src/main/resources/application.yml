@@ -7,3 +7,6 @@ spring:
     user:
       name: admin
       password: admin
+eureka:
+  client:
+    register-with-eureka: false
