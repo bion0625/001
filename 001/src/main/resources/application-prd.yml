@@ -1,0 +1,50 @@
+spring:
+  application:
+    name: 001
+  jpa:
+    show-sql: true
+    generate-ddl: true
+    database: postgresql
+  datasource:
+    url: jdbc:postgresql://localhost:5432/postgres
+    username: bion_user
+    password: 0xoavf78NKtWENO5Ui7bFCGZoGCoaTWG
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
+    encoding: UTF-8
+  messages:
+    encoding: UTF-8
+server:
+  port: 8080
+
+management:
+  info:
+    env:
+      enabled: true
+  endpoints:
+    web:
+      exposure:
+        include:
+        - '*'
+        exclude:
+        - threaddump
+        - heapdump
+      base-path: /management
+  endpoint:
+    health:
+      show-details: always
+    env:
+      show-values: always
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+  
+
+info:
+  conteact:
+    email: stxtory@gmail.com
+    phone: 010-2397-7156
