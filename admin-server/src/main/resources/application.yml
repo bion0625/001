@@ -1,0 +1,9 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: admin-server
+  security:
+    user:
+      name: admin
+      password: admin

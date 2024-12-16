@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -32,6 +33,8 @@ public class SecurityConfig implements WebMvcConfigurer {
         http.authorizeHttpRequests(request -> request
         		.requestMatchers("/join").permitAll()
         		.requestMatchers("/admin/**", "/sql_stock/**", "/sql_upbit/**").hasRole("ADMIN")
+        		.requestMatchers("/actuator/**").access((auth, context) -> 
+        			new AuthorizationDecision(context.getRequest().getRemoteAddr().equals("127.0.0.1")))
         		.anyRequest().authenticated());
 
         return http.build();

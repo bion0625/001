@@ -2,3 +2,8 @@ spring:
   profiles:
     active:
     - prd
+  boot:
+    admin:
+      client:
+        instance:
+          service-base-url: http://localhost:9090

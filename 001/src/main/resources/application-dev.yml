@@ -1,6 +1,6 @@
 spring:
   application:
-    name: 001
+    name: dev
   jpa:
     show-sql: true
     generate-ddl: true
@@ -35,7 +35,6 @@ management:
         exclude:
         - threaddump
         - heapdump
-      base-path: /management
   endpoint:
     health:
       show-details: always
