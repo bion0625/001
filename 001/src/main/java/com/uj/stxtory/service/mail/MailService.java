@@ -1,12 +1,13 @@
 package com.uj.stxtory.service.mail;
 
-import com.uj.stxtory.domain.dto.deal.DealItem;
-import com.uj.stxtory.domain.entity.GmailToken;
-import com.uj.stxtory.domain.entity.TargetMail;
-import com.uj.stxtory.repository.TargetEailRepository;
-import com.uj.stxtory.service.token.TokenService;
-import com.uj.stxtory.util.FormatUtil;
-import lombok.extern.slf4j.Slf4j;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+
+import jakarta.mail.MessagingException;
+import jakarta.mail.internet.MimeMessage;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
@@ -16,12 +17,14 @@ import org.springframework.transaction.annotation.Transactional;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import javax.mail.MessagingException;
-import javax.mail.internet.MimeMessage;
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
+import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.entity.GmailToken;
+import com.uj.stxtory.domain.entity.TargetMail;
+import com.uj.stxtory.repository.TargetEailRepository;
+import com.uj.stxtory.service.token.TokenService;
+import com.uj.stxtory.util.FormatUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 @Transactional
 @Service

@@ -1,11 +1,12 @@
 package com.uj.stxtory.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import lombok.Data;
-
-import javax.persistence.Column;
-import javax.persistence.MappedSuperclass;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.MappedSuperclass;
+import lombok.Data;
 
 @Data
 @MappedSuperclass
