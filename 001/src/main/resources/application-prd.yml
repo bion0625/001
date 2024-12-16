@@ -36,12 +36,26 @@ management:
       show-details: always
     env:
       show-values: always
+    logfile:
+      access: read-only
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka/
-  
+
+logging:
+  file:
+    name: ../logfile.log  
+  logback:
+    rollingpolicy:
+      max-history: 1
+      max-file-size: 100MB
+      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}-%i.log
+  charset:
+    file: UTF-8
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
 
 info:
   conteact:
