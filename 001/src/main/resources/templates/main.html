@@ -228,8 +228,9 @@
 		<h1 th:if="${subject == null}">주식 및 코인 SELECT</h1>
 		<h1 th:if="${subject != null}" th:text="${subject}">주식 및 코인 SELECT</h1>
 		<button id="home" class="button">HOME</button>
-		<button id="goStockList" class="button">STOCK SELECT 목록</button>
-		<button id="goUpbitList" class="button">UPBIT SELECT 목록</button>
+		<button id="goStockList" class="button">STOCK SELECT</button>
+		<button id="goUpbitList" class="button">UPBIT SELECT</button>
+		<p class="highlight-green" th:if="${items != null && items.size() > 0}" th:text="${items.size()}"></p>
 
 		<div class="stock-cards-container">
 			<div class="stock-card" th:each="item : ${items}">

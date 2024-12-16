@@ -7,3 +7,5 @@ spring:
       client:
         instance:
           service-base-url: http://localhost:9090
+  tomcat:
+    reject-illegal-header: true  # 비정상 헤더 차단

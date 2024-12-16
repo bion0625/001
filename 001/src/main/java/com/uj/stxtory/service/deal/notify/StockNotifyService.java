@@ -36,7 +36,8 @@ public class StockNotifyService implements DealNotifyService {
     private List<Stock> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
         return stockRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc().stream()
                 .filter(s -> s.getExpectedSellingPrice() != s.getMinimumSellingPrice())
-                .sorted(Comparator.comparingDouble(s -> (s.getExpectedSellingPrice() - s.getTempPrice())/(s.getExpectedSellingPrice()-s.getMinimumSellingPrice())))
+                .sorted(Comparator.comparing(Stock::getRenewalCnt).reversed()
+                		.thenComparing(Comparator.comparingDouble(s -> (s.getExpectedSellingPrice() - s.getTempPrice())/(s.getExpectedSellingPrice()-s.getMinimumSellingPrice()))))
                 .collect(Collectors.toList());
     }
 

@@ -36,7 +36,8 @@ public class UPbitNotifyService implements DealNotifyService {
     private List<UPbit> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
         return uPbitRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc().stream()
                 .filter(u -> u.getExpectedSellingPrice() != u.getMinimumSellingPrice())
-                .sorted(Comparator.comparingDouble(u -> (u.getExpectedSellingPrice() - u.getTempPrice())/(u.getExpectedSellingPrice()-u.getMinimumSellingPrice())))
+                .sorted(Comparator.comparing(UPbit::getRenewalCnt).reversed()
+                		.thenComparing(Comparator.comparingDouble(u -> (u.getExpectedSellingPrice() - u.getTempPrice())/(u.getExpectedSellingPrice()-u.getMinimumSellingPrice()))))
                 .collect(Collectors.toList());
     }
 
