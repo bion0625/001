@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.uj.stxtory.domain.dto.upbit.UPbitAccount;
 
@@ -21,5 +22,11 @@ public interface UpbitClient {
     String placeOrder(
             @RequestHeader("Authorization") String authorizationToken,
             @RequestBody Map<String, String> orderRequest
+    );
+	
+	@GetMapping("/v1/orders/chance")
+    String getOrdersChance(
+            @RequestHeader("Authorization") String authorizationToken,
+            @RequestParam("market") String market
     );
 }

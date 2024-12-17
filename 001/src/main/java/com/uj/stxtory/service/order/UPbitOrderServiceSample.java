@@ -23,12 +23,12 @@ import com.uj.stxtory.domain.dto.upbit.UPbitAccount;
 
 // TODO 추후에 openFeign으로 변경
 // 일단 restTemplate을 빈으로 등록 예정
-public class UPbitOrderService {
+public class UPbitOrderServiceSample {
 	public static void main(String[] args) {
 		String accessKey = ""; // DB에서 가져오기
 		String secretKey = "";
 
-		UPbitOrderService order = new UPbitOrderService();
+		UPbitOrderServiceSample order = new UPbitOrderServiceSample();
 //		order.getNow(accessKey, secretKey);
 		try {
 			order.execute("KRW-ETH", "0.38168799", "bid", accessKey, secretKey);// 매수 TODO 최소주문금액 이상으로 주문해주세요 에러까지 확인: 진짜 테스트 해봐야 함

@@ -33,7 +33,8 @@ public class UPbitAccountService {
 	private final PublicIpClient publicIpClient;
 	private final UpbitClient upbitClient;
 
-	public UPbitAccountService(TbUPbitKeyRepository keyRepository, PublicIpClient publicIpClient, UpbitClient upbitClient) {
+	public UPbitAccountService(TbUPbitKeyRepository keyRepository, PublicIpClient publicIpClient,
+			UpbitClient upbitClient) {
 		this.keyRepository = keyRepository;
 		this.publicIpClient = publicIpClient;
 		this.upbitClient = upbitClient;
@@ -50,7 +51,7 @@ public class UPbitAccountService {
 			keyRepository.save(key.toEntity(loginId));
 		}
 	}
-	
+
 	@Transactional
 	public void updateAuto(String loginId, boolean auto) {
 		keyRepository.findByUserLoginId(loginId).map(e -> {
@@ -58,7 +59,7 @@ public class UPbitAccountService {
 			return e;
 		}).orElseThrow();
 	}
-	
+
 	public boolean isAuto(String loginId) {
 		return keyRepository.findByUserLoginId(loginId).map(e -> e.getAutoOn()).orElse(false);
 	}
@@ -75,26 +76,40 @@ public class UPbitAccountService {
 					.withClaim("nonce", UUID.randomUUID().toString()).sign(algorithm);
 		}).orElse("");
 	}
-	
-	private String getAuthenticationTokenForOrder(Map<String, String> params, String accessKey, String secretKey) throws NoSuchAlgorithmException {
+
+	private String getAuthenticationTokenForOrder(Map<String, String> params, String accessKey, String secretKey)
+			throws NoSuchAlgorithmException {
 		// 쿼리 해시 생성
-        String queryString = params.entrySet().stream()
-                .map(entry -> entry.getKey() + "=" + entry.getValue())
-                .reduce((p1, p2) -> p1 + "&" + p2)
-                .orElse("");
+		String queryString = params.entrySet().stream().map(entry -> entry.getKey() + "=" + entry.getValue())
+				.reduce((p1, p2) -> p1 + "&" + p2).orElse("");
 
-        MessageDigest md = MessageDigest.getInstance("SHA-512");
-        md.update(queryString.getBytes(StandardCharsets.UTF_8));
-        String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+		MessageDigest md = MessageDigest.getInstance("SHA-512");
+		md.update(queryString.getBytes(StandardCharsets.UTF_8));
+		String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
 
-        // JWT 토큰 생성
-        Algorithm algorithm = Algorithm.HMAC256(secretKey);
-        return JWT.create()
-                .withClaim("access_key", accessKey)
-                .withClaim("nonce", UUID.randomUUID().toString())
-                .withClaim("query_hash", queryHash)
-                .withClaim("query_hash_alg", "SHA512")
-                .sign(algorithm);
+		// JWT 토큰 생성
+		Algorithm algorithm = Algorithm.HMAC256(secretKey);
+		return getOrderToken(accessKey, algorithm, queryHash);
+	}
+
+	private String getAuthenticationTokenForOrderChance(String market, String accessKey, String secretKey)
+			throws NoSuchAlgorithmException {
+		// 1. Query Parameter 설정
+		String queryString = "market=" + market;
+
+		// 2. Query Hash 생성
+		MessageDigest md = MessageDigest.getInstance("SHA-512");
+		md.update(queryString.getBytes(StandardCharsets.UTF_8));
+		String queryHash = String.format("%0128x", new BigInteger(1, md.digest()));
+
+		// 3. JWT 토큰 생성
+		Algorithm algorithm = Algorithm.HMAC256(secretKey);
+		return getOrderToken(accessKey, algorithm, queryHash);
+	}
+
+	private String getOrderToken(String accessKey, Algorithm algorithm, String queryHash) {
+		return JWT.create().withClaim("access_key", accessKey).withClaim("nonce", UUID.randomUUID().toString())
+				.withClaim("query_hash", queryHash).withClaim("query_hash_alg", "SHA512").sign(algorithm);
 	}
 
 	/**
@@ -104,54 +119,65 @@ public class UPbitAccountService {
 	public List<UPbitAccount> getAccount(String loginId) {
 		List<UPbitAccount> accounts = new ArrayList<>();
 
-        String authenticationToken = getAuthenticationToken(loginId);
-        
-        if (authenticationToken.isEmpty()) return accounts;
+		String authenticationToken = getAuthenticationToken(loginId);
 
-        try {
-            accounts = upbitClient.getAccount("Bearer " + authenticationToken);
-        } catch (Exception e) {
-            accounts = new ArrayList<>();
-        }
-        log.info("accounts: " + accounts);
+		if (authenticationToken.isEmpty())
+			return accounts;
 
-        return accounts;
+		try {
+			accounts = upbitClient.getAccount("Bearer " + authenticationToken);
+		} catch (Exception e) {
+			accounts = new ArrayList<>();
+		}
+		log.info("accounts: " + accounts);
+
+		return accounts;
 	}
-	
+
 	/**
-	 * 매수 주문하기 GUIDE:
+	 * 매수, 매도 주문하기 GUIDE:
 	 * https://docs.upbit.com/reference/%EC%A3%BC%EB%AC%B8%ED%95%98%EA%B8%B0
 	 * 
 	 * 시장가 매도 매수 예정
 	 */
-	public void order(String market, String priceOrVolume, String side, String accessKey, String secretKey) throws NoSuchAlgorithmException {
-        // 요청 파라미터 설정
-        Map<String, String> params = new HashMap<>();
-        params.put("market", market);
-        params.put("side", side); // 매수: bid, 매도: ask
+	public void order(String market, String priceOrVolume, String side, String accessKey, String secretKey)
+			throws NoSuchAlgorithmException {
+		// 요청 파라미터 설정
+		Map<String, String> params = new HashMap<>();
+		params.put("market", market);
+		params.put("side", side); // 매수: bid, 매도: ask
 
-        if ("bid".equals(side)) {
-            params.put("price", priceOrVolume); // 시장가 매수 시 필수
-            params.put("ord_type", "price");
-        }
-        if ("ask".equals(side)) {
-            params.put("volume", priceOrVolume); // 시장가 매도 시 필수
-            params.put("ord_type", "market");
-        }
+		if ("bid".equals(side)) {
+			params.put("price", priceOrVolume); // 시장가 매수 시 필수
+			params.put("ord_type", "price");
+		}
+		if ("ask".equals(side)) {
+			params.put("volume", priceOrVolume); // 시장가 매도 시 필수
+			params.put("ord_type", "market");
+		}
 
-        // FeignClient를 통해 요청 전송
-        try {
-        	String jwtToken = getAuthenticationTokenForOrder(params, accessKey, secretKey);
-            String authenticationToken = "Bearer " + jwtToken;
-            String response = upbitClient.placeOrder(authenticationToken, params);
-            log.info("Response: " + response);
-        } catch (Exception e) {
-        	log.info("bid".equals(side) ? "매수 실패" : "매도 실패");
-            e.printStackTrace();
-        }
-    }
-	
-	public String getIp() { 
+		// FeignClient를 통해 요청 전송
+		try {
+			String jwtToken = getAuthenticationTokenForOrder(params, accessKey, secretKey);
+			String authenticationToken = "Bearer " + jwtToken;
+			String response = upbitClient.placeOrder(authenticationToken, params);
+			log.info("Response: " + response);
+		} catch (Exception e) {
+			log.info("bid".equals(side) ? "매수 실패" : "매도 실패");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 주문-가능-정보 GUIDE:
+	 * https://docs.upbit.com/reference/%EC%A3%BC%EB%AC%B8-%EA%B0%80%EB%8A%A5-%EC%A0%95%EB%B3%B4
+	 */
+	public String getOrdersChance(String accessKey, String secretKey, String market) throws NoSuchAlgorithmException {
+		String jwtToken = getAuthenticationTokenForOrderChance(market, accessKey, secretKey);
+		return upbitClient.getOrdersChance("Bearer " + jwtToken, market);
+	}
+
+	public String getIp() {
 		try {
 			return publicIpClient.getPublicIp();
 		} catch (Exception e) {
