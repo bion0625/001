@@ -88,8 +88,8 @@ public class UPbitOrderSchedulerService {
 		account.forEach(a -> {
 			UpbitOrderChanceResponse ordersChance = accountService.getOrdersChance(key.getAccessKey(), key.getSecretKey(), "KRW-" + a.getCurrency());
 			String balance = ordersChance.getAskAccount().getBalance();
-			// 현재 추천 종목에 포함되지 않으면 곧장 매도
-			if (!markets.contains("KRW-" + a.getCurrency())) accountService.order("KRW-" + a.getCurrency(), balance, "ask", key.getAccessKey(), key.getSecretKey());
+			// 현재 추천 종목에 포함되지 않거나 추천 종목이 3개 미만이면 곧장 매도
+			if (!markets.contains("KRW-" + a.getCurrency()) || markets.size() < 3) accountService.order("KRW-" + a.getCurrency(), balance, "ask", key.getAccessKey(), key.getSecretKey());
 		});
 	}
 }
