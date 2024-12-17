@@ -230,7 +230,8 @@
 		<button id="home" class="button">HOME</button>
 		<button id="goStockList" class="button">STOCK SELECT</button>
 		<button id="goUpbitList" class="button">UPBIT SELECT</button>
-		<p class="highlight-green" th:if="${items != null && items.size() > 0}" th:text="${items.size()}"></p>
+		<p class="highlight-red" th:if="${items != null && items.size() >= 3}" th:text="${items.size()}"></p>
+		<p class="highlight-blue" th:if="${items != null && items.size() > 0 && items.size() < 3}" th:text="${items.size()}"></p>
 
 		<div class="stock-cards-container">
 			<div class="stock-card" th:each="item : ${items}">
