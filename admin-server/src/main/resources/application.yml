@@ -5,8 +5,8 @@ spring:
     name: admin-server
   security:
     user:
-      name: admin
-      password: admin
+      name: stxtory
+      password: 11dnjf3dlf#
 eureka:
   client:
     register-with-eureka: false
