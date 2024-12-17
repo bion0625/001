@@ -46,10 +46,16 @@ public class UPbitOrderSchedulerService {
 				.forEach(a -> log.info("{}is not account!", a));
 
 		// 이미 가지고 있으니, 매도할지 판단 후 실행
-		List<TbUPbitKey> in = accountGroup.get("IN");
+		Optional.ofNullable(accountGroup.get("IN")).map(in -> {
+			in.forEach(this::checkAndSale);
+			return true;
+		});
 
 		// 가지고 있는 게 없으니, 매수할지 판단 후 실행
-		accountGroup.get("OUT").forEach(this::checkAndBuy);
+		Optional.ofNullable(accountGroup.get("OUT")).map(out -> {
+			out.forEach(this::checkAndBuy);
+			return true;
+		});
 
 	}
 
@@ -71,6 +77,18 @@ public class UPbitOrderSchedulerService {
 			// 최소 주문 금액보다 크다면 주문
 			if (dPrice > Double.parseDouble(ordersChance.getMarket().getBid().getMinTotal()))
 				accountService.order(m, price, "bid", key.getAccessKey(), key.getSecretKey());
+		});
+	}
+
+	private void checkAndSale(TbUPbitKey key) {
+		List<String> markets = uPbitNotifyService.getSaved().stream().map(UPbitInfo::getCode).collect(Collectors.toList());
+		List<UPbitAccount> originalAccount = accountService.getAccount(key.getUserLoginId());
+		List<UPbitAccount> account = originalAccount.subList(1, originalAccount.size());
+		account.forEach(a -> {
+			UpbitOrderChanceResponse ordersChance = accountService.getOrdersChance(key.getAccessKey(), key.getSecretKey(), "KRW-" + a.getCurrency());
+			String balance = ordersChance.getAskAccount().getBalance();
+			// 현재 추천 종목에 포함되지 않으면 곧장 매도
+			if (!markets.contains("KRW-" + a.getCurrency())) accountService.order("KRW-" + a.getCurrency(), balance, "ask", key.getAccessKey(), key.getSecretKey());
 		});
 	}
 }
