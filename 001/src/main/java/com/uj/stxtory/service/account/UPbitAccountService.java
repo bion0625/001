@@ -25,12 +25,14 @@ import com.uj.stxtory.repository.TbUPbitKeyRepository;
 @Transactional(readOnly = true)
 public class UPbitAccountService {
 
-	private TbUPbitKeyRepository keyRepository;
-	private RestTemplate restTemplate;
+	private final TbUPbitKeyRepository keyRepository;
+	private final RestTemplate restTemplate;
+	private final PublicIpClient publicIpClient;
 
-	public UPbitAccountService(TbUPbitKeyRepository keyRepository, RestTemplate restTemplate) {
+	public UPbitAccountService(TbUPbitKeyRepository keyRepository, RestTemplate restTemplate, PublicIpClient publicIpClient) {
 		this.keyRepository = keyRepository;
 		this.restTemplate = restTemplate;
+		this.publicIpClient = publicIpClient;
 	}
 
 	@Transactional
@@ -102,5 +104,13 @@ public class UPbitAccountService {
 			accounts = new ArrayList<>();
 		}
 		return accounts;
+	}
+	
+	public String getIp() { 
+		try {
+			return publicIpClient.getPublicIp();
+		} catch (Exception e) {
+			return "NOT FOUND IP";
+		}
 	}
 }
