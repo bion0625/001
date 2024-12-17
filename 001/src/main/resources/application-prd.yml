@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: prd
   jpa:
     show-sql: true
     generate-ddl: true
@@ -9,55 +7,3 @@ spring:
     url: jdbc:postgresql://localhost:5432/postgres
     username: bion_user
     password: 0xoavf78NKtWENO5Ui7bFCGZoGCoaTWG
-  thymeleaf:
-    cache: false
-    prefix: classpath:/templates/
-    suffix: .html
-    encoding: UTF-8
-  messages:
-    encoding: UTF-8
-server:
-  port: 8080
-
-management:
-  info:
-    env:
-      enabled: true
-  endpoints:
-    web:
-      exposure:
-        include:
-        - '*'
-        exclude:
-        - threaddump
-        - heapdump
-  endpoint:
-    health:
-      show-details: always
-    env:
-      show-values: always
-    logfile:
-      access: read-only
-
-eureka:
-  client:
-    service-url:
-      defaultZone: http://localhost:8761/eureka/
-
-logging:
-  file:
-    name: ../logfile.log  
-  logback:
-    rollingpolicy:
-      max-history: 1
-      max-file-size: 100MB
-      file-name-pattern: ${LOG_FILE}.%d{yyyy-MM-dd}-%i.log
-  charset:
-    file: UTF-8
-  pattern:
-    dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
-
-info:
-  conteact:
-    email: stxtory@gmail.com
-    phone: 010-2397-7156
