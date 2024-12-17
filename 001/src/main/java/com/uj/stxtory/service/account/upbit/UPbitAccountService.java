@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.uj.stxtory.domain.dto.upbit.UpbitOrderChanceResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,11 +63,11 @@ public class UPbitAccountService {
 	}
 
 	public boolean isAuto(String loginId) {
-		return keyRepository.findByUserLoginId(loginId).map(e -> e.getAutoOn()).orElse(false);
+		return keyRepository.findByUserLoginId(loginId).map(TbUPbitKey::getAutoOn).orElse(false);
 	}
 
 	private Optional<UPbitKey> getKeyByLoginId(String loginId) {
-		return keyRepository.findByUserLoginId(loginId).map(e -> UPbitKey.fromEntity(e));
+		return keyRepository.findByUserLoginId(loginId).map(UPbitKey::fromEntity);
 	}
 
 	private String getAuthenticationToken(String loginId) {
@@ -130,19 +131,15 @@ public class UPbitAccountService {
 		} catch (Exception e) {
 			accounts = new ArrayList<>();
 		}
-		log.info("accounts: " + accounts);
-
 		return accounts;
 	}
 
 	/**
 	 * 매수, 매도 주문하기 GUIDE:
 	 * https://docs.upbit.com/reference/%EC%A3%BC%EB%AC%B8%ED%95%98%EA%B8%B0
-	 * 
 	 * 시장가 매도 매수 예정
 	 */
-	public void order(String market, String priceOrVolume, String side, String accessKey, String secretKey)
-			throws NoSuchAlgorithmException {
+	public void order(String market, String priceOrVolume, String side, String accessKey, String secretKey) {
 		// 요청 파라미터 설정
 		Map<String, String> params = new HashMap<>();
 		params.put("market", market);
@@ -163,9 +160,8 @@ public class UPbitAccountService {
 			String authenticationToken = "Bearer " + jwtToken;
 			String response = upbitClient.placeOrder(authenticationToken, params);
 			log.info("Response: " + response);
-		} catch (Exception e) {
+		} catch (NoSuchAlgorithmException e) {
 			log.info("bid".equals(side) ? "매수 실패" : "매도 실패");
-			e.printStackTrace();
 		}
 	}
 
@@ -173,9 +169,13 @@ public class UPbitAccountService {
 	 * 주문-가능-정보 GUIDE:
 	 * https://docs.upbit.com/reference/%EC%A3%BC%EB%AC%B8-%EA%B0%80%EB%8A%A5-%EC%A0%95%EB%B3%B4
 	 */
-	public String getOrdersChance(String accessKey, String secretKey, String market) throws NoSuchAlgorithmException {
-		String jwtToken = getAuthenticationTokenForOrderChance(market, accessKey, secretKey);
-		return upbitClient.getOrdersChance("Bearer " + jwtToken, market);
+	public UpbitOrderChanceResponse getOrdersChance(String accessKey, String secretKey, String market) {
+		try {
+			String jwtToken = getAuthenticationTokenForOrderChance(market, accessKey, secretKey);
+			return upbitClient.getOrdersChance("Bearer " + jwtToken, market);
+		}catch (NoSuchAlgorithmException ex) {
+			throw new RuntimeException("API getOrdersChance Error!\n" + ex.getMessage());
+		}
 	}
 
 	public String getIp() {
@@ -187,6 +187,6 @@ public class UPbitAccountService {
 	}
 	
 	public List<TbUPbitKey> getAutoAccount() {
-		return keyRepository.findAll().stream().filter(k -> k.getAutoOn()).collect(Collectors.toList());
+		return keyRepository.findAll().stream().filter(TbUPbitKey::getAutoOn).collect(Collectors.toList());
 	}
 }

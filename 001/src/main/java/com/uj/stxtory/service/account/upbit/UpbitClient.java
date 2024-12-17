@@ -3,6 +3,7 @@ package com.uj.stxtory.service.account.upbit;
 import java.util.List;
 import java.util.Map;
 
+import com.uj.stxtory.domain.dto.upbit.UpbitOrderChanceResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,7 @@ public interface UpbitClient {
     );
 	
 	@GetMapping("/v1/orders/chance")
-    String getOrdersChance(
+    UpbitOrderChanceResponse getOrdersChance(
             @RequestHeader("Authorization") String authorizationToken,
             @RequestParam("market") String market
     );
