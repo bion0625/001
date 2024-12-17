@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -183,5 +184,9 @@ public class UPbitAccountService {
 		} catch (Exception e) {
 			return "NOT FOUND IP";
 		}
+	}
+	
+	public List<TbUPbitKey> getAutoAccount() {
+		return keyRepository.findAll().stream().filter(k -> k.getAutoOn()).collect(Collectors.toList());
 	}
 }
