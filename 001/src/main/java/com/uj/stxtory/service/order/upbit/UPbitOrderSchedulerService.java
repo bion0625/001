@@ -62,6 +62,7 @@ public class UPbitOrderSchedulerService {
 	// 매수부터 확인
 	private void checkAndBuy(TbUPbitKey key) {
 		List<String> markets = uPbitNotifyService.getSaved().stream().map(UPbitInfo::getCode).collect(Collectors.toList());
+		if (markets.size() < 3) return;
 		markets.forEach(m -> {
 			List<UPbitAccount> account = accountService.getAccount(key.getUserLoginId());
 			if (account == null || account.isEmpty()) return;
