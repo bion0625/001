@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.uj.stxtory.domain.dto.key.UPbitKey;
-import com.uj.stxtory.service.account.UPbitAccountService;
+import com.uj.stxtory.service.account.upbit.UPbitAccountService;
 
 import lombok.extern.slf4j.Slf4j;
 

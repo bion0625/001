@@ -2,7 +2,7 @@ package com.uj.stxtory.controller;
 
 import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.service.UserService;
-import com.uj.stxtory.service.account.UPbitAccountService;
+import com.uj.stxtory.service.account.upbit.UPbitAccountService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
