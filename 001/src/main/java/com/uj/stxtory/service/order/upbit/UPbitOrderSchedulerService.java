@@ -83,7 +83,7 @@ public class UPbitOrderSchedulerService {
 	private void checkAndSale(TbUPbitKey key) {
 		List<String> markets = uPbitNotifyService.getSaved().stream().map(UPbitInfo::getCode).collect(Collectors.toList());
 		List<UPbitAccount> originalAccount = accountService.getAccount(key.getUserLoginId());
-		List<UPbitAccount> account = originalAccount.subList(1, originalAccount.size());
+		List<UPbitAccount> account = originalAccount.stream().filter(a -> !a.getCurrency().contains("KRW")).collect(Collectors.toList());
 		account.forEach(a -> {
 			UpbitOrderChanceResponse ordersChance = accountService.getOrdersChance(key.getAccessKey(), key.getSecretKey(), "KRW-" + a.getCurrency());
 			String balance = ordersChance.getAskAccount().getBalance();
