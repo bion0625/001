@@ -3,6 +3,7 @@ package com.uj.stxtory.service.account.upbit;
 import java.util.List;
 import java.util.Map;
 
+import com.uj.stxtory.domain.dto.upbit.UPbitOrderResponse;
 import com.uj.stxtory.domain.dto.upbit.UpbitOrderChanceResponse;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;
@@ -20,7 +21,7 @@ public interface UpbitClient {
     List<UPbitAccount> getAccount(@RequestHeader("Authorization") String authorizationToken);
 	
 	@PostMapping(value = "/v1/orders", consumes = MediaType.APPLICATION_JSON_VALUE)
-    String placeOrder(
+    UPbitOrderResponse placeOrder(
             @RequestHeader("Authorization") String authorizationToken,
             @RequestBody Map<String, String> orderRequest
     );

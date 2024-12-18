@@ -12,6 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.uj.stxtory.domain.dto.upbit.UPbitOrderResponse;
 import com.uj.stxtory.domain.dto.upbit.UpbitOrderChanceResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -139,7 +140,7 @@ public class UPbitAccountService {
 	 * https://docs.upbit.com/reference/%EC%A3%BC%EB%AC%B8%ED%95%98%EA%B8%B0
 	 * 시장가 매도 매수 예정
 	 */
-	public void order(String market, String priceOrVolume, String side, String accessKey, String secretKey) {
+	public Optional<UPbitOrderResponse> order(String market, String priceOrVolume, String side, String accessKey, String secretKey) {
 		// 요청 파라미터 설정
 		Map<String, String> params = new HashMap<>();
 		params.put("market", market);
@@ -158,10 +159,12 @@ public class UPbitAccountService {
 		try {
 			String jwtToken = getAuthenticationTokenForOrder(params, accessKey, secretKey);
 			String authenticationToken = "Bearer " + jwtToken;
-			String response = upbitClient.placeOrder(authenticationToken, params);
+			UPbitOrderResponse response = upbitClient.placeOrder(authenticationToken, params);
 			log.info("Response: " + response);
+			return Optional.ofNullable(response);
 		} catch (NoSuchAlgorithmException e) {
 			log.info("bid".equals(side) ? "매수 실패" : "매도 실패");
+			return Optional.empty();
 		}
 	}
 

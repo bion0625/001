@@ -40,7 +40,7 @@ public class UPbitAccountController {
 	@PostMapping("/upbit/key")
 	public String insertUpbitKey(UPbitKey key, Authentication authentication) {
 		accountService.insertKey(key, authentication.getPrincipal().toString());
-		return "upbit/key";
+		return "redirect:/my";
 	}
 	
 	@PutMapping("/upbit/auto")

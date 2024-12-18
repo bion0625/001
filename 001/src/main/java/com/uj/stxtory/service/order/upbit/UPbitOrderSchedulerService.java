@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
 import com.uj.stxtory.domain.dto.upbit.UpbitOrderChanceResponse;
+import com.uj.stxtory.repository.UPbitOrderHistoryRepository;
 import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -24,14 +25,19 @@ public class UPbitOrderSchedulerService {
 
 	private final UPbitAccountService accountService;
 	private final UPbitNotifyService uPbitNotifyService;
+	private final UPbitOrderHistoryRepository uPbitOrderHistoryRepository;
 
-	public UPbitOrderSchedulerService(UPbitAccountService accountService, UPbitNotifyService uPbitNotifyService) {
+	public UPbitOrderSchedulerService(
+			UPbitAccountService accountService,
+			UPbitNotifyService uPbitNotifyService,
+			UPbitOrderHistoryRepository uPbitOrderHistoryRepository) {
 		this.accountService = accountService;
 		this.uPbitNotifyService = uPbitNotifyService;
+		this.uPbitOrderHistoryRepository = uPbitOrderHistoryRepository;
 	}
 
 	// 매매 스케쥴러
-	@Scheduled(fixedDelay = 60000)
+	@Scheduled(fixedDelay = 1000 * 30)
 	public void upbitAutoOrder() {
 
 		// 타입값 확인
@@ -43,7 +49,7 @@ public class UPbitOrderSchedulerService {
 		}));
 
 		Optional.ofNullable(accountGroup.get("NOT ACCOUNT")).orElse(new ArrayList<>())
-				.forEach(a -> log.info("{}is not account!", a));
+				.forEach(a -> log.info("{} is not account!", a));
 
 		// 이미 가지고 있으니, 매도할지 판단 후 실행
 		Optional.ofNullable(accountGroup.get("IN")).map(in -> {
@@ -76,8 +82,10 @@ public class UPbitOrderSchedulerService {
 			String price = String.valueOf(dPrice);
 
 			// 최소 주문 금액보다 크다면 주문
-			if (dPrice > Double.parseDouble(ordersChance.getMarket().getBid().getMinTotal()))
-				accountService.order(m, price, "bid", key.getAccessKey(), key.getSecretKey());
+			if (dPrice > Double.parseDouble(ordersChance.getMarket().getBid().getMinTotal())) {
+				accountService.order(m, price, "bid", key.getAccessKey(), key.getSecretKey())
+						.map(o -> uPbitOrderHistoryRepository.save(o.toHistoryEntity(key.getUserLoginId())));
+			}
 		});
 	}
 
@@ -89,7 +97,10 @@ public class UPbitOrderSchedulerService {
 			UpbitOrderChanceResponse ordersChance = accountService.getOrdersChance(key.getAccessKey(), key.getSecretKey(), "KRW-" + a.getCurrency());
 			String balance = ordersChance.getAskAccount().getBalance();
 			// 현재 추천 종목에 포함되지 않거나 추천 종목이 3개 미만이면 곧장 매도
-			if (!markets.contains("KRW-" + a.getCurrency()) || markets.size() < 3) accountService.order("KRW-" + a.getCurrency(), balance, "ask", key.getAccessKey(), key.getSecretKey());
+			if (!markets.contains("KRW-" + a.getCurrency()) || markets.size() < 3) {
+				accountService.order("KRW-" + a.getCurrency(), balance, "ask", key.getAccessKey(), key.getSecretKey())
+						.map(o -> uPbitOrderHistoryRepository.save(o.toHistoryEntity(key.getUserLoginId())));
+			}
 		});
 	}
 }
