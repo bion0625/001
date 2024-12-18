@@ -32,7 +32,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .defaultSuccessUrl("/", true));
         http.authorizeHttpRequests(request -> request
         		.requestMatchers("/join").permitAll()
-        		.requestMatchers("/admin/**", "/sql_stock/**", "/sql_upbit/**").hasRole("ADMIN")
+        		.requestMatchers("/admin/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("ADMIN")
         		.requestMatchers("/actuator/**").access((auth, context) -> 
         			new AuthorizationDecision(context.getRequest().getRemoteAddr().equals("127.0.0.1")))
         		.anyRequest().authenticated());
