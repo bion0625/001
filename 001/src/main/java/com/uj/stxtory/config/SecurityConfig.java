@@ -10,6 +10,7 @@ import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -32,10 +33,11 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .defaultSuccessUrl("/", true));
         http.authorizeHttpRequests(request -> request
         		.requestMatchers("/join").permitAll()
-        		.requestMatchers("/admin/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("ADMIN")
+        		.requestMatchers("/h2/**", "/admin/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("ADMIN")
         		.requestMatchers("/actuator/**").access((auth, context) -> 
         			new AuthorizationDecision(context.getRequest().getRemoteAddr().equals("127.0.0.1")))
         		.anyRequest().authenticated());
+        http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
         return http.build();
     }
