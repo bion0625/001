@@ -3,8 +3,7 @@ package com.uj.stxtory.controller;
 import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.service.UserService;
 import com.uj.stxtory.service.account.upbit.UPbitAccountService;
-
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,13 +18,18 @@ import org.springframework.web.bind.support.SessionStatus;
 @SessionAttributes("user")
 public class UserController {
 
-    private UserService userService;
-    private UPbitAccountService uPbitAccountService;
+    private final UserService userService;
+    private final UPbitAccountService uPbitAccountService;
     
     public UserController(UserService userService, UPbitAccountService uPbitAccountService) {
 		this.userService = userService;
 		this.uPbitAccountService = uPbitAccountService;
 	}
+
+    @ModelAttribute
+    public void tbUser(Model model) {
+        model.addAttribute("user", new TbUser());
+    }
 
     @GetMapping(value = "/login")
     public String loginPage(){
@@ -33,17 +37,19 @@ public class UserController {
     }
 
     @GetMapping("/join")
-    public String joinForm(Model model) {
-        model.addAttribute("user", new TbUser());
+    public String joinForm() {
         return "user/join";
     }
 
     @PostMapping("/join")
-    public String join(@ModelAttribute("user")TbUser user, BindingResult result, SessionStatus status) {
+    public String join(@Valid @ModelAttribute("user")TbUser user, BindingResult result, SessionStatus status) {
         boolean idDupl = userService.isIdDupl(user.getUserLoginId());
         if (result.hasErrors() || idDupl) {
-            // 아이디 중복 에러 설정
-            result.rejectValue("userLoginId", "duplicate.userForm.userLoginId", "이미 사용 중인 아이디입니다.");
+            if (idDupl)
+                result.rejectValue(
+                        "userLoginId",
+                        "duplicate.userForm.userLoginId",
+                        "이미 사용 중인 아이디입니다.");
             return "user/join";
         }
         userService.save(user);
