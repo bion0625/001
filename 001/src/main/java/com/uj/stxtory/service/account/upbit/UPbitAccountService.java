@@ -119,6 +119,7 @@ public class UPbitAccountService {
 	 * 전체 계좌 조회 GUIDE:
 	 * docs.upbit.com/reference/%EC%A0%84%EC%B2%B4-%EA%B3%84%EC%A2%8C-%EC%A1%B0%ED%9A%8C
 	 */
+	@Transactional
 	public List<UPbitAccount> getAccount(String loginId) {
 		List<UPbitAccount> accounts = new ArrayList<>();
 
@@ -130,7 +131,11 @@ public class UPbitAccountService {
 		try {
 			accounts = upbitClient.getAccount("Bearer " + authenticationToken);
 		} catch (Exception e) {
-			accounts = new ArrayList<>();
+			log.info("현재 key값이 유효하지 않습니다, loginId: {}", loginId);
+			accounts = keyRepository.findByUserLoginId(loginId).map(key -> {
+				key.setAutoOn(false);
+				return new ArrayList<UPbitAccount>();
+			}).orElse(new ArrayList<>());
 		}
 		return accounts;
 	}
