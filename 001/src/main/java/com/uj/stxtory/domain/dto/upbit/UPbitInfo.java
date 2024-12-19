@@ -14,12 +14,7 @@ import org.jsoup.nodes.Document;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Data
@@ -40,6 +35,7 @@ public class UPbitInfo implements DealItem {
     private double minimumSellingPrice;
     private double expectedSellingPrice;
     private double tempPrice;
+    private LocalDateTime updatedAt;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
 
@@ -55,8 +51,7 @@ public class UPbitInfo implements DealItem {
         // 기대 매도 가격은 올림
         this.expectedSellingPrice = (long) Math.ceil(this.expectedSellingPrice * 1.1);
         this.renewalCnt++;
-        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//        this.pricingReferenceDate = LocalDateTime.now();
+        this.pricingReferenceDate = LocalDateTime.now();
     }
 
     public UPbitInfo(String name, String code,
@@ -65,6 +60,7 @@ public class UPbitInfo implements DealItem {
                      double minimumSellingPrice,
                      double expectedSellingPrice,
                      double tempPrice,
+                     LocalDateTime updatedAt,
                      LocalDateTime pricingReferenceDate,
                      int renewalCnt)  {
         this.name = name;
@@ -73,6 +69,7 @@ public class UPbitInfo implements DealItem {
         this.originExpectedSellingPrice = originExpectedSellingPrice;
         this.minimumSellingPrice = minimumSellingPrice;
         this.expectedSellingPrice = expectedSellingPrice;
+        this.updatedAt = updatedAt;
         this.pricingReferenceDate = pricingReferenceDate;
         this.tempPrice = tempPrice;
         this.renewalCnt = renewalCnt;
@@ -96,6 +93,7 @@ public class UPbitInfo implements DealItem {
                 uPbit.getMinimumSellingPrice(),
                 uPbit.getExpectedSellingPrice(),
                 uPbit.getTempPrice(),
+                uPbit.getUpdatedAt(),
                 uPbit.getPricingReferenceDate(),
                 uPbit.getRenewalCnt());
     }

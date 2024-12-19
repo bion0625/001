@@ -14,7 +14,6 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +33,7 @@ public class StockInfo implements DealItem {
     private double minimumSellingPrice;
     private double expectedSellingPrice;
     private double tempPrice;
+    private LocalDateTime updatedAt;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
 
@@ -50,8 +50,7 @@ public class StockInfo implements DealItem {
         // 기대 매도 가격은 올림
         this.expectedSellingPrice = (long) Math.ceil(this.expectedSellingPrice * 1.1);
         this.renewalCnt++;
-        this.pricingReferenceDate = pricingDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-//        this.pricingReferenceDate = LocalDateTime.now();
+        this.pricingReferenceDate = LocalDateTime.now();
     }
 
     public StockInfo(String name, String code,
@@ -59,6 +58,7 @@ public class StockInfo implements DealItem {
                      double originExpectedSellingPrice,
                      double minimumSellingPrice,
                      double expectedSellingPrice,
+                     LocalDateTime updatedAt,
                      LocalDateTime pricingReferenceDate,
                      double tempPrice,
                      int renewalCnt)  {
@@ -68,6 +68,7 @@ public class StockInfo implements DealItem {
         this.originExpectedSellingPrice = originExpectedSellingPrice;
         this.minimumSellingPrice = minimumSellingPrice;
         this.expectedSellingPrice = expectedSellingPrice;
+        this.updatedAt = updatedAt;
         this.pricingReferenceDate = pricingReferenceDate;
         this.tempPrice = tempPrice;
         this.renewalCnt = renewalCnt;
@@ -90,6 +91,7 @@ public class StockInfo implements DealItem {
                 stock.getOriginExpectedSellingPrice(),
                 stock.getMinimumSellingPrice(),
                 stock.getExpectedSellingPrice(),
+                stock.getUpdatedAt(),
                 stock.getPricingReferenceDate(),
                 stock.getTempPrice(),
                 stock.getRenewalCnt());

@@ -245,7 +245,8 @@
 						th:text="${T(java.lang.Math).floor(100 - (item.expectedSellingPrice - item.tempPrice) * 100.0 / (item.expectedSellingPrice - item.minimumSellingPrice))}"></span>
 				</p>
 				<p>갱신 레벨: <span th:text="${item.renewalCnt}"></span></p>
-				<p>갱신 날짜: <span th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></span>
+				<p>(재)설정 날짜: <span th:text="${#temporals.format(item.pricingReferenceDate, 'yyyy-MM-dd HH:mm')}"></span>
+				<p>갱신 날짜: <span th:text="${#temporals.format(item.updatedAt, 'yyyy-MM-dd HH:mm')}"></span>
 				</p>
 			</div>
 		</div>

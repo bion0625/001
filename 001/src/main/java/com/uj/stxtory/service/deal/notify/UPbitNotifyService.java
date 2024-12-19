@@ -37,7 +37,7 @@ public class UPbitNotifyService implements DealNotifyService {
         return uPbitRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc().stream()
                 .filter(u -> u.getExpectedSellingPrice() != u.getMinimumSellingPrice())
                 .sorted(Comparator.comparing(UPbit::getRenewalCnt).reversed()
-                		.thenComparing(Comparator.comparingDouble(u -> (u.getExpectedSellingPrice() - u.getTempPrice())/(u.getExpectedSellingPrice()-u.getMinimumSellingPrice()))))
+                		.thenComparingDouble(u -> (u.getExpectedSellingPrice() - u.getTempPrice())/(u.getExpectedSellingPrice()-u.getMinimumSellingPrice())))
                 .collect(Collectors.toList());
     }
 
@@ -83,27 +83,24 @@ public class UPbitNotifyService implements DealNotifyService {
     }
 
     private void update(List<UPbit> saved, List<DealItem> updateItems) {
-        saved.forEach(uPbit -> {
-            updateItems.stream()
-                    .filter(pItem -> pItem.getCode().equals(uPbit.getCode()))
-                    .findFirst().map(item -> {
-                    	uPbit.setPricingReferenceDate(LocalDateTime.now());
-                        uPbit.setExpectedSellingPrice(item.getExpectedSellingPrice());
-                        uPbit.setMinimumSellingPrice(item.getMinimumSellingPrice());
-                        uPbit.setRenewalCnt(item.getRenewalCnt());
-                        uPbit.setTempPrice(item.getTempPrice());
-                        uPbit.setUpdatedAt(LocalDateTime.now());
-                        return uPbit;
-                    });
-        });
+        saved.forEach(uPbit -> updateItems.stream()
+                .filter(pItem -> pItem.getCode().equals(uPbit.getCode()))
+                .findFirst().map(item -> {
+                    uPbit.setPricingReferenceDate(item.getPricingReferenceDate());
+                    uPbit.setExpectedSellingPrice(item.getExpectedSellingPrice());
+                    uPbit.setMinimumSellingPrice(item.getMinimumSellingPrice());
+                    uPbit.setRenewalCnt(item.getRenewalCnt());
+                    uPbit.setTempPrice(item.getTempPrice());
+                    uPbit.setUpdatedAt(LocalDateTime.now());
+                    return uPbit;
+                }));
     }
     
     private void delete(List<UPbit> saved, List<DealItem> deleteItems) {
-    	saved.forEach(uPbit -> {
-            deleteItems.stream().filter(pItem -> pItem.getCode().equals(uPbit.getCode())).findFirst().map(item -> {
-                uPbit.setDeletedAt(LocalDateTime.now());
-                return uPbit;
-            });
-        });
+    	saved.forEach(uPbit ->
+                deleteItems.stream().filter(pItem -> pItem.getCode().equals(uPbit.getCode())).findFirst().map(item -> {
+                    uPbit.setDeletedAt(LocalDateTime.now());
+                    return uPbit;
+                }));
     }
 }

@@ -37,7 +37,7 @@ public class StockNotifyService implements DealNotifyService {
         return stockRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc().stream()
                 .filter(s -> s.getExpectedSellingPrice() != s.getMinimumSellingPrice())
                 .sorted(Comparator.comparing(Stock::getRenewalCnt).reversed()
-                		.thenComparing(Comparator.comparingDouble(s -> (s.getExpectedSellingPrice() - s.getTempPrice())/(s.getExpectedSellingPrice()-s.getMinimumSellingPrice()))))
+                		.thenComparingDouble(s -> (s.getExpectedSellingPrice() - s.getTempPrice())/(s.getExpectedSellingPrice()-s.getMinimumSellingPrice())))
                 .collect(Collectors.toList());
     }
 
@@ -83,27 +83,25 @@ public class StockNotifyService implements DealNotifyService {
     }
 
     private void update(List<Stock> saved, List<DealItem> updateItems) {
-        saved.forEach(stock -> {
-            updateItems.stream()
-                    .filter(pItem -> pItem.getCode().equals(stock.getCode()))
-                    .findFirst().map(item -> {
-                    	stock.setPricingReferenceDate(LocalDateTime.now());
-                        stock.setExpectedSellingPrice(item.getExpectedSellingPrice());
-                        stock.setMinimumSellingPrice(item.getMinimumSellingPrice());
-                        stock.setRenewalCnt(item.getRenewalCnt());
-                        stock.setTempPrice(item.getTempPrice());
-                        stock.setUpdatedAt(LocalDateTime.now());
-                        return stock;
-                    });
-        });
+        saved.forEach(stock ->
+                updateItems.stream()
+                        .filter(pItem -> pItem.getCode().equals(stock.getCode()))
+                        .findFirst().map(item -> {
+                            stock.setPricingReferenceDate(item.getPricingReferenceDate());
+                            stock.setExpectedSellingPrice(item.getExpectedSellingPrice());
+                            stock.setMinimumSellingPrice(item.getMinimumSellingPrice());
+                            stock.setRenewalCnt(item.getRenewalCnt());
+                            stock.setTempPrice(item.getTempPrice());
+                            stock.setUpdatedAt(LocalDateTime.now());
+                            return stock;
+                        }));
     }
     
     private void delete(List<Stock> saved, List<DealItem> deleteItems) {
-    	saved.forEach(stock -> {
-            deleteItems.stream().filter(pItem -> pItem.getCode().equals(stock.getCode())).findFirst().map(item -> {
-            	stock.setDeletedAt(LocalDateTime.now());
-                return stock;
-            });
-        });
+    	saved.forEach(stock ->
+                deleteItems.stream().filter(pItem -> pItem.getCode().equals(stock.getCode())).findFirst().map(item -> {
+                    stock.setDeletedAt(LocalDateTime.now());
+                    return stock;
+                }));
     }
 }
