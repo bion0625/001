@@ -1,0 +1,229 @@
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f2f5;
+    color: #333;
+    overflow-x: hidden;
+    /* 수평 스크롤 방지 */
+}
+
+.header {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between; /* 양 끝으로 분리 */
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.user-info span {
+    margin-right: 15px;
+    font-weight: bold;
+}
+
+.logout {
+    background-color: #e74c3c;
+    color: white;
+    margin-left: auto; /* 자동으로 오른쪽 끝으로 이동 */
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.here {
+    background-color: #2c3e50;
+    color: white;
+    margin: 5px;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.menu {
+    background-color: #2980b9;
+    color: white;
+    margin: 5px;
+    padding: 8px 15px;
+    text-decoration: none;
+    border-radius: 3px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.logout:hover {
+    background-color: #c0392b;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.content {
+    text-align: center;
+    margin: 50px auto;
+    max-width: 800px;
+    background-color: #fff;
+    padding: 40px 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+    /* content 영역에서 수평 스크롤 */
+}
+
+.content h1 {
+    font-size: 2.2em;
+    color: #2c3e50;
+    margin-bottom: 20px;
+}
+
+.content p {
+    font-size: 1.1em;
+    color: #7f8c8d;
+    margin-bottom: 15px;
+}
+
+.button {
+    background-color: #2980b9;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s, box-shadow 0.3s;
+    margin-top: 10px;
+}
+
+.button:hover {
+    background-color: #1abc9c;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.button:disabled {
+    background-color: #bdc3c7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+.no-data {
+    text-align: center;
+    font-size: 1.2em;
+    color: #7f8c8d;
+    margin-top: 20px;
+}
+
+.stock-cards-container {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    /* 스크롤 가능하게 설정 */
+    gap: 20px;
+    padding: 20px 0;
+    margin-bottom: 20px;
+    width: 100%;
+    /* 전체 너비를 사용하도록 설정 */
+}
+
+.stock-card {
+    min-width: 250px;
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 15px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: box-shadow 0.3s ease;
+}
+
+.stock-card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.stock-card h3 {
+    margin-top: 0;
+    font-size: 1.2em;
+    color: #2c3e50;
+}
+
+.stock-card p {
+    font-size: 0.9em;
+    color: #7f8c8d;
+}
+
+/* 반응형 스타일 추가 */
+@media (max-width: 768px) {
+
+    .content {
+        margin: 20px 10px;
+        padding: 20px 10px;
+    }
+
+    .stock-cards-container {
+        gap: 10px;
+    }
+
+    .stock-card {
+        min-width: 200px;
+        /* 카드 크기를 모바일에 맞게 조정 */
+        padding: 10px;
+    }
+}
+
+/* 빨간색 강조 스타일 */
+.highlight-red {
+    color: #e74c3c;
+    /* 강조 색상 (빨강) */
+    font-weight: bold;
+    /* 굵게 표시 */
+    background-color: #ffe6e6;
+    /* 배경색 추가 */
+    padding: 2px 4px;
+    /* 텍스트와 배경 사이 여백 */
+    border-radius: 4px;
+    /* 둥근 모서리 */
+}
+
+/* 파란색 강조 스타일 */
+.highlight-blue {
+    color: #3498db;
+    /* 파란색 */
+    font-weight: bold;
+    /* 굵게 표시 */
+    background-color: #eaf6ff;
+    /* 연한 파란색 배경 */
+    padding: 2px 4px;
+    /* 텍스트와 배경 사이 여백 */
+    border-radius: 4px;
+    /* 둥근 모서리 */
+}
+
+/* 초록색 강조 (설정 시가) */
+.highlight-green {
+    color: #27ae60;
+    /* 초록색 텍스트 */
+    font-weight: bold;
+    background-color: #eafaf1;
+    /* 연한 초록색 배경 */
+    padding: 2px 4px;
+    border-radius: 4px;
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 0.85em;
+    }
+
+    .button {
+        width: 100%;
+        padding: 10px;
+        font-size: 0.9em;
+    }
+
+    .stock-cards-container {
+        gap: 10px;
+    }
+
+    .stock-card {
+        min-width: 160px;
+        /* 매우 작은 화면에서 카드 크기 추가 조정 */
+    }
+}

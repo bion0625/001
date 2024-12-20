@@ -4,153 +4,16 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>STOCK</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f0f2f5;
-            color: #333;
-        }
-
-        .header {
-            background-color: #2c3e50;
-            color: white;
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .user-info span {
-            margin-right: 15px;
-            font-weight: bold;
-        }
-
-        .logout {
-            background-color: #e74c3c;
-            color: white;
-            padding: 8px 15px;
-            text-decoration: none;
-            border-radius: 3px;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .logout:hover {
-            background-color: #c0392b;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .content {
-            text-align: center;
-            margin: 50px auto;
-            max-width: 800px;
-            background-color: #fff;
-            padding: 40px 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .content h1 {
-            font-size: 2.2em;
-            color: #2c3e50;
-            margin-bottom: 20px;
-        }
-
-        .content p {
-            font-size: 1.1em;
-            color: #7f8c8d;
-            margin-bottom: 15px;
-        }
-
-        .button {
-            background-color: #2980b9;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            font-size: 1em;
-            cursor: pointer;
-            border-radius: 5px;
-            transition: background-color 0.3s, box-shadow 0.3s;
-            margin-top: 10px;
-        }
-
-        .button:hover {
-            background-color: #1abc9c;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .input-field {
-            padding: 10px;
-            font-size: 1em;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            width: calc(100% - 22px); /* Adjust for padding and border */
-            transition: border-color 0.3s, box-shadow 0.3s;
-        }
-
-        .input-field:focus {
-            border-color: #2980b9;
-            box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
-            outline: none;
-        }
-
-        .target-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #ecf0f1;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 10px 15px;
-            margin: 5px 0;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .target-item:hover {
-            background-color: #bdc3c7;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .delete-button {
-            background-color: #e74c3c;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 3px;
-            transition: background-color 0.3s, box-shadow 0.3s;
-        }
-
-        .delete-button:hover {
-            background-color: #c0392b;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-        }
-
-        .delete-button:disabled {
-            background-color: #bdc3c7;
-            cursor: not-allowed;
-            box-shadow: none;
-        }
-
-        .hidden {
-            display: none;
-        }
-    </style>
+    <link rel="stylesheet" th:href="@{/css/admin.css}" />
 </head>
 <body>
 <div class="header">
-    <a href="/" class="logout">MAIN</a>
-    <a href="/my" class="logout">myPage</a>
-	<a href="/logout" class="logout">로그아웃</a>
+    <div class="menu-container">
+        <a href="/" class="menu">MAIN</a>
+        <a href="/admin/users" class="menu">USERS</a>
+        <a href="/admin" class="here">MAILING</a>
+    </div>
+	<a href="/logout" class="logout">LOGOUT</a>
 </div>
 
 <div class="content">

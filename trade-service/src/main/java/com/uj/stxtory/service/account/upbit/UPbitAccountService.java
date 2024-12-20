@@ -125,8 +125,7 @@ public class UPbitAccountService {
 
 		String authenticationToken = getAuthenticationToken(loginId);
 
-		if (authenticationToken.isEmpty())
-			return accounts;
+		if (authenticationToken.isEmpty()) return accounts;
 
 		try {
 			accounts = upbitClient.getAccount("Bearer " + authenticationToken);

@@ -29,7 +29,7 @@ public class SecurityService implements UserDetailsService {
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
 
-        Optional<TbUser> tbUser = userRepository.findByUserLoginId(userLoginId);
+        Optional<TbUser> tbUser = userRepository.findByUserLoginIdAndDeletedAtIsNull(userLoginId);
         if (tbUser.isPresent()){
             TbUser user = tbUser.get();
             grantedAuthorities.add(new SimpleGrantedAuthority(user.getUserRole()));
