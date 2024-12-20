@@ -1,6 +1,4 @@
 spring:
-  application:
-    name: dev
   jpa:
     show-sql: true
     generate-ddl: true
