@@ -249,6 +249,39 @@ body {
     box-shadow: none;
 }
 
+.input-field {
+    padding: 10px;
+    font-size: 1em;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    width: calc(100% - 22px); /* Adjust for padding and border */
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.input-field:focus {
+    border-color: #2980b9;
+    box-shadow: 0 0 5px rgba(41, 128, 185, 0.5);
+    outline: none;
+}
+
+.target-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ecf0f1;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px 15px;
+    margin: 5px 0;
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.target-item:hover {
+    background-color: #bdc3c7;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
 .hidden {
     display: none;
 }
