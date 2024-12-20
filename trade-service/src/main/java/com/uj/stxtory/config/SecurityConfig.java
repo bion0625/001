@@ -34,8 +34,7 @@ public class SecurityConfig implements WebMvcConfigurer {
         http.authorizeHttpRequests(request -> request
         		.requestMatchers("/join").permitAll()
         		.requestMatchers("/h2/**", "/admin/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("ADMIN")
-        		.requestMatchers("/actuator/**").access((auth, context) -> 
-        			new AuthorizationDecision(context.getRequest().getRemoteAddr().equals("127.0.0.1")))
+        		.requestMatchers("/actuator/**").permitAll()
         		.anyRequest().authenticated());
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));
 
