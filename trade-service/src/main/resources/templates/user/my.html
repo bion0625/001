@@ -39,6 +39,39 @@
 		</div>
 	</div>
 
+<div class="content">
+	<form method="post" th:object="${user}" th:action="@{/my}" onsubmit="return validatePassword()">
+		<h2>내 정보</h2>
+		<p>
+			<input type="hidden" id="joinLoginId" name="userLoginId" placeholder="LOGIN ID" th:field="*{userLoginId}">
+			ID: <label th:text="*{userLoginId}"></label>
+		</p>
+		<p>
+			<input class="input-field" type="password" id="joinPassword" name="userPassword" placeholder="PASSWORD" th:field="*{userPassword}" required>
+			<span class="error" th:if="${#fields.hasErrors('userPassword')}" th:errors="*{userPassword}"></span>
+		</p>
+		<p>
+			<input class="input-field" type="password" id="joinPasswordCheck" placeholder="PASSWORD CHECK" required>
+			<span class="error" style="display:none;" id="joinPasswordCheckMsg">비밀번호와 비밀번호 확인이 일치하지 않습니다.</span>
+		</p>
+		<p>
+			<input class="input-field" type="text" id="joinName" name="userName" placeholder="NAME" th:field="*{userName}" required>
+			<span class="error" th:if="${#fields.hasErrors('userName')}" th:errors="*{userName}"></span>
+		</p>
+		<p>
+			<input class="input-field" type="text" id="joinPhone" name="userPhone" placeholder="PHONE" th:field="*{userPhone}" required>
+			<span class="error" th:if="${#fields.hasErrors('userPhone')}" th:errors="*{userPhone}"></span>
+		</p>
+		<p>
+			<input class="input-field" type="text" id="joinEmail" name="userEmail" placeholder="E-MAIL" th:field="*{userEmail}" required>
+			<span class="error" th:if="${#fields.hasErrors('userEmail')}" th:errors="*{userEmail}"></span>
+		</p>
+		<p>
+			<button class="button" type="submit">수정</button>
+		</p>
+	</form>
+</div>
+
 	<script>
 		if (document.querySelector("#isAuto").value == 'true') document.querySelector("#upbitAutoOn").checked = true;
 		else document.querySelector("#upbitAutoOn").checked = false;
@@ -54,6 +87,30 @@
 				},
 				body: JSON.stringify({auto}) // boolean 값을 JSON으로 변환하여 전송
 			})
+		});
+
+		function validatePassword() {
+			const password = document.getElementById("joinPassword").value;
+			const confirmPassword = document.getElementById("joinPasswordCheck").value;
+			if (password !== confirmPassword) {
+				alert("비밀번호와 비밀번호 확인이 일치하지 않습니다.");
+				return false;
+			}
+			return true;
+		}
+
+		const passwordCheckHandler = () => {
+			const msg = document.querySelector("#joinPasswordCheckMsg");
+			if (document.querySelector("#joinPasswordCheck").value === document.querySelector("#joinPassword").value) {
+				msg.style.display = "none";
+			} else {
+				msg.style.display = "block";
+			}
+		};
+
+		document.addEventListener("DOMContentLoaded", () => {
+			document.querySelector("#joinPassword").addEventListener("keyup", passwordCheckHandler);
+			document.querySelector("#joinPasswordCheck").addEventListener("keyup", passwordCheckHandler);
 		});
 	</script>
 </body>

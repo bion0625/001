@@ -4,7 +4,9 @@ import com.uj.stxtory.domain.entity.TbUser;
 import com.uj.stxtory.service.UserService;
 import com.uj.stxtory.service.account.upbit.UPbitAccountService;
 import jakarta.validation.Valid;
-import org.springframework.security.core.Authentication;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.support.SessionStatus;
 
 @Controller
 @SessionAttributes("user")
+@Slf4j
 public class UserController {
 
     private final UserService userService;
@@ -58,13 +61,25 @@ public class UserController {
     }
     
     @GetMapping("/my")
-    public String my(Model model, Authentication authentication) {
-    	String userLoginId = authentication.getPrincipal().toString();
-
-    	var upbitAccounts = uPbitAccountService.getAccount(userLoginId);
-    	model.addAttribute("upbitAccounts", upbitAccounts);
-    	model.addAttribute("isAuto", uPbitAccountService.isAuto(userLoginId));
+    public String my(Model model, @AuthenticationPrincipal String userLoginId) {
+        settingMyUpbbit(model, userLoginId);
+        model.addAttribute("user", userService.findByLoginId(userLoginId)
+                .orElseThrow(() -> new UsernameNotFoundException(userLoginId + " is not found")));
 
     	return "user/my";
+    }
+
+    @PostMapping("/my")
+    public String update(Model model, @Valid @ModelAttribute("user")TbUser user, BindingResult result, SessionStatus status) {
+        settingMyUpbbit(model, user.getUserLoginId());
+        if (result.hasErrors()) return "user/my";
+        userService.updateByLoginId(user);
+        status.setComplete();
+        return "user/my";
+    }
+
+    private void settingMyUpbbit(Model model, String loginId) {
+        model.addAttribute("upbitAccounts", uPbitAccountService.getAccount(loginId));
+        model.addAttribute("isAuto", uPbitAccountService.isAuto(loginId));
     }
 }

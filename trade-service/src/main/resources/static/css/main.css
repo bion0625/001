@@ -105,6 +105,13 @@ body {
     box-shadow: none;
 }
 
+.error {
+    color: #cc0000;
+    display: block;
+    margin-top: -8px;
+    font-size: 0.9em;
+}
+
 .no-data {
     text-align: center;
     font-size: 1.2em;
