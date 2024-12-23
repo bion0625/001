@@ -60,7 +60,7 @@ public class UPbitAccountService {
 		keyRepository.findByUserLoginId(loginId).map(e -> {
 			e.setAutoOn(auto);
 			return e;
-		}).orElseThrow();
+		});
 	}
 
 	public boolean isAuto(String loginId) {
