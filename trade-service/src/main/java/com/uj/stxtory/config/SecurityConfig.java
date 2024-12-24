@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -33,7 +32,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .defaultSuccessUrl("/", true));
         http.authorizeHttpRequests(request -> request
         		.requestMatchers("/join").permitAll()
-        		.requestMatchers("/h2/**", "/admin/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("ADMIN")
+        		.requestMatchers( "/admin/**").hasAnyRole(new String[]{"ADMIN", "MASTER"})
+        		.requestMatchers("/h2/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("MASTER")
         		.requestMatchers("/actuator/**").permitAll()
         		.anyRequest().authenticated());
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));

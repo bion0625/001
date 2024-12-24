@@ -48,7 +48,7 @@ public class UserService implements UserDetailsService {
     public void save(TbUser user) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setUserPassword(encoder.encode(user.getUserPassword()));
-        if (userRepository.findAll().isEmpty()) user.setUserRole("ADMIN");
+        if (userRepository.findAll().isEmpty()) user.setUserRole("MASTER");
         userRepository.save(user);
     }
 
