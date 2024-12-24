@@ -65,7 +65,7 @@ public class UserService implements UserDetailsService {
 
     public String getAdmin(String loginId) {
         return userRepository.findByUserLoginIdAndDeletedAtIsNull(loginId)
-                .filter(u -> u.getUserRole().equals(CommonConstant.ROLE_ADMIN))
+                .filter(u -> u.getUserRole().equals(CommonConstant.ROLE_ADMIN) || u.getUserRole().equals(CommonConstant.ROLE_MASTER))
                 .map(TbUser::getUserPassword).orElseThrow();
     }
 
