@@ -32,8 +32,8 @@ public class SecurityConfig implements WebMvcConfigurer {
                         .defaultSuccessUrl("/", true));
         http.authorizeHttpRequests(request -> request
         		.requestMatchers("/join").permitAll()
-        		.requestMatchers( "/admin/**").hasAnyRole(new String[]{"ADMIN", "MASTER"})
-        		.requestMatchers("/h2/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole("MASTER")
+        		.requestMatchers( "/admin/**").hasAnyRole(new String[]{CommonConstant.ROLE_ADMIN, CommonConstant.ROLE_MASTER})
+        		.requestMatchers("/h2/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**").hasRole(CommonConstant.ROLE_MASTER)
         		.requestMatchers("/actuator/**").permitAll()
         		.anyRequest().authenticated());
         http.headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::sameOrigin));

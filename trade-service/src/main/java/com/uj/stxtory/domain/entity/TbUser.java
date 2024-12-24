@@ -1,5 +1,6 @@
 package com.uj.stxtory.domain.entity;
 
+import com.uj.stxtory.config.CommonConstant;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -33,7 +34,7 @@ public class TbUser extends Base {
     private String userName;
 
     @Column(name = "user_role", nullable = false)
-    private String userRole = "USER";
+    private String userRole = CommonConstant.ROLE_USER;
 
     @Column(name = "user_email", nullable = true)
     @Email(message = "유효한 이메일 주소를 입력해야 합니다.")

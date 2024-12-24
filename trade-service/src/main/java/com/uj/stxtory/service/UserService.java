@@ -1,5 +1,6 @@
 package com.uj.stxtory.service;
 
+import com.uj.stxtory.config.CommonConstant;
 import com.uj.stxtory.domain.dto.UserDto;
 import com.uj.stxtory.domain.dto.UserListDto;
 import com.uj.stxtory.domain.entity.TbUser;
@@ -48,7 +49,7 @@ public class UserService implements UserDetailsService {
     public void save(TbUser user) {
         BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setUserPassword(encoder.encode(user.getUserPassword()));
-        if (userRepository.findAll().isEmpty()) user.setUserRole("MASTER");
+        if (userRepository.findAll().isEmpty()) user.setUserRole(CommonConstant.ROLE_MASTER);
         userRepository.save(user);
     }
 
@@ -64,14 +65,14 @@ public class UserService implements UserDetailsService {
 
     public String getAdmin(String loginId) {
         return userRepository.findByUserLoginIdAndDeletedAtIsNull(loginId)
-                .filter(u -> u.getUserRole().equals("ADMIN"))
+                .filter(u -> u.getUserRole().equals(CommonConstant.ROLE_ADMIN))
                 .map(TbUser::getUserPassword).orElseThrow();
     }
 
     public List<UserDto> getAllForAdmin() {
         return userRepository.findAll().stream()
                 .sorted(Comparator.comparing(TbUser::getId))
-                .skip(1)
+                .filter(u -> !u.getUserRole().equals(CommonConstant.ROLE_MASTER))
                 .map(UserDto::fromEntity)
                 .collect(Collectors.toList());
     }
