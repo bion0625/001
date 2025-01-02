@@ -11,3 +11,4 @@
 
 #### 특징
 - 계산로직: 주식, upbit 메서드 팩토리 패턴으로 같은 로직을 통해 계산
+- spring-admin(admin-server): 모니터링 프로젝트 로그인 시 core 프로젝트(trade-service)의 유저 중 ADMIN or MASTER 권한의 유저로만 인증하도록 설정
