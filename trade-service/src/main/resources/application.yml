@@ -19,7 +19,7 @@ spring:
   messages:
     encoding: UTF-8
 server:
-  port: 0
+  port: 8080
 
 management:
   info:
