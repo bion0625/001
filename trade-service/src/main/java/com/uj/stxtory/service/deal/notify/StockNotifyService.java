@@ -56,11 +56,11 @@ public class StockNotifyService implements DealNotifyService {
                 .collect(Collectors.toList());
         stockRepository.saveAll(save);
         
-//        List<StockInfo> deleteList = saved.stream()
-//        		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
-//        		.map(StockInfo::fromEntity)
-//        		.collect(Collectors.toList());        
-//        delete(saved, new ArrayList<>(deleteList));
+        List<StockInfo> deleteList = saved.stream()
+        		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
+        		.map(StockInfo::fromEntity)
+        		.collect(Collectors.toList());
+        delete(saved, new ArrayList<>(deleteList));
     }
 
     @Override
@@ -72,7 +72,6 @@ public class StockNotifyService implements DealNotifyService {
         DealInfo model = new StockModel(dealDaysConfig.getBaseDays());
         if (saved.isEmpty()) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
-//        List<DealItem> updateItems = model.getUpdateItems();
         List<DealItem> updateItems = model.getNowItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 

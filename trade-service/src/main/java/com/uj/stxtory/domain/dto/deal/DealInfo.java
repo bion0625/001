@@ -14,7 +14,6 @@ import java.util.stream.Stream;
 @Slf4j
 public abstract class DealInfo {
     public List<DealItem> deleteItems = new ArrayList<>();// 업데이트 작업 후 매도 종목
-    public List<DealItem> updateItems = new ArrayList<>();// 업데이트 작업 후 갱신 종목
     public List<DealItem> nowItems = new ArrayList<>();// 갱신 포함 현재 활성화 종목
 
     public abstract List<DealItem> getAll();
@@ -113,7 +112,6 @@ public abstract class DealInfo {
                             && price.getClose() >= item.getExpectedSellingPrice()) {
                         item.sellingPriceUpdate(new Date());
                         item.setTempPrice(price.getClose());
-                        updateItems.add(item);
                     }
                     // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
                     if (price.getClose() <= item.getMinimumSellingPrice()) deleteItems.add(item);
