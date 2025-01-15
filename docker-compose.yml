@@ -14,6 +14,12 @@ services:
     volumes:
       - C:/data:/var/lib/postgresql/data
     restart: always
+    networks:
+      - nat
 
 volumes:
   postgres_data:
+
+networks:
+  nat:
+    driver: bridge

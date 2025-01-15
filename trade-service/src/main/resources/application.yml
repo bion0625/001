@@ -9,7 +9,7 @@ spring:
     generate-ddl: true
     database: postgresql
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: ${DB_URL:jdbc:postgresql://localhost:5432/postgres}
     username: bion_user
     password: 0xoavf78NKtWENO5Ui7bFCGZoGCoaTWG
   thymeleaf:

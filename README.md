@@ -13,9 +13,11 @@
 - 계산로직: 주식, upbit 메서드 팩토리 패턴으로 같은 로직을 통해 계산
 - spring-admin(admin-server): 모니터링 프로젝트 로그인 시 core 프로젝트(trade-service)의 유저 중 ADMIN or MASTER 권한의 유저로만 인증하도록 설정
 
-### docker 사용시 DEV 빌드 명령어
+### docker 사용시 빌드 명령어(root폴더에서 실행)
+- docker-compose up -d
 - docker network create nat
+- docker network connect nat postgres_db
 - docker run -d --network nat -p 8761:8761 --name registry-server bion0625/registry-server:v1
 - docker run -d --network nat -p 9090:9090 --name admin-server bion0625/admin-server:v1
-- docker run -d --network nat -p 8080:8080 --name trade-service -e ACTIVE=dev bion0625/trade-service:v1
+- docker run -d --network nat -p 8080:8080 --name trade-service -e ACTIVE=prd bion0625/trade-service:v1
 - docker run -d --network nat -p 8085:8085 --name edge-server bion0625/edge-server:v1
