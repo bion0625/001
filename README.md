@@ -14,7 +14,8 @@
 - spring-admin(admin-server): 모니터링 프로젝트 로그인 시 core 프로젝트(trade-service)의 유저 중 ADMIN or MASTER 권한의 유저로만 인증하도록 설정
 
 ### docker 사용시 빌드 명령어
-- docker run -d -p 8761:8761 bion0625/registry-server:v1
-- docker run -d -p 9090:9090 bion0625/admin-server:v1
-- docker run -d -p 8085:8085 bion0625/edge-server:v1
-- docker run -e ACTIVE=dev -d -p 8080:8080 bion0625/trade-service:v1
+- docker network create nat
+- docker run -d --network nat -p 8761:8761 bion0625/registry-server:v1
+- docker run -d --network nat -p 9090:9090 bion0625/admin-server:v1
+- docker run -d --network nat -p 8085:8085 bion0625/edge-server:v1
+- docker run -e --network nat ACTIVE=dev -d -p 8080:8080 bion0625/trade-service:v1
