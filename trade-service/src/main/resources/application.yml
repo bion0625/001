@@ -56,6 +56,10 @@ logging:
   pattern:
     dateformat: yyyy-MM-dd HH:mm:ss.SSS,Asia/Seoul
 
+usstock:
+  api:
+    key: ${USSTOCK_API_KEY:my_key}
+
 info:
   contact:
     email: stxtory@gmail.com
