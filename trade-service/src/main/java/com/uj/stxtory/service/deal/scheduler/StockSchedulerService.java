@@ -2,7 +2,6 @@ package com.uj.stxtory.service.deal.scheduler;
 
 import com.uj.stxtory.service.deal.DealSchedulerService;
 import com.uj.stxtory.service.deal.notify.StockNotifyService;
-import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
 import com.uj.stxtory.service.mail.MailService;
 import com.uj.stxtory.util.ApiUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -21,8 +20,6 @@ public class StockSchedulerService implements DealSchedulerService {
     MailService mailService;
     @Autowired
     StockNotifyService stockNotifyService;
-    @Autowired
-    UPbitNotifyService uPbitNotifyService;
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 20분, 40분 마다
     @Override

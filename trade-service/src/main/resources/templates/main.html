@@ -23,6 +23,7 @@
 		<h1 th:if="${subject != null}" th:text="${subject}">주식 및 코인 SELECT</h1>
 		<button id="home" class="button">HOME</button>
 		<button id="goStockList" class="button">STOCK SELECT</button>
+		<button id="goUSStockList" class="button">US STOCK SELECT</button>
 		<button id="goUpbitList" class="button">UPBIT SELECT</button>
 		<p class="highlight-red" th:if="${items != null && items.size() > 3}" th:text="${items.size()}"></p>
 		<p class="highlight-green" th:if="${items != null && items.size() == 3}" th:text="${items.size()}"></p>
@@ -57,6 +58,10 @@
 
 		document.querySelector("#goStockList").addEventListener("click", () => {
 			location.href = "/select/stock";
+		});
+
+		document.querySelector("#goUSStockList").addEventListener("click", () => {
+			location.href = "/select/usstock";
 		});
 
 		document.querySelector("#goUpbitList").addEventListener("click", () => {

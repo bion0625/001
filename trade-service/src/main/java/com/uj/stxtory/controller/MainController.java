@@ -4,6 +4,7 @@ import com.uj.stxtory.domain.entity.TbUPbitKey;
 import com.uj.stxtory.repository.TbUPbitKeyRepository;
 import com.uj.stxtory.service.deal.notify.StockNotifyService;
 import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
+import com.uj.stxtory.service.deal.notify.USStockNotifyService;
 import com.uj.stxtory.service.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,8 @@ public class MainController{
     MailService mailService;
     @Autowired
     StockNotifyService stockNotifyService;
+    @Autowired
+    USStockNotifyService usstockNotifyService;
     @Autowired
     UPbitNotifyService uPbitNotifyService;
     @Autowired
@@ -36,6 +39,13 @@ public class MainController{
     public String stocks(Model model){
         model.addAttribute("items", stockNotifyService.getSaved());
         model.addAttribute("subject", "STOCK SELECT");
+        return "main";
+    }
+
+    @GetMapping(value = "/select/usstock")
+    public String usstock(Model model){
+        model.addAttribute("items", usstockNotifyService.getSaved());
+        model.addAttribute("subject", "US STOCK SELECT");
         return "main";
     }
 

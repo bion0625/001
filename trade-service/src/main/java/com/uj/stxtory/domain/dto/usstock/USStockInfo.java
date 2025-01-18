@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.entity.USStock;
+import com.uj.stxtory.util.ApiUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,10 +24,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
-import java.util.Spliterator;
-import java.util.Spliterators;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 /**
  * 미국 주식 상위 500개
@@ -154,19 +152,21 @@ public class USStockInfo implements DealItem {
     }
 
     public static List<DealPrice> getPriceInfoByPage(String code, int day, String API_KEY) {
-        final OkHttpClient httpClient = new OkHttpClient();
-        final ObjectMapper objectMapper = new ObjectMapper();
-        final String BASE_URL = "https://www.alphavantage.co/query";
+        final String BASE_URL = "https://api.polygon.io/v2/aggs/ticker";
 
-        List<USStockPriceInfo> prices = new ArrayList<>();
+        List<DealPrice> prices = new ArrayList<>();
+        OkHttpClient httpClient = new OkHttpClient();
+        ObjectMapper objectMapper = new ObjectMapper();
 
-        String url = String.format("%s?function=TIME_SERIES_DAILY&outputsize=full&symbol=%s&apikey=%s", BASE_URL, code, API_KEY);
+        // 현재 날짜와 시작 날짜 계산
+        LocalDate toDate = LocalDate.now();
+        LocalDate fromDate = toDate.minusDays(day);
+
+        String url = String.format("%s/%s/range/1/day/%s/%s?apiKey=%s",
+                BASE_URL, code, fromDate, toDate, API_KEY);
 
         try {
-            Request request = new Request.Builder()
-                    .url(url)
-                    .build();
-
+            Request request = new Request.Builder().url(url).build();
             try (Response response = httpClient.newCall(request).execute()) {
                 if (!response.isSuccessful()) {
                     throw new RuntimeException("HTTP request failed: " + response.code());
@@ -174,29 +174,28 @@ public class USStockInfo implements DealItem {
 
                 String jsonData = response.body().string();
                 JsonNode rootNode = objectMapper.readTree(jsonData);
-                JsonNode timeSeries = rootNode.get("Time Series (Daily)");
 
-                prices = StreamSupport.stream(
-                                Spliterators.spliteratorUnknownSize(timeSeries.fieldNames(), Spliterator.ORDERED), false)
-                        .limit(day) // 원하는 개수만 가져오기
-                        .map(dateStr -> {
-                            LocalDate date = LocalDate.parse(dateStr);
-                            JsonNode dailyData = timeSeries.get(dateStr);
-                            USStockPriceInfo price = new USStockPriceInfo();
-                            price.setDate(java.sql.Date.valueOf(date));
-                            price.setOpen(dailyData.get("1. open").asDouble());
-                            price.setHigh(dailyData.get("2. high").asDouble());
-                            price.setLow(dailyData.get("3. low").asDouble());
-                            price.setClose(dailyData.get("4. close").asDouble());
-                            price.setVolume(dailyData.get("5. volume").asLong());
-                            return price;
-                        })
-                        .toList();
+                JsonNode results = rootNode.get("results");
+                if (results != null) {
+                    results.forEach(data -> {
+                        USStockPriceInfo price = new USStockPriceInfo();
+                        price.setDate(new java.sql.Date(data.get("t").asLong()));
+                        price.setOpen(data.get("o").asDouble());
+                        price.setHigh(data.get("h").asDouble());
+                        price.setLow(data.get("l").asDouble());
+                        price.setClose(data.get("c").asDouble());
+                        price.setVolume(data.get("v").asLong());
+                        prices.add(price);
+                    });
+                }
             }
         } catch (Exception e) {
-            log.info("Error fetching price data for code: " + code);
+            System.err.println("Error fetching data for ticker: " + code);
             e.printStackTrace();
         }
+
+        // 요청 수 제한으로 시간 제한 [초] 걸기
+        ApiUtil.setDelay(15);
 
         return new ArrayList<>(prices);
     }

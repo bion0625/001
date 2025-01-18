@@ -15,7 +15,7 @@ import java.util.List;
 @SpringBootTest
 @ActiveProfiles("dev")
 class USStockInfoTest {
-    @Value("usstock.api.key")
+    @Value("${usstock.api.key}")
     String key;
     @Test
     void getCompanyInfo() {
