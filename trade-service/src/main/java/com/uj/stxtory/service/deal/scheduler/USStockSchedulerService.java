@@ -26,8 +26,8 @@ public class USStockSchedulerService implements DealSchedulerService {
 
     // 1분마다
     @Override
-    @Scheduled(cron = "0 0/30 22-23 * 3-11 MON-FRI") // 22:30~23:59 (당일)
-    @Scheduled(cron = "0 0/30 0-5 * 11-12,1-2 MON-FRI") // 00:00~05:59 (익일)
+    @Scheduled(cron = "0 0/30 22-23 * 3-11 *") // 22:30~23:59 (당일)
+    @Scheduled(cron = "0 0/30 0-5 * 11-12,1-2 *") // 00:00~05:59 (익일)
     public void update() {
         ApiUtil.runWithException(
                 () -> usStockNotifyService.update());
