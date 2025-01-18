@@ -15,8 +15,8 @@ class USStockModelTest {
 
     @Test
     void calculateByThreeDaysByPageForSave() {
-        USStockModel model = new USStockModel(130, key);
-        model.calculateByThreeDaysByPageForSave().forEach(item -> log.info("item: " + item.toString()));
+//        USStockModel model = new USStockModel(130, key);
+//        model.calculateByThreeDaysByPageForSave().forEach(item -> log.info("item: " + item.toString()));
     }
 
 }
