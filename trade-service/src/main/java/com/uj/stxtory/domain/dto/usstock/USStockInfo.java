@@ -66,15 +66,11 @@ public class USStockInfo implements DealItem {
     }
 
     public USStock toEntity() {
-        return new USStock(
-                this.code,
-                this.name,
-                this.minimumSellingPrice,
-                this.expectedSellingPrice,
-                this.minimumSellingPrice,
-                this.expectedSellingPrice,
-                this.tempPrice
-        );
+        double high = prices.get(0).getHigh();
+        double temp = prices.get(0).getClose();
+        double minimum = Math.round(high * 0.95);
+        double expected = Math.round(high * 1.1);
+        return new USStock(code, name, minimum, expected, minimum, expected, temp);
     }
 
     public static USStockInfo fromEntity(USStock usStock) {
