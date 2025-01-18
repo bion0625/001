@@ -45,12 +45,6 @@ public class USStockInfo implements DealItem {
     private LocalDateTime updatedAt;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
-    public USStockInfo(String name, String code, double tempPrice) {
-        this.name = name;
-        this.code = code;
-        this.tempPrice = tempPrice;
-        this.updatedAt = LocalDateTime.now();
-    }
 
     @Override
     public void setPrices(List<DealPrice> prices) {
@@ -73,12 +67,39 @@ public class USStockInfo implements DealItem {
         return new USStock(code, name, minimum, expected, minimum, expected, temp);
     }
 
+    public USStockInfo(String name, String code,
+                     double originMinimumSellingPrice,
+                     double originExpectedSellingPrice,
+                     double minimumSellingPrice,
+                     double expectedSellingPrice,
+                     LocalDateTime updatedAt,
+                     LocalDateTime pricingReferenceDate,
+                     double tempPrice,
+                     int renewalCnt)  {
+        this.name = name;
+        this.code = code;
+        this.originMinimumSellingPrice = originMinimumSellingPrice;
+        this.originExpectedSellingPrice = originExpectedSellingPrice;
+        this.minimumSellingPrice = minimumSellingPrice;
+        this.expectedSellingPrice = expectedSellingPrice;
+        this.updatedAt = updatedAt;
+        this.pricingReferenceDate = pricingReferenceDate;
+        this.tempPrice = tempPrice;
+        this.renewalCnt = renewalCnt;
+    }
+
     public static USStockInfo fromEntity(USStock usStock) {
         return new USStockInfo(
                 usStock.getName(),
                 usStock.getCode(),
-                usStock.getTempPrice()
-        );
+                usStock.getOriginMinimumSellingPrice(),
+                usStock.getOriginExpectedSellingPrice(),
+                usStock.getMinimumSellingPrice(),
+                usStock.getExpectedSellingPrice(),
+                usStock.getUpdatedAt(),
+                usStock.getPricingReferenceDate(),
+                usStock.getTempPrice(),
+                usStock.getRenewalCnt());
     }
 
     // 상위 500개만 가져오기
