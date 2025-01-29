@@ -34,8 +34,9 @@ public class UPbitSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(fixedRate = 1000 * 60 * 15)
     public void save() {
-    	uPbitNotifyService.save();
-    	log.info("\n\n\nUPbit save complete("+dealDaysConfig.getBaseDays()+")\n\n\n");
+        int baseDays = dealDaysConfig.getBaseDays();
+        uPbitNotifyService.save();
+        log.info("\n\n\nUPbit save complete("+ baseDays +")\n\n\n");
     }
 
     // 매일 5분마다

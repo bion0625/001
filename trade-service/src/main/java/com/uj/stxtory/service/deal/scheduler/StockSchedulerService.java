@@ -34,8 +34,9 @@ public class StockSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void save() {
-    	stockNotifyService.save();
-    	log.info("\n\n\nstock save complete("+dealDaysConfig.getBaseDays()+")\n\n\n");
+        int baseDays = dealDaysConfig.getBaseDays();
+        stockNotifyService.save();
+        log.info("\n\n\nstock save complete("+ baseDays +")\n\n\n");
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
