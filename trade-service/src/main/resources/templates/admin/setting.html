@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STOCK</title>
+    <link rel="stylesheet" th:href="@{/css/main.css}" />
+</head>
+<body>
+<div class="header">
+    <div class="menu-container">
+        <a href="/" class="menu">MAIN</a>
+        <a href="/admin/users" class="menu">USERS</a>
+        <a href="/admin/autos" class="menu">AUTOS</a>
+        <a href="/admin/setting" class="here">SETTING</a>
+    </div>
+	<a href="/logout" class="logout">LOGOUT</a>
+</div>
+
+<div class="content">
+    <form>
+        <label>
+            신고가 기준 일 수(DEFAULT - 130):
+            <input class="input-field" type="number" th:value="${baseDays}" name="baseDays">
+        </label>
+        <input class="button" type="submit" value="confirm">
+    </form>
+</div>
+</body>
+</html>

@@ -1,8 +1,8 @@
 package com.uj.stxtory.service.deal.scheduler;
 
+import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.service.deal.DealSchedulerService;
 import com.uj.stxtory.service.deal.notify.StockNotifyService;
-import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
 import com.uj.stxtory.service.mail.MailService;
 import com.uj.stxtory.util.ApiUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -18,18 +18,24 @@ import java.util.ArrayList;
 @Service
 public class StockSchedulerService implements DealSchedulerService {
     @Autowired
-    MailService mailService;
+    private final MailService mailService;
     @Autowired
-    StockNotifyService stockNotifyService;
+    private final StockNotifyService stockNotifyService;
     @Autowired
-    UPbitNotifyService uPbitNotifyService;
+    private final DealDaysConfig dealDaysConfig;
+
+    public StockSchedulerService(MailService mailService, StockNotifyService stockNotifyService, DealDaysConfig dealDaysConfig) {
+        this.mailService = mailService;
+        this.stockNotifyService = stockNotifyService;
+        this.dealDaysConfig = dealDaysConfig;
+    }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 20분, 40분 마다
     @Override
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void save() {
     	stockNotifyService.save();
-    	log.info("\n\n\nstock save complete\n\n\n");
+    	log.info("\n\n\nstock save complete("+dealDaysConfig.getBaseDays()+")\n\n\n");
     }
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다

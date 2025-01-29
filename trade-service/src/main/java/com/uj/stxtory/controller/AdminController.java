@@ -1,37 +1,48 @@
 package com.uj.stxtory.controller;
 
+import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.AutoMangerDto;
 import com.uj.stxtory.domain.dto.AutoMangerListDto;
 import com.uj.stxtory.domain.dto.UserListDto;
 import com.uj.stxtory.domain.entity.TbUPbitKey;
 import com.uj.stxtory.service.UserService;
 import com.uj.stxtory.service.account.upbit.UPbitAccountService;
-import com.uj.stxtory.service.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Controller
 @Slf4j
 public class AdminController {
-    private final MailService mailService;
     private final UserService userService;
     private final UPbitAccountService uPbitAccountService;
+    private final DealDaysConfig dealDaysConfig;
 
-    public AdminController(MailService mailService, UserService userService, UPbitAccountService uPbitAccountService) {
-        this.mailService = mailService;
+    public AdminController(UserService userService, UPbitAccountService uPbitAccountService, DealDaysConfig dealDaysConfig) {
         this.userService = userService;
         this.uPbitAccountService = uPbitAccountService;
+        this.dealDaysConfig = dealDaysConfig;
     }
 
-    @GetMapping(value = "/admin")
-    public String admin(Model model){
-        model.addAttribute("targets", mailService.getTargets());
-        return "admin/mail";
+    // 메일링 종료
+//    @GetMapping(value = "/admin")
+//    public String admin(Model model){
+//        model.addAttribute("targets", mailService.getTargets());
+//        return "admin/mail";
+//    }
+
+    @GetMapping(value = "/admin/setting")
+    public String setting(Model model, Integer baseDays){
+
+        model.addAttribute("baseDays", Optional.ofNullable(baseDays)
+                                                    .map(dealDaysConfig::setBaseDays)
+                                                    .orElseGet(dealDaysConfig::getBaseDays));
+        return "admin/setting";
     }
 
     @GetMapping(value = "/admin/users")

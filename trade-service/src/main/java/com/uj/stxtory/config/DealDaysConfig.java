@@ -12,7 +12,8 @@ public class DealDaysConfig {
         return baseDays.get();
     }
 
-    public void setBaseDays(int baseDays) {
+    public int setBaseDays(int baseDays) {
         this.baseDays.set(baseDays);
+        return baseDays;
     }
 }
