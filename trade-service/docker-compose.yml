@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: bion_user
+      POSTGRES_PASSWORD: 0xoavf78NKtWENO5Ui7bFCGZoGCoaTWG
+      POSTGRES_DB: bion
+      TZ: Asia/Seoul
+    ports:
+      - "5432:5432"
+    volumes:
+      - C:/data:/var/lib/postgresql/data
+    networks:
+      - nat
+
+volumes:
+  postgres_data:
+
+networks:
+  nat:
+    driver: bridge
