@@ -46,7 +46,7 @@ public class UPbitNotifyService implements DealNotifyService {
     public void save() {
         List<UPbit> saved = callSaved();
 
-        DealInfo model = new UPbitModel(dealDaysConfig.getBaseDays());
+        DealInfo model = new UPbitModel(dealDaysConfig.getUpbitBaseDays());
 
         List<DealItem> saveItems = model.calculateByThreeDaysByPageForSave();
 
@@ -69,7 +69,7 @@ public class UPbitNotifyService implements DealNotifyService {
 
         List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 
-        DealInfo model = new UPbitModel(dealDaysConfig.getBaseDays());
+        DealInfo model = new UPbitModel(dealDaysConfig.getUpbitBaseDays());
         if (saved.isEmpty()) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
         List<DealItem> updateItems = model.getNowItems();

@@ -34,7 +34,7 @@ public class StockSchedulerService implements DealSchedulerService {
     @Override
     @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void save() {
-        int baseDays = dealDaysConfig.getBaseDays();
+        int baseDays = dealDaysConfig.getStockBaseDays();
         stockNotifyService.save();
         log.info("\n\n\nstock save complete("+ baseDays +")\n\n\n");
     }

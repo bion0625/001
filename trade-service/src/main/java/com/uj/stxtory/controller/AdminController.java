@@ -37,11 +37,14 @@ public class AdminController {
 //    }
 
     @GetMapping(value = "/admin/setting")
-    public String setting(Model model, Integer baseDays){
+    public String setting(Model model, Integer stockBaseDays, Integer upbitBaseDays){
 
-        model.addAttribute("baseDays", Optional.ofNullable(baseDays)
-                                                    .map(dealDaysConfig::setBaseDays)
-                                                    .orElseGet(dealDaysConfig::getBaseDays));
+        model.addAttribute("stockBaseDays", Optional.ofNullable(stockBaseDays)
+                                                    .map(dealDaysConfig::setStockBaseDays)
+                                                    .orElseGet(dealDaysConfig::getStockBaseDays));
+        model.addAttribute("upbitBaseDays", Optional.ofNullable(upbitBaseDays)
+                                                    .map(dealDaysConfig::setUpbitBaseDays)
+                                                    .orElseGet(dealDaysConfig::getUpbitBaseDays));
         return "admin/setting";
     }
 

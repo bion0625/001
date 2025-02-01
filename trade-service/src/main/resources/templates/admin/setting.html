@@ -18,11 +18,12 @@
 </div>
 
 <div class="content">
+    <h2>신고가 기준 일 수(DEFAULT - 130)</h2>
     <form>
-        <label>
-            신고가 기준 일 수(DEFAULT - 130):
-            <input class="input-field" type="number" th:value="${baseDays}" name="baseDays">
-        </label>
+            <label for="stockBaseDays">STOCK</label>
+            <input class="input-field" type="number" id="stockBaseDays" th:value="${stockBaseDays}" name="stockBaseDays">
+            <label for="upbitBaseDays">UPBIT</label>
+            <input class="input-field" type="number" id="upbitBaseDays" th:value="${upbitBaseDays}" name="upbitBaseDays">
         <input class="button" type="submit" value="confirm">
     </form>
 </div>

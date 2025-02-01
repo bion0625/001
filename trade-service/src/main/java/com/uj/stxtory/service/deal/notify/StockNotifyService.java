@@ -46,7 +46,7 @@ public class StockNotifyService implements DealNotifyService {
     public void save() {
         List<Stock> saved = callSaved();
 
-        StockModel stockModel = new StockModel(dealDaysConfig.getBaseDays());
+        StockModel stockModel = new StockModel(dealDaysConfig.getStockBaseDays());
 
         List<DealItem> saveItems = stockModel.calculateByThreeDaysByPageForSave();
 
@@ -69,7 +69,7 @@ public class StockNotifyService implements DealNotifyService {
 
         List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 
-        DealInfo model = new StockModel(dealDaysConfig.getBaseDays());
+        DealInfo model = new StockModel(dealDaysConfig.getStockBaseDays());
         if (saved.isEmpty()) return model;
         model.calculateForTodayUpdate(new ArrayList<>(items));
         List<DealItem> updateItems = model.getNowItems();
