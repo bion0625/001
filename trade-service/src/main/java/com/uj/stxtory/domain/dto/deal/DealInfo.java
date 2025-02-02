@@ -122,4 +122,97 @@ public abstract class DealInfo {
                         
                 });
     }
+
+    /**
+     * 이동평균선, ADX, OBV을 이용한 추세추종 계산 SAMPLE: 최소 계산 일수 70일로 세팅
+     */
+    public List<DealItem> trendFollowingSave() {
+        log.info("\n\n\nsave log start!\n\n\n");
+
+        Stream<DealItem> stream = getAll().stream();
+        if (useParallel()) stream = getAll().parallelStream();
+
+        return stream
+                .filter(item -> {
+                    List<DealPrice> prices = getPriceByPage(item, 1, getPage());
+                    if (prices.size() < 60) return false; // 최소 60일 데이터 필요 (이동평균 계산)
+
+                    int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
+
+                    // 최근 50일 고점 돌파 여부
+                    double highestPrice50 = prices.subList(lastdayIndex, lastdayIndex + 50)
+                            .stream().mapToDouble(DealPrice::getHigh).max().orElse(-1);
+                    if (prices.get(lastdayIndex).getClose() < highestPrice50) return false;
+
+                    // 이동평균선 필터 (5일 > 20일 > 60일)
+                    double ma5 = calculateMovingAverage(prices, lastdayIndex, 5);
+                    double ma20 = calculateMovingAverage(prices, lastdayIndex, 20);
+                    double ma60 = calculateMovingAverage(prices, lastdayIndex, 60);
+                    if (!(ma5 > ma20 && ma20 > ma60)) return false;
+
+                    // ADX 필터 (추세 강한 경우만)
+                    double adx = calculateADX(prices, lastdayIndex);
+                    if (adx < 25) return false;
+
+                    // OBV 필터 (거래량 증가 확인)
+                    double obv = calculateOBV(prices);
+                    if (obv <= 0) return false;
+
+                    // 최근 3일 동안 가격 상승
+                    if (prices.get(lastdayIndex).getHigh() <= prices.get(lastdayIndex + 1).getHigh()
+                            || prices.get(lastdayIndex + 1).getHigh() <= prices.get(lastdayIndex + 2).getHigh()
+                            || prices.get(lastdayIndex).getLow() <= prices.get(lastdayIndex + 1).getLow()
+                            || prices.get(lastdayIndex + 1).getLow() <= prices.get(lastdayIndex + 2).getLow()) {
+                        return false;
+                    }
+
+                    // 고점 대비 5% 미만이면 제외 (현재가 기준)
+                    if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95)))
+                        return false;
+
+                    // 데이터 저장
+                    item.setPrices(prices);
+
+                    return true;
+                })
+                .peek(item -> log.info(String.format("\tsuccess:\t%s(%s)", item.getName(), item.getCode())))
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * 이동평균선 계산
+     */
+    private double calculateMovingAverage(List<DealPrice> prices, int lastdayIndex, int period) {
+        if (prices.size() < period) return -1;
+        return prices.subList(lastdayIndex, lastdayIndex + period)
+                .stream().mapToDouble(DealPrice::getClose).average().orElse(-1);
+    }
+
+    /**
+     * ADX 계산
+     */
+    private double calculateADX(List<DealPrice> prices, int lastdayIndex) {
+        if (prices.size() < 14) return -1;
+        double adx = 0;
+        for (int i = lastdayIndex; i < lastdayIndex + 14; i++) {
+            double tr = prices.get(i).getHigh() - prices.get(i).getLow();
+            adx += tr;
+        }
+        return adx / 14;
+    }
+
+    /**
+     * OBV 계산
+     */
+    private double calculateOBV(List<DealPrice> prices) {
+        double obv = 0;
+        for (int i = 1; i < prices.size(); i++) {
+            if (prices.get(i).getClose() > prices.get(i - 1).getClose()) {
+                obv += prices.get(i).getVolume();
+            } else {
+                obv -= prices.get(i).getVolume();
+            }
+        }
+        return obv;
+    }
 }
