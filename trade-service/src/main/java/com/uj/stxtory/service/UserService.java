@@ -24,10 +24,14 @@ import java.util.stream.Collectors;
 public class UserService implements UserDetailsService {
 
     @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
 
     public boolean isIdDupl(String userLoginId) {
-        return userRepository.findByUserLoginIdAndDeletedAtIsNull(userLoginId).orElse(null) != null;
+        return userRepository.findByUserLoginId(userLoginId).isPresent();
     }
 
     public Optional<TbUser> findByLoginId(String loginId) {
