@@ -33,6 +33,7 @@ public class StockInfo implements DealItem {
     private double minimumSellingPrice;
     private double expectedSellingPrice;
     private double tempPrice;
+    private double settingPrice;
     private LocalDateTime updatedAt;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
@@ -61,6 +62,7 @@ public class StockInfo implements DealItem {
                      LocalDateTime updatedAt,
                      LocalDateTime pricingReferenceDate,
                      double tempPrice,
+                     double settingPrice,
                      int renewalCnt)  {
         this.name = name;
         this.code = code;
@@ -71,6 +73,7 @@ public class StockInfo implements DealItem {
         this.updatedAt = updatedAt;
         this.pricingReferenceDate = pricingReferenceDate;
         this.tempPrice = tempPrice;
+        this.settingPrice = settingPrice;
         this.renewalCnt = renewalCnt;
     }
 
@@ -78,9 +81,10 @@ public class StockInfo implements DealItem {
     public Stock toEntity() {
         double high = prices.get(0).getHigh();
         double temp = prices.get(0).getClose();
+        double setting = prices.get(0).getClose();
         double minimum = Math.round(high * 0.95);
         double expected = Math.round(high * 1.1);
-        return new Stock(code, name, minimum, expected, minimum, expected, temp);
+        return new Stock(code, name, minimum, expected, minimum, expected, temp, setting);
     }
 
     public static StockInfo fromEntity(Stock stock) {
@@ -94,6 +98,7 @@ public class StockInfo implements DealItem {
                 stock.getUpdatedAt(),
                 stock.getPricingReferenceDate(),
                 stock.getTempPrice(),
+                stock.getSettingPrice(),
                 stock.getRenewalCnt());
     }
 

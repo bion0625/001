@@ -112,6 +112,7 @@ public abstract class DealInfo {
                             && price.getClose() >= item.getExpectedSellingPrice()) {
                         item.sellingPriceUpdate(new Date());
                         item.setTempPrice(price.getClose());
+                        item.setSettingPrice(price.getClose());// 갱신할 때만 설정가
                     }
                     // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
                     if (price.getClose() <= item.getMinimumSellingPrice()) deleteItems.add(item);

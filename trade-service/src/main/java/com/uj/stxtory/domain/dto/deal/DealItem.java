@@ -14,7 +14,10 @@ public interface DealItem {
     double getExpectedSellingPrice();
     double getMinimumSellingPrice();
     void setTempPrice(double price);
+
+    void setSettingPrice(double price);
     double getTempPrice();
+    double getSettingPrice();
     int getRenewalCnt();
 
     Object toEntity();

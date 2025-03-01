@@ -90,6 +90,7 @@ public class UPbitNotifyService implements DealNotifyService {
                     uPbit.setMinimumSellingPrice(item.getMinimumSellingPrice());
                     uPbit.setRenewalCnt(item.getRenewalCnt());
                     uPbit.setTempPrice(item.getTempPrice());
+                    uPbit.setSettingPrice(item.getSettingPrice());
                     uPbit.setUpdatedAt(LocalDateTime.now());
                     return uPbit;
                 }));

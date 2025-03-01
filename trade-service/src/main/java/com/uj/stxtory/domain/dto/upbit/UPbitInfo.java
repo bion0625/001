@@ -35,6 +35,7 @@ public class UPbitInfo implements DealItem {
     private double minimumSellingPrice;
     private double expectedSellingPrice;
     private double tempPrice;
+    private double settingPrice;
     private LocalDateTime updatedAt;
     private LocalDateTime pricingReferenceDate;
     private int renewalCnt;
@@ -60,6 +61,7 @@ public class UPbitInfo implements DealItem {
                      double minimumSellingPrice,
                      double expectedSellingPrice,
                      double tempPrice,
+                     double settingPrice,
                      LocalDateTime updatedAt,
                      LocalDateTime pricingReferenceDate,
                      int renewalCnt)  {
@@ -72,6 +74,7 @@ public class UPbitInfo implements DealItem {
         this.updatedAt = updatedAt;
         this.pricingReferenceDate = pricingReferenceDate;
         this.tempPrice = tempPrice;
+        this.settingPrice = settingPrice;
         this.renewalCnt = renewalCnt;
     }
 
@@ -79,9 +82,10 @@ public class UPbitInfo implements DealItem {
     public UPbit toEntity() {
         double high = prices.get(0).getHigh();
         double temp = prices.get(0).getClose();
+        double setting = prices.get(0).getClose();
         double minimum = Math.round(high * 0.95);
         double expected = Math.round(high * 1.1);
-        return new UPbit(code, name, minimum, expected, minimum, expected, temp);
+        return new UPbit(code, name, minimum, expected, minimum, expected, temp, setting);
     }
 
     public static UPbitInfo fromEntity(UPbit uPbit) {
@@ -93,6 +97,7 @@ public class UPbitInfo implements DealItem {
                 uPbit.getMinimumSellingPrice(),
                 uPbit.getExpectedSellingPrice(),
                 uPbit.getTempPrice(),
+                uPbit.getSettingPrice(),
                 uPbit.getUpdatedAt(),
                 uPbit.getPricingReferenceDate(),
                 uPbit.getRenewalCnt());

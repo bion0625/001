@@ -91,6 +91,7 @@ public class StockNotifyService implements DealNotifyService {
                             stock.setMinimumSellingPrice(item.getMinimumSellingPrice());
                             stock.setRenewalCnt(item.getRenewalCnt());
                             stock.setTempPrice(item.getTempPrice());
+                            stock.setSettingPrice(item.getSettingPrice());
                             stock.setUpdatedAt(LocalDateTime.now());
                             return stock;
                         }));
