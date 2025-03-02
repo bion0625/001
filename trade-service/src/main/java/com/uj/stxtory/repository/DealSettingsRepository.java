@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @RepositoryRestResource(path = "sql_deal_settings")
 public interface DealSettingsRepository extends JpaRepository<DealSettings, Long> {
-    Optional<DealSettings> findByName(String name);
+    Optional<DealSettings> findByNameAndDeletedAtIsNull(String name);
 }

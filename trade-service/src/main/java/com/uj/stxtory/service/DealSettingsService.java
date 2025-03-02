@@ -20,20 +20,21 @@ public class DealSettingsService {
 	}
 
 	public DealSettingsInfo getByName(String name) {
-		return dealSettingsRepository.findByName(name)
+		return dealSettingsRepository.findByNameAndDeletedAtIsNull(name)
 				.map(DealSettingsInfo::fromEntity)
-				.orElseGet(() -> DealSettingsInfo.Basic(name));
+				.orElseGet(() -> DealSettingsInfo.basic(name));
 	}
 
 	@Transactional
 	public void update(DealSettingsInfo info) {
-		dealSettingsRepository.findByName(info.getName())
+		dealSettingsRepository.findByNameAndDeletedAtIsNull(info.getName())
 				.map(entity -> {
 					entity.setExpectedHighPercentage(info.getExpectedHighPercentage());
 					entity.setExpectedLowPercentage(info.getExpectedLowPercentage());
 					entity.setHighestPriceReferenceDays(info.getHighestPriceReferenceDays());
 					entity.setUpdatedAt(LocalDateTime.now());
-					return true;
-				});
+					return entity;
+				})
+				.orElseGet(() -> dealSettingsRepository.save(info.toEntity()));
 	}
 }

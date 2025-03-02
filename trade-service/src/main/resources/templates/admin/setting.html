@@ -14,17 +14,39 @@
         <a href="/admin/autos" class="menu">AUTOS</a>
         <a href="/admin/setting" class="here">SETTING</a>
     </div>
-	<a href="/logout" class="logout">LOGOUT</a>
+    <a href="/logout" class="logout">LOGOUT</a>
 </div>
 
 <div class="content">
-    <h2>신고가 기준 일 수(DEFAULT - 130)</h2>
-    <form>
-            <label for="stockBaseDays">STOCK</label>
-            <input class="input-field" type="number" id="stockBaseDays" th:value="${stockBaseDays}" name="stockBaseDays">
-            <label for="upbitBaseDays">UPBIT</label>
-            <input class="input-field" type="number" id="upbitBaseDays" th:value="${upbitBaseDays}" name="upbitBaseDays">
-        <input class="button" type="submit" value="confirm">
+    <h2>설정 관리</h2>
+    <form method="post">
+        <table>
+            <thead>
+            <tr>
+                <th>이름</th>
+                <th>신고가 기준 일수</th>
+                <th>기대 상승 비율 (%)</th>
+                <th>기대 하락 비율 (%)</th>
+            </tr>
+            </thead>
+            <tbody id="settingsTableBody">
+            <tr th:each="setting, settingStat : ${settings}">
+                <td>
+                    <input type="text" th:name="|settings[${settingStat.index}].name|" th:value="${setting.name}" required readonly class="input-field">
+                </td>
+                <td>
+                    <input type="number" th:name="|settings[${settingStat.index}].highestPriceReferenceDays|" th:value="${setting.highestPriceReferenceDays}" class="input-field">
+                </td>
+                <td>
+                    <input type="number" th:name="|settings[${settingStat.index}].expectedHighPercentage|" th:value="${setting.expectedHighPercentage}" class="input-field">
+                </td>
+                <td>
+                    <input type="number" th:name="|settings[${settingStat.index}].expectedLowPercentage|" th:value="${setting.expectedLowPercentage}" class="input-field">
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <input class="button" type="submit" value="확인">
     </form>
 </div>
 </body>

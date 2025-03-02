@@ -1,17 +1,24 @@
 package com.uj.stxtory.controller;
 
-import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.AutoMangerDto;
 import com.uj.stxtory.domain.dto.AutoMangerListDto;
 import com.uj.stxtory.domain.dto.UserListDto;
+import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
+import com.uj.stxtory.domain.dto.deal.DealSettingsWrapper;
 import com.uj.stxtory.domain.entity.TbUPbitKey;
+import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.UserService;
 import com.uj.stxtory.service.account.upbit.UPbitAccountService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -21,12 +28,12 @@ import java.util.stream.Collectors;
 public class AdminController {
     private final UserService userService;
     private final UPbitAccountService uPbitAccountService;
-    private final DealDaysConfig dealDaysConfig;
+    private final DealSettingsService dealSettingsService;
 
-    public AdminController(UserService userService, UPbitAccountService uPbitAccountService, DealDaysConfig dealDaysConfig) {
+    public AdminController(UserService userService, UPbitAccountService uPbitAccountService, DealSettingsService dealSettingsService) {
         this.userService = userService;
         this.uPbitAccountService = uPbitAccountService;
-        this.dealDaysConfig = dealDaysConfig;
+        this.dealSettingsService = dealSettingsService;
     }
 
     // 메일링 종료
@@ -37,15 +44,23 @@ public class AdminController {
 //    }
 
     @GetMapping(value = "/admin/setting")
-    public String setting(Model model, Integer stockBaseDays, Integer upbitBaseDays){
+    public String settingPage(Model model) {
 
-        model.addAttribute("stockBaseDays", Optional.ofNullable(stockBaseDays)
-                                                    .map(dealDaysConfig::setStockBaseDays)
-                                                    .orElseGet(dealDaysConfig::getStockBaseDays));
-        model.addAttribute("upbitBaseDays", Optional.ofNullable(upbitBaseDays)
-                                                    .map(dealDaysConfig::setUpbitBaseDays)
-                                                    .orElseGet(dealDaysConfig::getUpbitBaseDays));
+        List<DealSettingsInfo> updatedSettings = new ArrayList<>();
+
+        updatedSettings.add(dealSettingsService.getByName("upbit"));
+        updatedSettings.add(dealSettingsService.getByName("stock"));
+
+        model.addAttribute("settings", updatedSettings);
+
         return "admin/setting";
+    }
+
+    @PostMapping(value = "/admin/setting")
+    public String setting(@ModelAttribute DealSettingsWrapper wrapper) {
+        if (Optional.of(wrapper).map(DealSettingsWrapper::getSettings).isPresent())
+            wrapper.getSettings().forEach(dealSettingsService::update);
+        return "redirect:/admin/setting";
     }
 
     @GetMapping(value = "/admin/users")
