@@ -4,9 +4,7 @@ import com.uj.stxtory.domain.entity.TbUPbitKey;
 import com.uj.stxtory.repository.TbUPbitKeyRepository;
 import com.uj.stxtory.service.deal.notify.StockNotifyService;
 import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
-import com.uj.stxtory.service.mail.MailService;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,14 +13,18 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 @Slf4j
 public class MainController{
-    @Autowired
-    MailService mailService;
-    @Autowired
-    StockNotifyService stockNotifyService;
-    @Autowired
-    UPbitNotifyService uPbitNotifyService;
-    @Autowired
-    TbUPbitKeyRepository tbUPbitKeyRepository;
+    private final StockNotifyService stockNotifyService;
+    private final UPbitNotifyService uPbitNotifyService;
+    private final TbUPbitKeyRepository tbUPbitKeyRepository;
+
+    public MainController(
+            StockNotifyService stockNotifyService,
+            UPbitNotifyService uPbitNotifyService,
+            TbUPbitKeyRepository tbUPbitKeyRepository) {
+        this.stockNotifyService = stockNotifyService;
+        this.uPbitNotifyService = uPbitNotifyService;
+        this.tbUPbitKeyRepository = tbUPbitKeyRepository;
+    }
 
     @GetMapping(value = "/")
     public String mainPage(@AuthenticationPrincipal String loginId){
@@ -35,14 +37,12 @@ public class MainController{
     @GetMapping(value = "/select/stock")
     public String stocks(Model model){
         model.addAttribute("items", stockNotifyService.getSaved());
-        model.addAttribute("subject", "STOCK SELECT");
-        return "main";
+        return "stock";
     }
 
     @GetMapping(value = "/select/upbit")
     public String upbits(Model model){
         model.addAttribute("items", uPbitNotifyService.getSaved());
-        model.addAttribute("subject", "UPBIT SELECT");
-        return "main";
+        return "upbit";
     }
 }
