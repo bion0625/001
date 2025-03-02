@@ -80,7 +80,7 @@ public class UPbitInfo implements DealItem {
 
     @Override
     public UPbit toEntity() {
-        double high = prices.get(0).getHigh();
+        double high = prices.get(0).getClose();
         double temp = prices.get(0).getClose();
         double setting = prices.get(0).getClose();
         double minimum = high * 0.95;
