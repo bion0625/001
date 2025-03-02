@@ -49,7 +49,7 @@ public class StockInfo implements DealItem {
         // 하한 매도 가격은 반올림
         this.minimumSellingPrice = this.expectedSellingPrice * lowPer;
         // 기대 매도 가격은 올림
-        this.expectedSellingPrice = (long) this.expectedSellingPrice * highPer;
+        this.expectedSellingPrice = this.expectedSellingPrice * highPer;
         this.renewalCnt++;
         this.pricingReferenceDate = LocalDateTime.now();
     }
