@@ -2,6 +2,8 @@ package com.uj.stxtory.service;
 
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.repository.DealSettingsRepository;
+import com.uj.stxtory.repository.StockRepository;
+import com.uj.stxtory.repository.UPbitRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,8 +17,13 @@ public class DealSettingsService {
 
 	private final DealSettingsRepository dealSettingsRepository;
 
-	public DealSettingsService(DealSettingsRepository dealSettingsRepository) {
+	private final StockRepository stockRepository;
+	private final UPbitRepository uPbitRepository;
+
+	public DealSettingsService(DealSettingsRepository dealSettingsRepository, StockRepository stockRepository, UPbitRepository uPbitRepository) {
 		this.dealSettingsRepository = dealSettingsRepository;
+		this.stockRepository = stockRepository;
+		this.uPbitRepository = uPbitRepository;
 	}
 
 	public DealSettingsInfo getByName(String name) {
@@ -36,5 +43,34 @@ public class DealSettingsService {
 					return entity;
 				})
 				.orElseGet(() -> dealSettingsRepository.save(info.toEntity()));
+
+	}
+
+	@Transactional
+	public void applyExpectAndMinimumPriceStock() {
+		DealSettingsInfo stockSettings = getByName("stock");
+		stockRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
+				.forEach(info -> {
+					if (info.getRenewalCnt() == 0) {
+						info.setOriginExpectedSellingPrice(info.getSettingPrice() * (1 + ((double)stockSettings.getExpectedHighPercentage()/100)));
+						info.setOriginMinimumSellingPrice(info.getSettingPrice() * (1 + ((double)stockSettings.getExpectedLowPercentage()/100)));
+					}
+					info.setExpectedSellingPrice(info.getSettingPrice() * (1 + ((double)stockSettings.getExpectedHighPercentage()/100)));
+					info.setMinimumSellingPrice(info.getSettingPrice() * (1 + ((double)stockSettings.getExpectedLowPercentage()/100)));
+				});
+	}
+
+	@Transactional
+	public void applyExpectAndMinimumPriceUpbit() {
+		DealSettingsInfo upbitSettings = getByName("upbit");
+		uPbitRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
+				.forEach(info -> {
+					if (info.getRenewalCnt() == 0) {
+						info.setOriginExpectedSellingPrice(info.getSettingPrice() * (1 + ((double)upbitSettings.getExpectedHighPercentage()/100)));
+						info.setOriginMinimumSellingPrice(info.getSettingPrice() * (1 + ((double)upbitSettings.getExpectedLowPercentage()/100)));
+					}
+					info.setExpectedSellingPrice(info.getSettingPrice() * (1 + ((double)upbitSettings.getExpectedHighPercentage()/100)));
+					info.setMinimumSellingPrice(info.getSettingPrice() * (1 + ((double)upbitSettings.getExpectedLowPercentage()/100)));
+				});
 	}
 }

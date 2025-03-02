@@ -39,7 +39,7 @@ public abstract class DealInfo {
     public boolean useParallel() {
         return false;
     }
-    public List<DealItem> calculateByThreeDaysByPageForSave() {
+    public List<DealItem> calculateByThreeDaysByPageForSave(double lowPer) {
         log.info("\n\n\nsave log start!\n\n\n");
 
         Stream<DealItem> stream = getAll().stream();
@@ -69,8 +69,8 @@ public abstract class DealInfo {
                         return false;
                     }
 
-                    // 고점 대비 5% 미만이면 제외 - 현재가(종가) 기준
-                    if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * 0.95))) return false;
+                    // 고점 대비 lowPer 미만이면 제외 - 현재가(종가) 기준
+                    if (prices.get(lastdayIndex).getClose() < (Math.round(prices.get(lastdayIndex).getHigh() * lowPer))) return false;
 
                     // 부하를 방지하기 위해 신고가 설정할 때 다시 구하기
                     if (usePage()) {
@@ -92,7 +92,7 @@ public abstract class DealInfo {
                 .collect(Collectors.toList());
     }
 
-    public void calculateForTodayUpdate(List<DealItem> savedItem) {
+    public void calculateForTodayUpdate(List<DealItem> savedItem, double highPer, double lowPer) {
         savedItem.stream()
                 .filter(item -> {
                     if (!CustomCheckForDelete(item)) {
@@ -110,7 +110,7 @@ public abstract class DealInfo {
                     // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
                     while (price.getClose() != 0 && item.getExpectedSellingPrice() != 0
                             && price.getClose() >= item.getExpectedSellingPrice()) {
-                        item.sellingPriceUpdate(new Date());
+                        item.sellingPriceUpdate(new Date(), highPer, lowPer);
                         item.setTempPrice(price.getClose());
                         item.setSettingPrice(price.getClose());// 갱신할 때만 설정가
                     }

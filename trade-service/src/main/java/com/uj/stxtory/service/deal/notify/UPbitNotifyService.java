@@ -1,14 +1,14 @@
 package com.uj.stxtory.service.deal.notify;
 
-import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitModel;
 import com.uj.stxtory.domain.entity.UPbit;
 import com.uj.stxtory.repository.UPbitRepository;
+import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.deal.DealNotifyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class UPbitNotifyService implements DealNotifyService {
 
-    @Autowired
-    private UPbitRepository uPbitRepository;
+    private final UPbitRepository uPbitRepository;
+    private final DealSettingsService dealSettingsService;
 
-    @Autowired
-    private DealDaysConfig dealDaysConfig;
+    public UPbitNotifyService(UPbitRepository uPbitRepository, DealSettingsService dealSettingsService) {
+        this.uPbitRepository = uPbitRepository;
+        this.dealSettingsService = dealSettingsService;
+    }
 
     public List<UPbitInfo> getSaved() {
         return callSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
@@ -46,20 +48,21 @@ public class UPbitNotifyService implements DealNotifyService {
     public void save() {
         List<UPbit> saved = callSaved();
 
-        DealInfo model = new UPbitModel(dealDaysConfig.getUpbitBaseDays());
+        DealSettingsInfo settings = dealSettingsService.getByName("upbit");
+        DealInfo model = new UPbitModel(settings.getHighestPriceReferenceDays());
 
-        List<DealItem> saveItems = model.calculateByThreeDaysByPageForSave();
+        List<DealItem> saveItems = model.calculateByThreeDaysByPageForSave(1 + ((double)settings.getExpectedLowPercentage()/100));
 
         List<UPbit> save = saveItems.stream()
                 .filter(item -> saved.stream().noneMatch(s -> s.getCode().equals(item.getCode())))
-                .map(item -> (UPbit) item.toEntity())
+                .map(item -> (UPbit) item.toEntity(1 + ((double)settings.getExpectedHighPercentage()/100), 1 + ((double)settings.getExpectedLowPercentage()/100)))
                 .collect(Collectors.toList());
         uPbitRepository.saveAll(save);
         
         List<UPbitInfo> deleteList = saved.stream()
         		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
         		.map(UPbitInfo::fromEntity)
-        		.collect(Collectors.toList());
+        		.toList();
         delete(saved, new ArrayList<>(deleteList));
     }
 
@@ -69,9 +72,10 @@ public class UPbitNotifyService implements DealNotifyService {
 
         List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 
-        DealInfo model = new UPbitModel(dealDaysConfig.getUpbitBaseDays());
+        DealSettingsInfo settings = dealSettingsService.getByName("upbit");
+        DealInfo model = new UPbitModel(settings.getHighestPriceReferenceDays());
         if (saved.isEmpty()) return model;
-        model.calculateForTodayUpdate(new ArrayList<>(items));
+        model.calculateForTodayUpdate(new ArrayList<>(items), 1 + ((double)settings.getExpectedHighPercentage()/100), 1 + ((double)settings.getExpectedLowPercentage()/100));
         List<DealItem> updateItems = model.getNowItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 

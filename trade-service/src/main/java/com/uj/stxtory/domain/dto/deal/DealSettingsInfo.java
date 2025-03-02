@@ -15,7 +15,7 @@ public class DealSettingsInfo {
     private int highestPriceReferenceDays; // 신고가 기준일 수
 
     public static DealSettingsInfo basic(String name) {
-        return new DealSettingsInfo(name, 10L, 5L, 130);
+        return new DealSettingsInfo(name, 10L, -5L, 130);
     }
 
     public static DealSettingsInfo fromEntity(DealSettings entity) {

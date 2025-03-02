@@ -1,14 +1,14 @@
 package com.uj.stxtory.service.deal.notify;
 
-import com.uj.stxtory.config.DealDaysConfig;
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockModel;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.repository.StockRepository;
+import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.deal.DealNotifyService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,11 +23,13 @@ import java.util.stream.Collectors;
 @Service
 public class StockNotifyService implements DealNotifyService {
 
-    @Autowired
-    private StockRepository stockRepository;
+    private final StockRepository stockRepository;
+    private final DealSettingsService dealSettingsService;
 
-    @Autowired
-    private DealDaysConfig dealDaysConfig;
+    public StockNotifyService(StockRepository stockRepository, DealSettingsService dealSettingsService) {
+        this.stockRepository = stockRepository;
+        this.dealSettingsService = dealSettingsService;
+    }
 
     public List<StockInfo> getSaved() {
         return callSaved().stream().map(StockInfo::fromEntity).collect(Collectors.toList());
@@ -46,20 +48,21 @@ public class StockNotifyService implements DealNotifyService {
     public void save() {
         List<Stock> saved = callSaved();
 
-        StockModel stockModel = new StockModel(dealDaysConfig.getStockBaseDays());
+        DealSettingsInfo settings = dealSettingsService.getByName("stock");
+        StockModel stockModel = new StockModel(settings.getHighestPriceReferenceDays());
 
-        List<DealItem> saveItems = stockModel.calculateByThreeDaysByPageForSave();
+        List<DealItem> saveItems = stockModel.calculateByThreeDaysByPageForSave(1 + ((double)settings.getExpectedLowPercentage()/100));
 
         List<Stock> save = saveItems.stream()
                 .filter(item -> saved.stream().noneMatch(s -> s.getCode().equals(item.getCode())))
-                .map(item -> (Stock) item.toEntity())
+                .map(item -> (Stock) item.toEntity(1 + ((double)settings.getExpectedHighPercentage()/100), 1 + ((double)settings.getExpectedLowPercentage()/100)))
                 .collect(Collectors.toList());
         stockRepository.saveAll(save);
         
         List<StockInfo> deleteList = saved.stream()
         		.filter(s -> saveItems.stream().noneMatch(item -> item.getCode().equals(s.getCode())) && s.getRenewalCnt() == 0.0)
         		.map(StockInfo::fromEntity)
-        		.collect(Collectors.toList());
+        		.toList();
         delete(saved, new ArrayList<>(deleteList));
     }
 
@@ -69,9 +72,10 @@ public class StockNotifyService implements DealNotifyService {
 
         List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 
-        DealInfo model = new StockModel(dealDaysConfig.getStockBaseDays());
+        DealSettingsInfo settings = dealSettingsService.getByName("upbit");
+        DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
         if (saved.isEmpty()) return model;
-        model.calculateForTodayUpdate(new ArrayList<>(items));
+        model.calculateForTodayUpdate(new ArrayList<>(items), 1 + ((double)settings.getExpectedHighPercentage()/100), 1 + ((double)settings.getExpectedLowPercentage()/100));
         List<DealItem> updateItems = model.getNowItems();
         List<DealItem> deleteItems = model.getDeleteItems();
 

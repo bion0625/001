@@ -46,11 +46,11 @@ public class UPbitInfo implements DealItem {
     }
 
     @Override
-    public void sellingPriceUpdate(Date pricingDate) {
+    public void sellingPriceUpdate(Date pricingDate, double highPer, double lowPer) {
         // 하한 매도 가격은 반올림
-        this.minimumSellingPrice = this.expectedSellingPrice * 0.95;
+        this.minimumSellingPrice = this.expectedSellingPrice * lowPer;
         // 기대 매도 가격은 올림
-        this.expectedSellingPrice = (long) this.expectedSellingPrice * 1.1;
+        this.expectedSellingPrice = (long) this.expectedSellingPrice * highPer;
         this.renewalCnt++;
         this.pricingReferenceDate = LocalDateTime.now();
     }
@@ -79,12 +79,11 @@ public class UPbitInfo implements DealItem {
     }
 
     @Override
-    public UPbit toEntity() {
-        double high = prices.get(0).getClose();
+    public UPbit toEntity(double highPer, double lowPer) {
         double temp = prices.get(0).getClose();
         double setting = prices.get(0).getClose();
-        double minimum = high * 0.95;
-        double expected = high * 1.1;
+        double minimum = setting * lowPer;
+        double expected = setting * highPer;
         return new UPbit(code, name, minimum, expected, minimum, expected, temp, setting);
     }
 

@@ -60,6 +60,8 @@ public class AdminController {
     public String setting(@ModelAttribute DealSettingsWrapper wrapper) {
         if (Optional.of(wrapper).map(DealSettingsWrapper::getSettings).isPresent())
             wrapper.getSettings().forEach(dealSettingsService::update);
+        dealSettingsService.applyExpectAndMinimumPriceStock();
+        dealSettingsService.applyExpectAndMinimumPriceUpbit();
         return "redirect:/admin/setting";
     }
 
