@@ -36,9 +36,9 @@ public class UPbitSchedulerService implements DealSchedulerService {
         log.info("\n\n\nUPbit save complete("+ baseDays +")\n\n\n");
     }
 
-    // 매일 5분마다
+    // 매일 1분마다
     @Override
-    @Scheduled(fixedDelay = 1000 * 60 * 5)
+    @Scheduled(fixedDelay = 1000 * 60)
     public void update() {
         log.info("\n\n\nUPbit update & mail send start\n\n\n");
         ApiUtil.runWithException(
