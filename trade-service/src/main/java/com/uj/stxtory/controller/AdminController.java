@@ -69,7 +69,9 @@ public class AdminController {
     @GetMapping(value = "/admin/reset/{name}")
     public String reset(@PathVariable String name) {
         dealSettingsService.deleteByName(name);
-        return "redirect:/admin/setting";
+        return Optional.ofNullable(name)
+                .map(n -> "redirect:/select/" + n)
+                .orElse("redirect:/");
     }
 
     @GetMapping(value = "/admin/users")
