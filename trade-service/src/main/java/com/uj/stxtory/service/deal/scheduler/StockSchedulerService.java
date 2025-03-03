@@ -38,7 +38,7 @@ public class StockSchedulerService implements DealSchedulerService {
 
     // 월-금 아침 8시 - 오후 4시: 정각 및 15분, 30분, 45분 마다
     @Override
-    @Scheduled(cron = "0 * 8-16 ? * MON-FRI")
+    @Scheduled(cron = "0 0/15 8-16 ? * MON-FRI")
     public void update() {
         log.info("\n\n\nstock update & mail send start\n\n\n");
         ApiUtil.runWithException(
