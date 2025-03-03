@@ -208,11 +208,17 @@ public class StockInfo implements DealItem {
 //        return totalPage;
 //    }
 
-    private static Document getDocumentByUrl(String url) throws IOException {
-        return Jsoup.connect(url)
-                .userAgent("Mozilla/5.0")
-                .ignoreContentType(true)
-                .timeout(10000)
-                .get();
+    private static Document getDocumentByUrl(String url) {
+        try {
+            return Jsoup.connect(url)
+                    .userAgent("Mozilla/5.0")
+                    .ignoreHttpErrors(true)  // HTTP 404, 500 오류 무시 (null 반환)
+                    .ignoreContentType(true) // 응답 내용 타입 무시
+                    .timeout(10000) // 10초까지 대기
+                    .get();
+        } catch (IOException e) {
+            log.error("getDocumentByUrl failed: " + url, e);
+            return null;
+        }
     }
 }
