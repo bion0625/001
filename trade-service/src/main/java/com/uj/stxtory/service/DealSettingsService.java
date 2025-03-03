@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -72,5 +73,18 @@ public class DealSettingsService {
 					info.setExpectedSellingPrice(info.getSettingPrice() * (1 + ((double)upbitSettings.getExpectedHighPercentage()/100)));
 					info.setMinimumSellingPrice(info.getSettingPrice() * (1 + ((double)upbitSettings.getExpectedLowPercentage()/100)));
 				});
+	}
+
+	@Transactional
+	public void deleteByName(String name) {
+		Optional.ofNullable(name).map(n -> {
+			switch (n) {
+				case "stock" -> stockRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
+						.forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
+				case "upbit" -> uPbitRepository.findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
+						.forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
+			}
+			return n;
+		});
 	}
 }
