@@ -18,6 +18,16 @@ public class LocalDateTimeAttributeConverter implements AttributeConverter<Local
 
     @Override
     public LocalDateTime convertToEntityAttribute(String dbData) {
-        return dbData != null ? LocalDateTime.parse(dbData, FORMATTER) : null;
+        if (dbData == null) return null;
+
+        // " " 기준으로 날짜/시간 분리 후 초 단위까지만 자르기
+        String trimmed;
+        try {
+            trimmed = dbData.substring(0, 19); // yyyy-MM-dd HH:mm:ss (정확히 19자리)
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Invalid datetime format: " + dbData, e);
+        }
+
+        return LocalDateTime.parse(trimmed, FORMATTER);
     }
 }
