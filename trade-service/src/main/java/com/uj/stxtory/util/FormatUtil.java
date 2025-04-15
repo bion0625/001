@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
@@ -66,5 +67,19 @@ public class FormatUtil {
             log.info(String.format("dateToString : date >>>> %s", date));
         }
         return str;
+    }
+
+    public static LocalDateTime dateToLocalDateTime(Date date) {
+        // Date -> LocalDateTime
+        LocalDateTime localDateTime = null;
+        try {
+
+            localDateTime = date.toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDateTime();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return localDateTime;
     }
 }
