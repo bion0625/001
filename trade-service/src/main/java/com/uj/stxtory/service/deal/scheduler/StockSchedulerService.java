@@ -54,4 +54,11 @@ public class StockSchedulerService implements DealSchedulerService {
                 () -> mailService.noticeSelect(new ArrayList<>(stockNotifyService.getSaved()), "STOCK"));
         log.info("\n\n\nSTOCK mail send Complete\n\n\n");
     }
+
+    @Scheduled(cron = "0 0 17 * * *")
+    public void saveHistory() {
+        log.info("\n\n\nstock saveHistory start\n\n\n");
+        stockNotifyService.saveHistory();
+        log.info("\n\n\nstock saveHistory complete\n\n\n");
+    }
 }

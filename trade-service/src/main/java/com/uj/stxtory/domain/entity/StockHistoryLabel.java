@@ -11,16 +11,21 @@ import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
-@RequiredArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 public class StockHistoryLabel extends Base {
     @Id
     @GeneratedValue
     private Long id;
 
     @Column(name = "code", nullable = false)
-    private final String code;
+    private String code;
 
     @Column(name = "name", nullable = false)
-    private final String name;
+    private String name;
+
+    public StockHistoryLabel(String code, String name) {
+        this.code = code;
+        this.name = name;
+    }
 }

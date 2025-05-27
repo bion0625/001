@@ -17,6 +17,7 @@ import com.uj.stxtory.service.deal.DealNotifyService;
 import com.uj.stxtory.util.FormatUtil;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
@@ -120,13 +121,13 @@ public class StockNotifyService implements DealNotifyService {
                 }));
     }
 
-    // todo 하루에 한 번만 돌리면 될듯
+    @Async
     public void saveHistory() {
         DealSettingsInfo settings = dealSettingsService.getByName("stock");
         StockModel stockModel = new StockModel(settings.getHighestPriceReferenceDays());
 
         // 저장로직
-        stockModel.getAll().forEach(info -> {
+        stockModel.getAll().forEach(info ->
                     stockHistoryLabelRepository.findByCodeAndName(info.getCode(), info.getName())
                             .map(label -> {
                                 // 추가 저장은 label의 updatedAt 다음날부터
@@ -138,14 +139,15 @@ public class StockNotifyService implements DealNotifyService {
                             })
                             .orElseGet(() -> {
                                 // 새로 저장은 1년
-                                stockModel.getPriceByPage(info, 1, 130).forEach(p -> savePriceHistory(info, p));
+                                stockModel.getPriceByPage(info, 1, 130)
+                                        .forEach(p -> savePriceHistory(info, p));
                                 return stockHistoryLabelRepository.save(new StockHistoryLabel(info.getCode(), info.getName()));
-                            });
-                }
+                            })
         );
     }
 
-    private void savePriceHistory(DealItem info, DealPrice p) {
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    protected void savePriceHistory(DealItem info, DealPrice p) {
         StockHistory history = StockHistory.builder()
                 .name(info.getName())
                 .code(info.getCode())
