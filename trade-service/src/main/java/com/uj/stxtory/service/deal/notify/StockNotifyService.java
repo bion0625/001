@@ -170,8 +170,9 @@ public class StockNotifyService implements DealNotifyService {
                           stockModel.getPriceByPage(info, 1, 130).stream()
                               .filter(
                                   p ->
-                                      FormatUtil.dateToLocalDateTime(p.getDate())
-                                          .isAfter(label.getUpdatedAt()))
+                                      FormatUtil.dateToLocalDateTime(p.getDate()) != null
+                                          && FormatUtil.dateToLocalDateTime(p.getDate())
+                                              .isAfter(label.getUpdatedAt()))
                               .forEach(p -> savePriceHistory(info, p));
                           label.setUpdatedAt(LocalDateTime.now());
                           return label;
@@ -182,8 +183,10 @@ public class StockNotifyService implements DealNotifyService {
                           stockModel
                               .getPriceByPage(info, 1, 130)
                               .forEach(p -> savePriceHistory(info, p));
-                          return stockHistoryLabelRepository.save(
-                              new StockHistoryLabel(info.getCode(), info.getName()));
+                          StockHistoryLabel entity =
+                              new StockHistoryLabel(info.getCode(), info.getName());
+                          entity.setUpdatedAt(LocalDateTime.now());
+                          return stockHistoryLabelRepository.save(entity);
                         }));
   }
 
