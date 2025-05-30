@@ -24,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Transactional
@@ -148,17 +149,21 @@ public class StockNotifyService implements DealNotifyService {
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     protected void savePriceHistory(DealItem info, DealPrice p) {
-        StockHistory history = StockHistory.builder()
-                .name(info.getName())
-                .code(info.getCode())
-                .low(p.getLow())
-                .high(p.getHigh())
-                .close(p.getClose())
-                .diff(p.getDiff())
-                .volume(p.getVolume())
-                .build();
         // 저장 날짜를 타겟 날짜로
-        history.setCreatedAt(FormatUtil.dateToLocalDateTime(p.getDate()));
-        stockHistoryRepository.save(history);
+        Optional.ofNullable(p.getDate())
+                .map(date -> {
+                    StockHistory history = StockHistory.builder()
+                            .name(info.getName())
+                            .code(info.getCode())
+                            .low(p.getLow())
+                            .high(p.getHigh())
+                            .close(p.getClose())
+                            .diff(p.getDiff())
+                            .volume(p.getVolume())
+                            .build();
+                    history.setCreatedAt(FormatUtil.dateToLocalDateTime(date));
+                    stockHistoryRepository.save(history);
+                    return true;
+                });
     }
 }
