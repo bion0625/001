@@ -10,8 +10,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableFeignClients
 public class StxtoryApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(StxtoryApplication.class, args);
-	}
-
+  public static void main(String[] args) {
+    SpringApplication.run(StxtoryApplication.class, args);
+  }
 }

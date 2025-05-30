@@ -8,22 +8,23 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
 @Configuration
 public class AsyncConfig {
-	@Bean
-	ThreadPoolTaskExecutor poolTaskExecutor() {
-		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-		executor.setCorePoolSize(5);
-		executor.setMaxPoolSize(100);
-		executor.setQueueCapacity(500);
-		executor.setThreadNamePrefix("stock&coin-");
-		executor.initialize();
-		return executor;
-	}
-	@Bean
-	TaskScheduler taskScheduler() {
-		ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
-		scheduler.setPoolSize(30);
-		scheduler.setThreadNamePrefix("task-");
-		scheduler.initialize();
-		return scheduler;
-	}
+  @Bean
+  ThreadPoolTaskExecutor poolTaskExecutor() {
+    ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+    executor.setCorePoolSize(5);
+    executor.setMaxPoolSize(100);
+    executor.setQueueCapacity(500);
+    executor.setThreadNamePrefix("stock&coin-");
+    executor.initialize();
+    return executor;
+  }
+
+  @Bean
+  TaskScheduler taskScheduler() {
+    ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
+    scheduler.setPoolSize(30);
+    scheduler.setThreadNamePrefix("task-");
+    scheduler.initialize();
+    return scheduler;
+  }
 }

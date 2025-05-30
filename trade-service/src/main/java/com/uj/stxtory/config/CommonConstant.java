@@ -1,7 +1,7 @@
 package com.uj.stxtory.config;
 
 public class CommonConstant {
-    static public String ROLE_MASTER = "MASTER";
-    static public String ROLE_ADMIN = "ADMIN";
-    static public String ROLE_USER = "USER";
+  public static String ROLE_MASTER = "MASTER";
+  public static String ROLE_ADMIN = "ADMIN";
+  public static String ROLE_USER = "USER";
 }

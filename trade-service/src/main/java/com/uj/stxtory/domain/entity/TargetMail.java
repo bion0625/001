@@ -11,11 +11,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TargetMail extends Base {
 
-    @Id
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
+  @Id
+  @Column(name = "email", nullable = false, unique = true)
+  private String email;
 
-    public TargetMail(String email) {
-        this.email = email;
-    }
+  public TargetMail(String email) {
+    this.email = email;
+  }
 }

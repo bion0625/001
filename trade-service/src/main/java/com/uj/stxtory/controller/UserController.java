@@ -21,65 +21,70 @@ import org.springframework.web.bind.support.SessionStatus;
 @Slf4j
 public class UserController {
 
-    private final UserService userService;
-    private final UPbitAccountService uPbitAccountService;
-    
-    public UserController(UserService userService, UPbitAccountService uPbitAccountService) {
-		this.userService = userService;
-		this.uPbitAccountService = uPbitAccountService;
-	}
+  private final UserService userService;
+  private final UPbitAccountService uPbitAccountService;
 
-    @ModelAttribute
-    public void tbUser(Model model) {
-        model.addAttribute("user", new TbUser());
-    }
+  public UserController(UserService userService, UPbitAccountService uPbitAccountService) {
+    this.userService = userService;
+    this.uPbitAccountService = uPbitAccountService;
+  }
 
-    @GetMapping(value = "/login")
-    public String loginPage(){
-        return "user/login";
-    }
+  @ModelAttribute
+  public void tbUser(Model model) {
+    model.addAttribute("user", new TbUser());
+  }
 
-    @GetMapping("/join")
-    public String joinForm() {
-        return "user/join";
-    }
+  @GetMapping(value = "/login")
+  public String loginPage() {
+    return "user/login";
+  }
 
-    @PostMapping("/join")
-    public String join(@Valid @ModelAttribute("user")TbUser user, BindingResult result, SessionStatus status) {
-        boolean idDupl = userService.isIdDupl(user.getUserLoginId());
-        if (result.hasErrors() || idDupl) {
-            if (idDupl)
-                result.rejectValue(
-                        "userLoginId",
-                        "duplicate.userForm.userLoginId",
-                        "이미 사용 중인 아이디입니다.");
-            return "user/join";
-        }
-        userService.save(user);
-        status.setComplete();
-        return "user/login";
-    }
-    
-    @GetMapping("/my")
-    public String my(Model model, @AuthenticationPrincipal String userLoginId) {
-        settingMyUpbbit(model, userLoginId);
-        model.addAttribute("user", userService.findByLoginId(userLoginId)
-                .orElseThrow(() -> new UsernameNotFoundException(userLoginId + " is not found")));
+  @GetMapping("/join")
+  public String joinForm() {
+    return "user/join";
+  }
 
-    	return "user/my";
+  @PostMapping("/join")
+  public String join(
+      @Valid @ModelAttribute("user") TbUser user, BindingResult result, SessionStatus status) {
+    boolean idDupl = userService.isIdDupl(user.getUserLoginId());
+    if (result.hasErrors() || idDupl) {
+      if (idDupl)
+        result.rejectValue("userLoginId", "duplicate.userForm.userLoginId", "이미 사용 중인 아이디입니다.");
+      return "user/join";
     }
+    userService.save(user);
+    status.setComplete();
+    return "user/login";
+  }
 
-    @PostMapping("/my")
-    public String update(Model model, @Valid @ModelAttribute("user")TbUser user, BindingResult result, SessionStatus status) {
-        settingMyUpbbit(model, user.getUserLoginId());
-        if (result.hasErrors()) return "user/my";
-        userService.updateByLoginId(user);
-        status.setComplete();
-        return "user/my";
-    }
+  @GetMapping("/my")
+  public String my(Model model, @AuthenticationPrincipal String userLoginId) {
+    settingMyUpbbit(model, userLoginId);
+    model.addAttribute(
+        "user",
+        userService
+            .findByLoginId(userLoginId)
+            .orElseThrow(() -> new UsernameNotFoundException(userLoginId + " is not found")));
 
-    private void settingMyUpbbit(Model model, String loginId) {
-        model.addAttribute("upbitAccounts", uPbitAccountService.getAccount(loginId));
-        model.addAttribute("isAuto", uPbitAccountService.isAuto(loginId));
-    }
+    return "user/my";
+  }
+
+  @PostMapping("/my")
+  public String update(
+      Model model,
+      @Valid @ModelAttribute("user") TbUser user,
+      BindingResult result,
+      SessionStatus status) {
+    settingMyUpbbit(model, user.getUserLoginId());
+    if (result.hasErrors()) return "user/my";
+    userService.updateByLoginId(user);
+    status.setComplete();
+    return "user/my";
+  }
+
+  private void settingMyUpbbit(Model model, String loginId) {
+    model.addAttribute("upbitAccounts", uPbitAccountService.getAccount(loginId));
+    model.addAttribute("isAuto", uPbitAccountService.isAuto(loginId));
+  }
 }

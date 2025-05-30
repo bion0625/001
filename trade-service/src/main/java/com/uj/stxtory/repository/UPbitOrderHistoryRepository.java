@@ -5,5 +5,4 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 @RepositoryRestResource(path = "sql_upbit_order_history")
-public interface UPbitOrderHistoryRepository extends JpaRepository<UPbitOrderHistory, Long> {
-}
+public interface UPbitOrderHistoryRepository extends JpaRepository<UPbitOrderHistory, Long> {}

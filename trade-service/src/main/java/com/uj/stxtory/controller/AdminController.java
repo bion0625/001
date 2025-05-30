@@ -9,6 +9,10 @@ import com.uj.stxtory.domain.entity.TbUPbitKey;
 import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.UserService;
 import com.uj.stxtory.service.account.upbit.UPbitAccountService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -19,96 +23,103 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
 @Controller
 @Slf4j
 public class AdminController {
-    private final UserService userService;
-    private final UPbitAccountService uPbitAccountService;
-    private final DealSettingsService dealSettingsService;
+  private final UserService userService;
+  private final UPbitAccountService uPbitAccountService;
+  private final DealSettingsService dealSettingsService;
 
-    public AdminController(UserService userService, UPbitAccountService uPbitAccountService, DealSettingsService dealSettingsService) {
-        this.userService = userService;
-        this.uPbitAccountService = uPbitAccountService;
-        this.dealSettingsService = dealSettingsService;
-    }
+  public AdminController(
+      UserService userService,
+      UPbitAccountService uPbitAccountService,
+      DealSettingsService dealSettingsService) {
+    this.userService = userService;
+    this.uPbitAccountService = uPbitAccountService;
+    this.dealSettingsService = dealSettingsService;
+  }
 
-    // 메일링 종료
-//    @GetMapping(value = "/admin")
-//    public String admin(Model model){
-//        model.addAttribute("targets", mailService.getTargets());
-//        return "admin/mail";
-//    }
+  // 메일링 종료
+  //    @GetMapping(value = "/admin")
+  //    public String admin(Model model){
+  //        model.addAttribute("targets", mailService.getTargets());
+  //        return "admin/mail";
+  //    }
 
-    @GetMapping(value = "/admin/setting")
-    public String settingPage(Model model) {
+  @GetMapping(value = "/admin/setting")
+  public String settingPage(Model model) {
 
-        List<DealSettingsInfo> updatedSettings = new ArrayList<>();
+    List<DealSettingsInfo> updatedSettings = new ArrayList<>();
 
-        updatedSettings.add(dealSettingsService.getByName("upbit"));
-        updatedSettings.add(dealSettingsService.getByName("stock"));
+    updatedSettings.add(dealSettingsService.getByName("upbit"));
+    updatedSettings.add(dealSettingsService.getByName("stock"));
 
-        model.addAttribute("settings", updatedSettings);
+    model.addAttribute("settings", updatedSettings);
 
-        return "admin/setting";
-    }
+    return "admin/setting";
+  }
 
-    @PostMapping(value = "/admin/setting")
-    public String setting(@ModelAttribute DealSettingsWrapper wrapper) {
-        if (Optional.of(wrapper).map(DealSettingsWrapper::getSettings).isPresent())
-            wrapper.getSettings().forEach(dealSettingsService::update);
-        dealSettingsService.applyExpectAndMinimumPriceStock();
-        dealSettingsService.applyExpectAndMinimumPriceUpbit();
-        return "redirect:/";
-    }
+  @PostMapping(value = "/admin/setting")
+  public String setting(@ModelAttribute DealSettingsWrapper wrapper) {
+    if (Optional.of(wrapper).map(DealSettingsWrapper::getSettings).isPresent())
+      wrapper.getSettings().forEach(dealSettingsService::update);
+    dealSettingsService.applyExpectAndMinimumPriceStock();
+    dealSettingsService.applyExpectAndMinimumPriceUpbit();
+    return "redirect:/";
+  }
 
-    @GetMapping(value = "/admin/reset/{name}")
-    public String reset(@PathVariable String name) {
-        dealSettingsService.deleteByName(name);
-        return Optional.ofNullable(name)
-                .map(n -> "redirect:/select/" + n)
-                .orElse("redirect:/");
-    }
+  @GetMapping(value = "/admin/reset/{name}")
+  public String reset(@PathVariable String name) {
+    dealSettingsService.deleteByName(name);
+    return Optional.ofNullable(name).map(n -> "redirect:/select/" + n).orElse("redirect:/");
+  }
 
-    @GetMapping(value = "/admin/users")
-    public String users(Model model) {
-        model.addAttribute("users", userService.getAllForAdmin());
-        return "admin/users";
-    }
+  @GetMapping(value = "/admin/users")
+  public String users(Model model) {
+    model.addAttribute("users", userService.getAllForAdmin());
+    return "admin/users";
+  }
 
-    @PostMapping("/admin/users")
-    public String updateUsers(@ModelAttribute UserListDto userListDto) {
-        userService.setRoleAndDel(userListDto);
-        return "redirect:/admin/users";
-    }
+  @PostMapping("/admin/users")
+  public String updateUsers(@ModelAttribute UserListDto userListDto) {
+    userService.setRoleAndDel(userListDto);
+    return "redirect:/admin/users";
+  }
 
-    @GetMapping("/admin/autos")
-    public String autos(Model model) {
-        List<TbUPbitKey> autoAccount = uPbitAccountService.getAutoAccount();
-        List<AutoMangerDto> autos = userService.getAllForAdmin().stream().map(u -> new AutoMangerDto(
-                u.getUserLoginId(),
-                u.getUserName(),
-                autoAccount.stream().anyMatch(key -> key.getUserLoginId().equals(u.getUserLoginId())) ? "ON" : "OFF")).collect(Collectors.toList());
+  @GetMapping("/admin/autos")
+  public String autos(Model model) {
+    List<TbUPbitKey> autoAccount = uPbitAccountService.getAutoAccount();
+    List<AutoMangerDto> autos =
+        userService.getAllForAdmin().stream()
+            .map(
+                u ->
+                    new AutoMangerDto(
+                        u.getUserLoginId(),
+                        u.getUserName(),
+                        autoAccount.stream()
+                                .anyMatch(key -> key.getUserLoginId().equals(u.getUserLoginId()))
+                            ? "ON"
+                            : "OFF"))
+            .collect(Collectors.toList());
 
-        model.addAttribute("autos", autos);
-        return "admin/autos";
-    }
+    model.addAttribute("autos", autos);
+    return "admin/autos";
+  }
 
-    @PostMapping("/admin/autos")
-    public String autos(@ModelAttribute AutoMangerListDto autoMangerListDto) {
-        autoMangerListDto.getAutoMangers()
-                .forEach(dto ->
-                        uPbitAccountService.updateAuto(dto.getUserLoginId(), "ON".equals(dto.getUpbitAuto())));
-        return "redirect:/admin/autos";
-    }
+  @PostMapping("/admin/autos")
+  public String autos(@ModelAttribute AutoMangerListDto autoMangerListDto) {
+    autoMangerListDto
+        .getAutoMangers()
+        .forEach(
+            dto ->
+                uPbitAccountService.updateAuto(
+                    dto.getUserLoginId(), "ON".equals(dto.getUpbitAuto())));
+    return "redirect:/admin/autos";
+  }
 
-    @PostMapping(value = "/actuator/adminLogin")
-    @ResponseBody
-    public String adminTest(@RequestBody String loginId){
-        return userService.getAdmin(loginId);
-    }
+  @PostMapping(value = "/actuator/adminLogin")
+  @ResponseBody
+  public String adminTest(@RequestBody String loginId) {
+    return userService.getAdmin(loginId);
+  }
 }

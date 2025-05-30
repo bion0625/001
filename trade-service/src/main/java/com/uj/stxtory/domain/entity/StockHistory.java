@@ -1,6 +1,5 @@
 package com.uj.stxtory.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,32 +9,32 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Data
 @Builder
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
 public class StockHistory extends Base {
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id @GeneratedValue private Long id;
 
-    @Column(name = "code", nullable = false)
-    private String code;
+  @Column(name = "code", nullable = false)
+  private String code;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    /** 현재가 */
-    private double close;
-    /** 고가 */
-    private double high;
-    /** 저가 */
-    private double low;
-    /** 일차이 */
-    private double diff;
-    /** 거래량 */
-    private double volume;
+  /** 현재가 */
+  private double close;
+
+  /** 고가 */
+  private double high;
+
+  /** 저가 */
+  private double low;
+
+  /** 일차이 */
+  private double diff;
+
+  /** 거래량 */
+  private double volume;
 }

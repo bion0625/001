@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AutoMangerDto {
-    private String userLoginId;
-    private String userName;
-    private String upbitAuto;
+  private String userLoginId;
+  private String userName;
+  private String upbitAuto;
 }

@@ -12,11 +12,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DealSettings extends Base {
-    @Id
-    @GeneratedValue
-    private Long id;
-    private String name;
-    private Long expectedHighPercentage;
-    private Long expectedLowPercentage;
-    private int highestPriceReferenceDays; // 신고가 기준일 수
+  @Id @GeneratedValue private Long id;
+  private String name;
+  private Long expectedHighPercentage;
+  private Long expectedLowPercentage;
+  private int highestPriceReferenceDays; // 신고가 기준일 수
 }

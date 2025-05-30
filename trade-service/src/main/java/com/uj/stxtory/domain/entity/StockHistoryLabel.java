@@ -7,25 +7,22 @@ import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 
 @Data
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
 public class StockHistoryLabel extends Base {
-    @Id
-    @GeneratedValue
-    private Long id;
+  @Id @GeneratedValue private Long id;
 
-    @Column(name = "code", nullable = false)
-    private String code;
+  @Column(name = "code", nullable = false)
+  private String code;
 
-    @Column(name = "name", nullable = false)
-    private String name;
+  @Column(name = "name", nullable = false)
+  private String name;
 
-    public StockHistoryLabel(String code, String name) {
-        this.code = code;
-        this.name = name;
-    }
+  public StockHistoryLabel(String code, String name) {
+    this.code = code;
+    this.name = name;
+  }
 }
