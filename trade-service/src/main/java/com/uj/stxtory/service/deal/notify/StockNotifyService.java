@@ -194,26 +194,27 @@ public class StockNotifyService implements DealNotifyService {
   protected void savePriceHistory(DealItem info, DealPrice p) {
     // 저장 날짜를 타겟 날짜로
     Optional.ofNullable(p.getDate())
-        .map(
-            date -> {
-              LocalDateTime createdAt = FormatUtil.dateToLocalDateTime(date);
-              return stockHistoryRepository
-                  .findByCodeAndNameAndCreatedAt(info.getCode(), info.getName(), createdAt)
-                  .orElseGet(
-                      () -> {
-                        StockHistory history =
-                            StockHistory.builder()
-                                .name(info.getName())
-                                .code(info.getCode())
-                                .low(p.getLow())
-                                .high(p.getHigh())
-                                .close(p.getClose())
-                                .diff(p.getDiff())
-                                .volume(p.getVolume())
-                                .build();
-                        history.setCreatedAt(createdAt);
-                        return stockHistoryRepository.save(history);
-                      });
+        .map(FormatUtil::dateToLocalDateTime)
+        .ifPresent(
+            createdAt -> {
+              boolean exists =
+                  stockHistoryRepository
+                      .findByCodeAndNameAndCreatedAt(info.getCode(), info.getName(), createdAt)
+                      .isPresent();
+              if (!exists) {
+                StockHistory history =
+                    StockHistory.builder()
+                        .name(info.getName())
+                        .code(info.getCode())
+                        .low(p.getLow())
+                        .high(p.getHigh())
+                        .close(p.getClose())
+                        .diff(p.getDiff())
+                        .volume(p.getVolume())
+                        .build();
+                history.setCreatedAt(createdAt);
+                stockHistoryRepository.save(history);
+              }
             });
   }
 }
