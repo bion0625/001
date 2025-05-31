@@ -104,7 +104,7 @@ public class StockNotifyService implements DealNotifyService {
 
     List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).toList();
 
-    DealSettingsInfo settings = dealSettingsService.getByName("upbit");
+    DealSettingsInfo settings = dealSettingsService.getByName("stock");
     DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
     if (saved.isEmpty()) return model;
     model.calculateForTodayUpdate(
