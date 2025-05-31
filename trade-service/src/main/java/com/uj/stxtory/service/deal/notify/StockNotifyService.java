@@ -102,7 +102,7 @@ public class StockNotifyService implements DealNotifyService {
   public DealInfo update() {
     List<Stock> saved = callSaved();
 
-    List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
+    List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).toList();
 
     DealSettingsInfo settings = dealSettingsService.getByName("upbit");
     DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
@@ -196,19 +196,24 @@ public class StockNotifyService implements DealNotifyService {
     Optional.ofNullable(p.getDate())
         .map(
             date -> {
-              StockHistory history =
-                  StockHistory.builder()
-                      .name(info.getName())
-                      .code(info.getCode())
-                      .low(p.getLow())
-                      .high(p.getHigh())
-                      .close(p.getClose())
-                      .diff(p.getDiff())
-                      .volume(p.getVolume())
-                      .build();
-              history.setCreatedAt(FormatUtil.dateToLocalDateTime(date));
-              stockHistoryRepository.save(history);
-              return true;
+              LocalDateTime createdAt = FormatUtil.dateToLocalDateTime(date);
+              return stockHistoryRepository
+                  .findByCodeAndNameAndCreatedAt(info.getCode(), info.getName(), createdAt)
+                  .orElseGet(
+                      () -> {
+                        StockHistory history =
+                            StockHistory.builder()
+                                .name(info.getName())
+                                .code(info.getCode())
+                                .low(p.getLow())
+                                .high(p.getHigh())
+                                .close(p.getClose())
+                                .diff(p.getDiff())
+                                .volume(p.getVolume())
+                                .build();
+                        history.setCreatedAt(createdAt);
+                        return stockHistoryRepository.save(history);
+                      });
             });
   }
 }
