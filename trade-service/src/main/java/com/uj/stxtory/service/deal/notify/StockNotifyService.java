@@ -128,7 +128,13 @@ public class StockNotifyService implements DealNotifyService {
           ArrayList<DealPrice> prices = new ArrayList<>(historyPrices);
           prices.addAll(model.getPrice(item, 1));
           pricesMap.put(
-              item.getCode(), prices.stream().filter(p -> p.getDate() != null).distinct().toList());
+              item.getCode(),
+              prices.stream()
+                  .filter(p -> p.getDate() != null)
+                  .distinct()
+                  .sorted((prev, curr) -> curr.getDate().compareTo(prev.getDate()))
+                  .limit(settings.getHighestPriceReferenceDays())
+                  .toList());
         });
 
     if (saved.isEmpty()) return model;
