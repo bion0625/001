@@ -60,6 +60,7 @@ public class CalculStockService {
       // 새로 저장은 1년
       List<StockHistory> stockHistories =
           stockModel.getPriceByPage(info, 1, 130).stream()
+              .filter(p -> FormatUtil.dateToLocalDateTime(p.getDate()) != null)
               .map(p -> getPriceHistory(info, p))
               .toList();
       StockHistoryLabel entity = new StockHistoryLabel(info.getCode(), info.getName());
