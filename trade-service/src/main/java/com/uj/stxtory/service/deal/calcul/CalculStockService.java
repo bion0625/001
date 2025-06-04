@@ -50,6 +50,7 @@ public class CalculStockService {
                                               FormatUtil.dateToLocalDateTime(p.getDate()))
                                           .isEmpty())
                           .map(p -> getPriceHistory(info, p))
+                          .distinct()
                           .toList();
                   stockHistoryRepository.saveAll(stockHistories);
                   label.setUpdatedAt(LocalDateTime.now());
@@ -62,6 +63,7 @@ public class CalculStockService {
           stockModel.getPriceByPage(info, 1, 130).stream()
               .filter(p -> FormatUtil.dateToLocalDateTime(p.getDate()) != null)
               .map(p -> getPriceHistory(info, p))
+              .distinct()
               .toList();
       StockHistoryLabel entity = new StockHistoryLabel(info.getCode(), info.getName());
       entity.setUpdatedAt(LocalDateTime.now());
