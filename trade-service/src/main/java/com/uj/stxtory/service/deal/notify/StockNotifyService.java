@@ -8,6 +8,7 @@ import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockModel;
 import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
 import com.uj.stxtory.domain.entity.Stock;
+import com.uj.stxtory.domain.entity.StockHistory;
 import com.uj.stxtory.repository.StockHistoryRepository;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.service.DealSettingsService;
@@ -70,7 +71,8 @@ public class StockNotifyService implements DealNotifyService {
 
     List<DealItem> saveItems =
         stockModel.calculateByThreeDaysByPageForSave(
-            1 + ((double) settings.getExpectedLowPercentage() / 100));
+            1 + ((double) settings.getExpectedLowPercentage() / 100),
+            getPricesMap(stockModel, settings));
 
     List<Stock> save =
         saveItems.stream()
@@ -105,6 +107,23 @@ public class StockNotifyService implements DealNotifyService {
 
     DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
 
+    if (saved.isEmpty()) return model;
+    model.calculateForTodayUpdate(
+        new ArrayList<>(items),
+        getPricesMap(new ArrayList<>(items), model, settings),
+        1 + ((double) settings.getExpectedHighPercentage() / 100),
+        1 + ((double) settings.getExpectedLowPercentage() / 100));
+    List<DealItem> updateItems = model.getNowItems();
+    List<DealItem> deleteItems = model.getDeleteItems();
+
+    update(saved, updateItems);
+    delete(saved, deleteItems);
+
+    return model;
+  }
+
+  private Map<String, List<DealPrice>> getPricesMap(
+      List<DealItem> items, DealInfo model, DealSettingsInfo settings) {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
     items.forEach(
         item -> {
@@ -137,19 +156,46 @@ public class StockNotifyService implements DealNotifyService {
                   .toList());
         });
 
-    if (saved.isEmpty()) return model;
-    model.calculateForTodayUpdate(
-        new ArrayList<>(items),
-        pricesMap,
-        1 + ((double) settings.getExpectedHighPercentage() / 100),
-        1 + ((double) settings.getExpectedLowPercentage() / 100));
-    List<DealItem> updateItems = model.getNowItems();
-    List<DealItem> deleteItems = model.getDeleteItems();
+    return pricesMap;
+  }
 
-    update(saved, updateItems);
-    delete(saved, deleteItems);
+  private Map<String, List<DealPrice>> getPricesMap(DealInfo model, DealSettingsInfo settings) {
+    Map<String, List<DealPrice>> pricesMap = new HashMap<>();
 
-    return model;
+    Map<String, List<StockHistory>> historyMap =
+        stockHistoryRepository.findAll().stream().collect(Collectors.groupingBy(h -> h.getCode()));
+    historyMap.forEach(
+        (code, histories) -> {
+          List<StockPriceInfo> historyPrices =
+              histories.stream()
+                  .map(
+                      history -> {
+                        return new StockPriceInfo(
+                            Date.from(
+                                history.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()),
+                            history.getClose(),
+                            history.getDiff(),
+                            history.getOpen(),
+                            history.getHigh(),
+                            history.getLow(),
+                            history.getVolume());
+                      })
+                  .toList();
+          ArrayList<DealPrice> prices = new ArrayList<>(historyPrices);
+          StockInfo item = new StockInfo();
+          item.setCode(code);
+          prices.addAll(model.getPrice(item, 1));
+          pricesMap.put(
+              item.getCode(),
+              prices.stream()
+                  .filter(p -> p.getDate() != null)
+                  .distinct()
+                  .sorted((prev, curr) -> curr.getDate().compareTo(prev.getDate()))
+                  .limit(settings.getHighestPriceReferenceDays())
+                  .toList());
+        });
+
+    return pricesMap;
   }
 
   private void update(List<Stock> saved, List<DealItem> updateItems) {
