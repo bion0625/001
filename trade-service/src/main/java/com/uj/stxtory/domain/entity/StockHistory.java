@@ -23,6 +23,9 @@ public class StockHistory extends Base {
   @Column(name = "name", nullable = false)
   private String name;
 
+  /** 시가 */
+  private double open;
+
   /** 현재가 */
   private double close;
 

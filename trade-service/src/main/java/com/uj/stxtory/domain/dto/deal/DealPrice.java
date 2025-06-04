@@ -13,5 +13,7 @@ public interface DealPrice {
 
   double getLow();
 
+  double getOpen();
+
   Date getDate();
 }

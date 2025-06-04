@@ -81,6 +81,7 @@ public class CalculStockService {
             .code(info.getCode())
             .low(p.getLow())
             .high(p.getHigh())
+            .open(p.getOpen())
             .close(p.getClose())
             .diff(p.getDiff())
             .volume(p.getVolume())
