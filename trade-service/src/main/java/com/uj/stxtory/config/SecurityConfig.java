@@ -35,7 +35,7 @@ public class SecurityConfig implements WebMvcConfigurer {
                 .requestMatchers(
                     "/h2/**", "/sql_stock/**", "/sql_upbit/**", "/sql_upbit_order_history/**")
                 .hasRole(CommonConstant.ROLE_MASTER)
-                .requestMatchers("/actuator/**")
+                .requestMatchers("/actuator/**", "/collect/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated());
