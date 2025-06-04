@@ -12,7 +12,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - C:/data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
     networks:
       - nat
   
@@ -55,6 +55,8 @@ services:
 
 volumes:
   postgres_data:
+    external: true
+    name: 001_postgres_data
 
 networks:
   nat:
