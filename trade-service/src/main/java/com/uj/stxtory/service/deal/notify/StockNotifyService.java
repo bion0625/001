@@ -2,48 +2,40 @@ package com.uj.stxtory.service.deal.notify;
 
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
-import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockModel;
 import com.uj.stxtory.domain.entity.Stock;
-import com.uj.stxtory.domain.entity.StockHistory;
-import com.uj.stxtory.domain.entity.StockHistoryLabel;
-import com.uj.stxtory.repository.StockHistoryLabelRepository;
-import com.uj.stxtory.repository.StockHistoryRepository;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.deal.DealNotifyService;
-import com.uj.stxtory.util.FormatUtil;
+import com.uj.stxtory.service.deal.calcul.CalculStockService;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @Service
 public class StockNotifyService implements DealNotifyService {
 
+  private static final String SETTING_NAME = "stock";
+
   private final StockRepository stockRepository;
   private final DealSettingsService dealSettingsService;
-  private final StockHistoryLabelRepository stockHistoryLabelRepository;
-  private final StockHistoryRepository stockHistoryRepository;
+  private final CalculStockService calculStockService;
 
   public StockNotifyService(
       StockRepository stockRepository,
       DealSettingsService dealSettingsService,
-      StockHistoryLabelRepository stockHistoryLabelRepository,
-      StockHistoryRepository stockHistoryRepository) {
+      CalculStockService calculStockService) {
     this.stockRepository = stockRepository;
     this.dealSettingsService = dealSettingsService;
-    this.stockHistoryLabelRepository = stockHistoryLabelRepository;
-    this.stockHistoryRepository = stockHistoryRepository;
+    this.calculStockService = calculStockService;
   }
 
   public List<StockInfo> getSaved() {
@@ -68,7 +60,7 @@ public class StockNotifyService implements DealNotifyService {
   public void save() {
     List<Stock> saved = callSaved();
 
-    DealSettingsInfo settings = dealSettingsService.getByName("stock");
+    DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
     StockModel stockModel = new StockModel(settings.getHighestPriceReferenceDays());
 
     List<DealItem> saveItems =
@@ -104,7 +96,7 @@ public class StockNotifyService implements DealNotifyService {
 
     List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).toList();
 
-    DealSettingsInfo settings = dealSettingsService.getByName("stock");
+    DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
     DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
     if (saved.isEmpty()) return model;
     model.calculateForTodayUpdate(
@@ -154,67 +146,12 @@ public class StockNotifyService implements DealNotifyService {
 
   @Async
   public void saveHistory() {
-    DealSettingsInfo settings = dealSettingsService.getByName("stock");
+    DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
     StockModel stockModel = new StockModel(settings.getHighestPriceReferenceDays());
 
     // 저장로직
     stockModel
         .getAll()
-        .forEach(
-            info ->
-                stockHistoryLabelRepository
-                    .findByCodeAndName(info.getCode(), info.getName())
-                    .map(
-                        label -> {
-                          // 추가 저장은 label의 updatedAt 다음날부터
-                          stockModel.getPriceByPage(info, 1, 130).stream()
-                              .filter(
-                                  p ->
-                                      FormatUtil.dateToLocalDateTime(p.getDate()) != null
-                                          && FormatUtil.dateToLocalDateTime(p.getDate())
-                                              .isAfter(label.getUpdatedAt()))
-                              .forEach(p -> savePriceHistory(info, p));
-                          label.setUpdatedAt(LocalDateTime.now());
-                          return label;
-                        })
-                    .orElseGet(
-                        () -> {
-                          // 새로 저장은 1년
-                          stockModel
-                              .getPriceByPage(info, 1, 130)
-                              .forEach(p -> savePriceHistory(info, p));
-                          StockHistoryLabel entity =
-                              new StockHistoryLabel(info.getCode(), info.getName());
-                          entity.setUpdatedAt(LocalDateTime.now());
-                          return stockHistoryLabelRepository.save(entity);
-                        }));
-  }
-
-  @Transactional(propagation = Propagation.REQUIRES_NEW)
-  protected void savePriceHistory(DealItem info, DealPrice p) {
-    // 저장 날짜를 타겟 날짜로
-    Optional.ofNullable(p.getDate())
-        .map(FormatUtil::dateToLocalDateTime)
-        .ifPresent(
-            createdAt -> {
-              boolean exists =
-                  stockHistoryRepository
-                      .findByCodeAndNameAndCreatedAt(info.getCode(), info.getName(), createdAt)
-                      .isPresent();
-              if (!exists) {
-                StockHistory history =
-                    StockHistory.builder()
-                        .name(info.getName())
-                        .code(info.getCode())
-                        .low(p.getLow())
-                        .high(p.getHigh())
-                        .close(p.getClose())
-                        .diff(p.getDiff())
-                        .volume(p.getVolume())
-                        .build();
-                history.setCreatedAt(createdAt);
-                stockHistoryRepository.save(history);
-              }
-            });
+        .forEach(info -> calculStockService.savePriceHistoryWithLabel(info, stockModel));
   }
 }
