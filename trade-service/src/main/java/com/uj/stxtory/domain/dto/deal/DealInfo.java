@@ -1,9 +1,6 @@
 package com.uj.stxtory.domain.dto.deal;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import lombok.Getter;
@@ -111,6 +108,45 @@ public abstract class DealInfo {
         // 로그
         .peek(item -> log.info(String.format("\tsuccess:\t%s(%s)", item.getName(), item.getCode())))
         .collect(Collectors.toList());
+  }
+
+  public void calculateForTodayUpdate(
+      List<DealItem> savedItem,
+      Map<String, List<DealPrice>> pricesMap,
+      double highPer,
+      double lowPer) {
+    savedItem.stream()
+        .filter(
+            item -> {
+              if (!CustomCheckForDelete(item)) {
+                deleteItems.add(item);
+                return false;
+              }
+              return true;
+            })
+        .forEach(
+            item -> {
+              // 거래량이 0이면 하루 전으로 계산
+              List<DealPrice> prices = pricesMap.get(item.getCode());
+              int lastDayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
+              // 마지막 가격
+              DealPrice price = prices.get(lastDayIndex);
+
+              // 당일 현재(종)가가 기대 매도 가격보다 높으면 하한 가격 및 기대 가격 갱신
+              while (price.getClose() != 0
+                  && item.getExpectedSellingPrice() != 0
+                  && price.getClose() >= item.getExpectedSellingPrice()) {
+                item.sellingPriceUpdate(new Date(), highPer, lowPer);
+                item.setTempPrice(price.getClose());
+                item.setSettingPrice(price.getClose()); // 갱신할 때만 설정가
+              }
+              // 현재 종가(현재가)가 하한 매도 가격 대비 같거나 낮으면 삭제
+              if (price.getClose() <= item.getMinimumSellingPrice()) deleteItems.add(item);
+              else {
+                item.setTempPrice(price.getClose());
+                nowItems.add(item);
+              }
+            });
   }
 
   public void calculateForTodayUpdate(List<DealItem> savedItem, double highPer, double lowPer) {
