@@ -1,12 +1,12 @@
-package com.uj.stxtory.service.deal.calcul;
+package com.uj.stxtory.service.deal.calculate;
 
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
-import com.uj.stxtory.domain.dto.stock.StockModel;
-import com.uj.stxtory.domain.entity.StockHistory;
-import com.uj.stxtory.domain.entity.StockHistoryLabel;
-import com.uj.stxtory.repository.StockHistoryLabelRepository;
-import com.uj.stxtory.repository.StockHistoryRepository;
+import com.uj.stxtory.domain.dto.upbit.UPbitModel;
+import com.uj.stxtory.domain.entity.UpbitHistory;
+import com.uj.stxtory.domain.entity.UpbitHistoryLabel;
+import com.uj.stxtory.repository.UpbitHistoryLabelRepository;
+import com.uj.stxtory.repository.UpbitHistoryRepository;
 import com.uj.stxtory.util.FormatUtil;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,34 +16,34 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class CalculStockService {
+public class CalculateUpbitService {
 
-  private final StockHistoryLabelRepository stockHistoryLabelRepository;
-  private final StockHistoryRepository stockHistoryRepository;
+  private final UpbitHistoryLabelRepository upbitHistoryLabelRepository;
+  private final UpbitHistoryRepository upbitHistoryRepository;
 
-  public CalculStockService(
-      StockHistoryLabelRepository stockHistoryLabelRepository,
-      StockHistoryRepository stockHistoryRepository) {
-    this.stockHistoryLabelRepository = stockHistoryLabelRepository;
-    this.stockHistoryRepository = stockHistoryRepository;
+  public CalculateUpbitService(
+      UpbitHistoryLabelRepository upbitHistoryLabelRepository,
+      UpbitHistoryRepository upbitHistoryRepository) {
+    this.upbitHistoryLabelRepository = upbitHistoryLabelRepository;
+    this.upbitHistoryRepository = upbitHistoryRepository;
   }
 
   @Transactional(propagation = Propagation.REQUIRES_NEW)
-  public void savePriceHistoryWithLabel(DealItem info, StockModel stockModel) {
+  public void savePriceHistoryWithLabel(DealItem info, UPbitModel upbitModel) {
     boolean exist =
-        stockHistoryLabelRepository
+        upbitHistoryLabelRepository
             .findByCodeAndName(info.getCode(), info.getName())
             .map(
                 label -> {
                   // 추가 저장은 label의 updatedAt 다음날부터
-                  List<StockHistory> stockHistories =
-                      stockModel.getPriceByPage(info, 1, 130).stream()
+                  List<UpbitHistory> upbitHistories =
+                      upbitModel.getPriceByPage(info, 1, 130).stream()
                           .filter(
                               p ->
                                   FormatUtil.dateToLocalDateTime(p.getDate()) != null
                                       && FormatUtil.dateToLocalDateTime(p.getDate())
                                           .isAfter(label.getUpdatedAt())
-                                      && stockHistoryRepository
+                                      && upbitHistoryRepository
                                           .findByCodeAndNameAndCreatedAt(
                                               info.getCode(),
                                               info.getName(),
@@ -52,31 +52,31 @@ public class CalculStockService {
                           .map(p -> getPriceHistory(info, p))
                           .distinct()
                           .toList();
-                  stockHistoryRepository.saveAll(stockHistories);
+                  upbitHistoryRepository.saveAll(upbitHistories);
                   label.setUpdatedAt(LocalDateTime.now());
                   return label;
                 })
             .isPresent();
     if (!exist) {
       // 새로 저장은 1년
-      List<StockHistory> stockHistories =
-          stockModel.getPriceByPage(info, 1, 130).stream()
+      List<UpbitHistory> upbitHistories =
+          upbitModel.getPriceByPage(info, 1, 130).stream()
               .filter(p -> FormatUtil.dateToLocalDateTime(p.getDate()) != null)
               .map(p -> getPriceHistory(info, p))
               .distinct()
               .toList();
-      StockHistoryLabel entity = new StockHistoryLabel(info.getCode(), info.getName());
+      UpbitHistoryLabel entity = new UpbitHistoryLabel(info.getCode(), info.getName());
       entity.setUpdatedAt(LocalDateTime.now());
 
-      stockHistoryRepository.saveAll(stockHistories);
-      stockHistoryLabelRepository.save(entity);
+      upbitHistoryRepository.saveAll(upbitHistories);
+      upbitHistoryLabelRepository.save(entity);
     }
   }
 
-  private StockHistory getPriceHistory(DealItem info, DealPrice p) {
+  private UpbitHistory getPriceHistory(DealItem info, DealPrice p) {
     LocalDateTime createdAt = FormatUtil.dateToLocalDateTime(p.getDate());
-    StockHistory history =
-        StockHistory.builder()
+    UpbitHistory history =
+        UpbitHistory.builder()
             .name(info.getName())
             .code(info.getCode())
             .low(p.getLow())

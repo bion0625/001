@@ -56,4 +56,11 @@ public class UPbitSchedulerService implements DealSchedulerService {
         () -> mailService.noticeSelect(new ArrayList<>(uPbitNotifyService.getSaved()), "UPbit"));
     log.info("\n\n\nUPbit mail send Complete\n\n\n");
   }
+
+  @Scheduled(cron = "0 0 17 * * *")
+  public void saveHistory() {
+    log.info("\n\n\nupbit saveHistory start\n\n\n");
+    uPbitNotifyService.saveHistory();
+    log.info("\n\n\nupbit saveHistory complete\n\n\n");
+  }
 }
