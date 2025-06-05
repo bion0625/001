@@ -136,13 +136,13 @@ public abstract class DealInfo {
                 return false;
 
               // 마지막일 diff가 5% ~ 15% 내에 있지 않으면 제외
-              if (useSize()) {
-                double diffPercent =
-                    (prices.get(lastdayIndex).getDiff() * 100)
-                        / prices.get(lastdayIndex + 1).getClose();
-                if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15))
-                  return false;
-              }
+//              if (useSize()) {
+//                double diffPercent =
+//                    (prices.get(lastdayIndex).getDiff() * 100)
+//                        / prices.get(lastdayIndex + 1).getClose();
+//                if (prices.get(lastdayIndex).getDiff() < 0 || (diffPercent < 5 || diffPercent > 15))
+//                  return false;
+//              }
 
               // 3일 연달아 가격 상승이 아니면 제외
               if (prices.get(lastdayIndex).getHigh() <= prices.get(lastdayIndex + 1).getHigh()
