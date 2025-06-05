@@ -57,7 +57,7 @@ public class UPbitSchedulerService implements DealSchedulerService {
     log.info("\n\n\nUPbit mail send Complete\n\n\n");
   }
 
-  @Scheduled(cron = "0 0 17 * * *")
+  @Scheduled(cron = "0 30 17 * * *")
   public void saveHistory() {
     log.info("\n\n\nupbit saveHistory start\n\n\n");
     uPbitNotifyService.saveHistory();
