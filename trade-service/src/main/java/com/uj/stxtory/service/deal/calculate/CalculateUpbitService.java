@@ -37,7 +37,7 @@ public class CalculateUpbitService {
                 label -> {
                   // 추가 저장은 label의 updatedAt 다음날부터
                   List<UpbitHistory> upbitHistories =
-                      upbitModel.getPriceByPage(info, 1, 130).stream()
+                      upbitModel.getPriceByPage(info, 1, 365).stream()
                           .filter(
                               p ->
                                   FormatUtil.dateToLocalDateTime(p.getDate()) != null
@@ -60,7 +60,7 @@ public class CalculateUpbitService {
     if (!exist) {
       // 새로 저장은 1년
       List<UpbitHistory> upbitHistories =
-          upbitModel.getPriceByPage(info, 1, 130).stream()
+          upbitModel.getPriceByPage(info, 1, 365).stream()
               .filter(p -> FormatUtil.dateToLocalDateTime(p.getDate()) != null)
               .map(p -> getPriceHistory(info, p))
               .distinct()
