@@ -21,11 +21,6 @@ public class StockModel extends DealInfo {
   }
 
   @Override
-  public boolean usePage() {
-    return true;
-  }
-
-  @Override
   public boolean useSize() {
     return true;
   }
