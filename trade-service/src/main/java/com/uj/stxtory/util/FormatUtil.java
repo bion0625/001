@@ -79,4 +79,15 @@ public class FormatUtil {
     }
     return localDateTime;
   }
+
+  public static String dateToString(Date date) {
+    if (date == null) return null;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    try {
+      return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime().format(formatter);
+    } catch (Exception e) {
+      log.warn("dateToString : date >>>> {}", date, e);
+      return null;
+    }
+  }
 }
