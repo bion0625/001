@@ -2,17 +2,21 @@ package com.uj.stxtory.service.deal.notify;
 
 import com.uj.stxtory.domain.dto.deal.DealInfo;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitModel;
+import com.uj.stxtory.domain.dto.upbit.UPbitPriceInfo;
 import com.uj.stxtory.domain.entity.UPbit;
+import com.uj.stxtory.domain.entity.UpbitHistory;
 import com.uj.stxtory.repository.UPbitRepository;
+import com.uj.stxtory.repository.UpbitHistoryRepository;
 import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.deal.DealNotifyService;
+import com.uj.stxtory.service.deal.calculate.CalculateUpbitService;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -22,17 +26,26 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class UPbitNotifyService implements DealNotifyService {
 
+  private static final String SETTING_NAME = "upbit";
+
   private final UPbitRepository uPbitRepository;
+  private final UpbitHistoryRepository upbitHistoryRepository;
   private final DealSettingsService dealSettingsService;
+  private final CalculateUpbitService calculateUpbitService;
 
   public UPbitNotifyService(
-      UPbitRepository uPbitRepository, DealSettingsService dealSettingsService) {
+      UPbitRepository uPbitRepository,
+      DealSettingsService dealSettingsService,
+      UpbitHistoryRepository upbitHistoryRepository,
+      CalculateUpbitService calculateUpbitService) {
     this.uPbitRepository = uPbitRepository;
     this.dealSettingsService = dealSettingsService;
+    this.upbitHistoryRepository = upbitHistoryRepository;
+    this.calculateUpbitService = calculateUpbitService;
   }
 
   public List<UPbitInfo> getSaved() {
-    return callSaved().stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
+    return callSaved().stream().map(UPbitInfo::fromEntity).toList();
   }
 
   private List<UPbit> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
@@ -45,7 +58,7 @@ public class UPbitNotifyService implements DealNotifyService {
                     u ->
                         (u.getExpectedSellingPrice() - u.getTempPrice())
                             / (u.getExpectedSellingPrice() - u.getMinimumSellingPrice())))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Async
@@ -53,12 +66,13 @@ public class UPbitNotifyService implements DealNotifyService {
   public void save() {
     List<UPbit> saved = callSaved();
 
-    DealSettingsInfo settings = dealSettingsService.getByName("upbit");
+    DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
     DealInfo model = new UPbitModel(settings.getHighestPriceReferenceDays());
 
     List<DealItem> saveItems =
         model.calculateByThreeDaysByPageForSave(
-            1 + ((double) settings.getExpectedLowPercentage() / 100));
+            1 + ((double) settings.getExpectedLowPercentage() / 100),
+            getPricesMap(model, settings));
 
     List<UPbit> save =
         saveItems.stream()
@@ -69,7 +83,7 @@ public class UPbitNotifyService implements DealNotifyService {
                         item.toEntity(
                             1 + ((double) settings.getExpectedHighPercentage() / 100),
                             1 + ((double) settings.getExpectedLowPercentage() / 100)))
-            .collect(Collectors.toList());
+            .toList();
     uPbitRepository.saveAll(save);
 
     List<UPbitInfo> deleteList =
@@ -89,11 +103,14 @@ public class UPbitNotifyService implements DealNotifyService {
 
     List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 
-    DealSettingsInfo settings = dealSettingsService.getByName("upbit");
+    DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
+
     DealInfo model = new UPbitModel(settings.getHighestPriceReferenceDays());
+
     if (saved.isEmpty()) return model;
     model.calculateForTodayUpdate(
-        new ArrayList<>(items),
+        items,
+        getPricesMap(items, model, settings),
         1 + ((double) settings.getExpectedHighPercentage() / 100),
         1 + ((double) settings.getExpectedLowPercentage() / 100));
     List<DealItem> updateItems = model.getNowItems();
@@ -135,5 +152,92 @@ public class UPbitNotifyService implements DealNotifyService {
                       uPbit.setDeletedAt(LocalDateTime.now());
                       return uPbit;
                     }));
+  }
+
+  private Map<String, List<DealPrice>> getPricesMap(
+      List<DealItem> items, DealInfo model, DealSettingsInfo settings) {
+    Map<String, List<DealPrice>> pricesMap = new HashMap<>();
+    items.forEach(
+        item -> {
+          List<UPbitPriceInfo> historyPrices =
+              upbitHistoryRepository.findByCode(item.getCode()).stream()
+                  .map(
+                      history ->
+                          new UPbitPriceInfo(
+                              Date.from(
+                                  history
+                                      .getCreatedAt()
+                                      .atZone(ZoneId.systemDefault())
+                                      .toInstant()),
+                              history.getClose(),
+                              history.getDiff(),
+                              history.getOpen(),
+                              history.getHigh(),
+                              history.getLow(),
+                              history.getVolume()))
+                  .toList();
+          ArrayList<DealPrice> prices = new ArrayList<>(historyPrices);
+          prices.addAll(model.getPrice(item, 1));
+          pricesMap.put(
+              item.getCode(),
+              prices.stream()
+                  .filter(p -> p.getDate() != null)
+                  .distinct()
+                  .sorted((prev, curr) -> curr.getDate().compareTo(prev.getDate()))
+                  .limit(settings.getHighestPriceReferenceDays())
+                  .toList());
+        });
+
+    return pricesMap;
+  }
+
+  private Map<String, List<DealPrice>> getPricesMap(DealInfo model, DealSettingsInfo settings) {
+    Map<String, List<DealPrice>> pricesMap = new HashMap<>();
+
+    Map<String, List<UpbitHistory>> historyMap =
+        upbitHistoryRepository.findAll().stream().collect(Collectors.groupingBy(h -> h.getCode()));
+    historyMap.forEach(
+        (code, histories) -> {
+          List<UPbitPriceInfo> historyPrices =
+              histories.stream()
+                  .map(
+                      history ->
+                          new UPbitPriceInfo(
+                              Date.from(
+                                  history
+                                      .getCreatedAt()
+                                      .atZone(ZoneId.systemDefault())
+                                      .toInstant()),
+                              history.getClose(),
+                              history.getDiff(),
+                              history.getOpen(),
+                              history.getHigh(),
+                              history.getLow(),
+                              history.getVolume()))
+                  .toList();
+          ArrayList<DealPrice> prices = new ArrayList<>(historyPrices);
+          UPbitInfo item = new UPbitInfo();
+          item.setCode(code);
+          prices.addAll(model.getPrice(item, 1));
+          pricesMap.put(
+              item.getCode(),
+              prices.stream()
+                  .filter(p -> p.getDate() != null)
+                  .distinct()
+                  .sorted((prev, curr) -> curr.getDate().compareTo(prev.getDate()))
+                  .limit(settings.getHighestPriceReferenceDays())
+                  .toList());
+        });
+
+    return pricesMap;
+  }
+
+  @Async
+  public void saveHistory() {
+    DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
+    UPbitModel model = new UPbitModel(settings.getHighestPriceReferenceDays());
+
+    // 저장로직
+    model.getAll().forEach(info -> calculateUpbitService.savePriceHistoryWithLabel(info, model));
   }
 }

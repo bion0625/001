@@ -1,4 +1,4 @@
-package com.uj.stxtory.service.deal.calcul;
+package com.uj.stxtory.service.deal.calculate;
 
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
@@ -16,12 +16,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
-public class CalculStockService {
+public class CalculateStockService {
 
   private final StockHistoryLabelRepository stockHistoryLabelRepository;
   private final StockHistoryRepository stockHistoryRepository;
 
-  public CalculStockService(
+  public CalculateStockService(
       StockHistoryLabelRepository stockHistoryLabelRepository,
       StockHistoryRepository stockHistoryRepository) {
     this.stockHistoryLabelRepository = stockHistoryLabelRepository;

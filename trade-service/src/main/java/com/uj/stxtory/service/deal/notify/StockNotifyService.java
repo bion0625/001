@@ -13,7 +13,7 @@ import com.uj.stxtory.repository.StockHistoryRepository;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.deal.DealNotifyService;
-import com.uj.stxtory.service.deal.calcul.CalculStockService;
+import com.uj.stxtory.service.deal.calculate.CalculateStockService;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -31,21 +31,21 @@ public class StockNotifyService implements DealNotifyService {
   private final StockRepository stockRepository;
   private final StockHistoryRepository stockHistoryRepository;
   private final DealSettingsService dealSettingsService;
-  private final CalculStockService calculStockService;
+  private final CalculateStockService calculateStockService;
 
   public StockNotifyService(
       StockRepository stockRepository,
       DealSettingsService dealSettingsService,
-      CalculStockService calculStockService,
+      CalculateStockService calculStockService,
       StockHistoryRepository stockHistoryRepository) {
     this.stockRepository = stockRepository;
     this.dealSettingsService = dealSettingsService;
-    this.calculStockService = calculStockService;
+    this.calculateStockService = calculStockService;
     this.stockHistoryRepository = stockHistoryRepository;
   }
 
   public List<StockInfo> getSaved() {
-    return callSaved().stream().map(StockInfo::fromEntity).collect(Collectors.toList());
+    return callSaved().stream().map(StockInfo::fromEntity).toList();
   }
 
   private List<Stock> callSaved() { // 목표가와 현재가가 비율 상으로 가장 가까운 순
@@ -58,7 +58,7 @@ public class StockNotifyService implements DealNotifyService {
                     s ->
                         (s.getExpectedSellingPrice() - s.getTempPrice())
                             / (s.getExpectedSellingPrice() - s.getMinimumSellingPrice())))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   @Async
@@ -83,7 +83,7 @@ public class StockNotifyService implements DealNotifyService {
                         item.toEntity(
                             1 + ((double) settings.getExpectedHighPercentage() / 100),
                             1 + ((double) settings.getExpectedLowPercentage() / 100)))
-            .collect(Collectors.toList());
+            .toList();
     stockRepository.saveAll(save);
 
     List<StockInfo> deleteList =
@@ -101,7 +101,7 @@ public class StockNotifyService implements DealNotifyService {
   public DealInfo update() {
     List<Stock> saved = callSaved();
 
-    List<StockInfo> items = saved.stream().map(StockInfo::fromEntity).toList();
+    List<DealItem> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 
     DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
 
@@ -109,8 +109,8 @@ public class StockNotifyService implements DealNotifyService {
 
     if (saved.isEmpty()) return model;
     model.calculateForTodayUpdate(
-        new ArrayList<>(items),
-        getPricesMap(new ArrayList<>(items), model, settings),
+        items,
+        getPricesMap(items, model, settings),
         1 + ((double) settings.getExpectedHighPercentage() / 100),
         1 + ((double) settings.getExpectedLowPercentage() / 100));
     List<DealItem> updateItems = model.getNowItems();
@@ -163,23 +163,26 @@ public class StockNotifyService implements DealNotifyService {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
 
     Map<String, List<StockHistory>> historyMap =
-        stockHistoryRepository.findAll().stream().collect(Collectors.groupingBy(h -> h.getCode()));
+        stockHistoryRepository.findAll().stream()
+            .collect(Collectors.groupingBy(StockHistory::getCode));
     historyMap.forEach(
         (code, histories) -> {
           List<StockPriceInfo> historyPrices =
               histories.stream()
                   .map(
-                      history -> {
-                        return new StockPriceInfo(
-                            Date.from(
-                                history.getCreatedAt().atZone(ZoneId.systemDefault()).toInstant()),
-                            history.getClose(),
-                            history.getDiff(),
-                            history.getOpen(),
-                            history.getHigh(),
-                            history.getLow(),
-                            history.getVolume());
-                      })
+                      history ->
+                          new StockPriceInfo(
+                              Date.from(
+                                  history
+                                      .getCreatedAt()
+                                      .atZone(ZoneId.systemDefault())
+                                      .toInstant()),
+                              history.getClose(),
+                              history.getDiff(),
+                              history.getOpen(),
+                              history.getHigh(),
+                              history.getLow(),
+                              history.getVolume()))
                   .toList();
           ArrayList<DealPrice> prices = new ArrayList<>(historyPrices);
           StockInfo item = new StockInfo();
@@ -238,6 +241,6 @@ public class StockNotifyService implements DealNotifyService {
     // 저장로직
     stockModel
         .getAll()
-        .forEach(info -> calculStockService.savePriceHistoryWithLabel(info, stockModel));
+        .forEach(info -> calculateStockService.savePriceHistoryWithLabel(info, stockModel));
   }
 }
