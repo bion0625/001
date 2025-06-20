@@ -60,6 +60,15 @@ body {
     transition: background-color 0.3s, box-shadow 0.3s;
 }
 
+/* Admin 메뉴만 덮어쓰기 */
+.menu.admin-menu {
+    background-color: #27ae60;       /* 원하는 새 배경색 */
+}
+.menu.admin-menu:hover {
+    background-color: #2ecc71;       /* 호버 시 색상 */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
 .logout:hover {
     background-color: #c0392b;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
