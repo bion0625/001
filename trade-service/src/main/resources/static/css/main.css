@@ -1,4 +1,11 @@
 body {
+    overflow-x: hidden; /* 수평 스크롤 방지 */
+}
+.content {
+    overflow-x: auto;   /* 테이블 가로 스크롤 허용 */
+}
+
+body {
     font-family: 'Arial', sans-serif;
     margin: 0;
     padding: 0;
@@ -346,4 +353,57 @@ body {
     background-color: #bdc3c7;
     cursor: not-allowed;
     box-shadow: none;
+}
+
+/* ─── 테이블 전체 기본 스타일 ─── */
+.content table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+.content th,
+.content td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #e2e8f0; /* 연한 그레이 선 */
+    vertical-align: middle;
+}
+
+/* ─── 헤더 셀 배경/정렬 ─── */
+.content th {
+    background-color: #f7fafc;
+    text-align: left;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+/* ─── 체크박스 전용 열 ─── */
+.content th.checkbox-column,
+.content td.checkbox-column {
+    text-align: center;       /* 가운데 정렬 */
+    width: 120px;             /* 충분한 너비 지정 */
+}
+
+/* ─── 체크박스 자체 스타일 ─── */
+.input-checkbox {
+    /* 조금 키워서 클릭 영역 확보 */
+    width: 1.25rem;
+    height: 1.25rem;
+    cursor: pointer;
+}
+
+/* ─── 에러 메시지 스타일 (이미 있으실 수도) ─── */
+.error {
+    color: #e53e3e;
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+}
+.error.hidden {
+    display: none;
+}
+
+/* ─── 버튼(확인) 비활성화 처리 ─── */
+#submit-btn:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+    opacity: 0.6;
 }

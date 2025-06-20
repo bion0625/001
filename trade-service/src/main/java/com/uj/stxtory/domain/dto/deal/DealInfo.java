@@ -37,7 +37,7 @@ public abstract class DealInfo {
   }
 
   public List<DealItem> calculateByThreeDaysByPageForSave(
-      double lowPer, Map<String, List<DealPrice>> pricesMap) {
+      double lowPer, Map<String, List<DealPrice>> pricesMap, boolean isValueCheck) {
     log.info("\n\n\nsave log start!\n\n\n");
 
     Stream<DealItem> stream;
@@ -54,12 +54,14 @@ public abstract class DealInfo {
               int lastdayIndex = prices.get(0).getVolume() == 0 ? 1 : 0;
 
               // 최근 3일 중 마지막일이 최고 거래량이면 제외
-              DealPrice checkPrice =
-                  prices.subList(lastdayIndex, (lastdayIndex + 3)).parallelStream()
-                      .reduce((p, c) -> p.getVolume() > c.getVolume() ? p : c)
-                      .orElse(null);
-              if (checkPrice != null && prices.get(0).getVolume() == checkPrice.getVolume())
-                return false;
+              if (isValueCheck) {
+                DealPrice checkPrice =
+                    prices.subList(lastdayIndex, (lastdayIndex + 3)).parallelStream()
+                        .reduce((p, c) -> p.getVolume() > c.getVolume() ? p : c)
+                        .orElse(null);
+                if (checkPrice != null && prices.get(0).getVolume() == checkPrice.getVolume())
+                  return false;
+              }
 
               // 마지막일 diff가 5% ~ 15% 내에 있지 않으면 제외
               //              if (useSize()) {
@@ -86,7 +88,7 @@ public abstract class DealInfo {
                   < (Math.round(prices.get(lastdayIndex).getHigh() * lowPer))) return false;
 
               // 조회 기간(6개월) 중 신고가가 아니면 제외
-              checkPrice =
+              DealPrice checkPrice =
                   prices.parallelStream()
                       .max(Comparator.comparingDouble(DealPrice::getHigh))
                       .orElse(null);

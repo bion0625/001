@@ -72,7 +72,8 @@ public class StockNotifyService implements DealNotifyService {
     List<DealItem> saveItems =
         stockModel.calculateByThreeDaysByPageForSave(
             1 + ((double) settings.getExpectedLowPercentage() / 100),
-            getPricesMap(stockModel, settings));
+            getPricesMap(stockModel, settings),
+            settings.isVolumeCheck());
 
     List<Stock> save =
         saveItems.stream()

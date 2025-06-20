@@ -72,7 +72,8 @@ public class UPbitNotifyService implements DealNotifyService {
     List<DealItem> saveItems =
         model.calculateByThreeDaysByPageForSave(
             1 + ((double) settings.getExpectedLowPercentage() / 100),
-            getPricesMap(model, settings));
+            getPricesMap(model, settings),
+            settings.isVolumeCheck());
 
     List<UPbit> save =
         saveItems.stream()
@@ -195,7 +196,8 @@ public class UPbitNotifyService implements DealNotifyService {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
 
     Map<String, List<UpbitHistory>> historyMap =
-        upbitHistoryRepository.findAll().stream().collect(Collectors.groupingBy(h -> h.getCode()));
+        upbitHistoryRepository.findAll().stream()
+            .collect(Collectors.groupingBy(UpbitHistory::getCode));
     historyMap.forEach(
         (code, histories) -> {
           List<UPbitPriceInfo> historyPrices =

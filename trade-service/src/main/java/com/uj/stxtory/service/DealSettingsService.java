@@ -45,6 +45,7 @@ public class DealSettingsService {
               entity.setExpectedHighPercentage(info.getExpectedHighPercentage());
               entity.setExpectedLowPercentage(info.getExpectedLowPercentage());
               entity.setHighestPriceReferenceDays(info.getHighestPriceReferenceDays());
+              entity.setVolumeCheck(info.isVolumeCheck());
               entity.setUpdatedAt(LocalDateTime.now());
               return entity;
             })

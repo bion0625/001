@@ -17,4 +17,5 @@ public class DealSettings extends Base {
   private Long expectedHighPercentage;
   private Long expectedLowPercentage;
   private int highestPriceReferenceDays; // 신고가 기준일 수
+  private boolean isVolumeCheck;
 }

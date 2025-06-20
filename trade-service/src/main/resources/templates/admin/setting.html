@@ -29,6 +29,7 @@
                 <th>신고가 기준 일수</th>
                 <th>상승 비율 (%) - 재조정</th>
                 <th>하락 비율 (%) - 손절</th>
+                <th class="checkbox-column">3일중 최대 거래량 제외</th>
             </tr>
             </thead>
             <tbody id="settingsTableBody">
@@ -44,6 +45,14 @@
                 </td>
                 <td>
                     <input type="number" th:name="|settings[${settingStat.index}].expectedLowPercentage|" th:value="${setting.expectedLowPercentage}" class="input-field low-percentage" oninput="checkValues()">
+                </td>
+                <td class="checkbox-column">
+                    <input
+                            type="checkbox"
+                            th:name="|settings[${settingStat.index}].volumeCheck|"
+                            th:checked="${setting.volumeCheck}"
+                            class="input-checkbox"
+                    />
                 </td>
             </tr>
             </tbody>

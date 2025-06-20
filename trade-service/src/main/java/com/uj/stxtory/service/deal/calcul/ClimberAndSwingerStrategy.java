@@ -85,8 +85,7 @@ public class ClimberAndSwingerStrategy {
 
               // 3. Swinger 포인트 탐지 (최근 3일 중 거래량 2배 이상 & 가격 5%↓)
               List<String> swingPoints =
-                  findSwingerPoints(
-                      volumeList, closeList, prices, 3, 2.0, 0.05);
+                  findSwingerPoints(volumeList, closeList, prices, 3, 2.0, 0.05);
               if (!swingPoints.isEmpty()) {
                 swingPointsStocks.put(item, swingPoints);
               }

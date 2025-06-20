@@ -13,9 +13,10 @@ public class DealSettingsInfo {
   private Long expectedHighPercentage;
   private Long expectedLowPercentage;
   private int highestPriceReferenceDays; // 신고가 기준일 수
+  private boolean isVolumeCheck;
 
   public static DealSettingsInfo basic(String name) {
-    return new DealSettingsInfo(name, 10L, -5L, 130);
+    return new DealSettingsInfo(name, 10L, -5L, 130, false);
   }
 
   public static DealSettingsInfo fromEntity(DealSettings entity) {
@@ -23,7 +24,8 @@ public class DealSettingsInfo {
         entity.getName(),
         entity.getExpectedHighPercentage(),
         entity.getExpectedLowPercentage(),
-        entity.getHighestPriceReferenceDays());
+        entity.getHighestPriceReferenceDays(),
+        entity.isVolumeCheck());
   }
 
   public DealSettings toEntity() {
@@ -32,6 +34,7 @@ public class DealSettingsInfo {
     entity.setExpectedHighPercentage(this.expectedHighPercentage);
     entity.setExpectedLowPercentage(this.expectedLowPercentage);
     entity.setHighestPriceReferenceDays(this.highestPriceReferenceDays);
+    entity.setVolumeCheck(this.isVolumeCheck);
     return entity;
   }
 }
