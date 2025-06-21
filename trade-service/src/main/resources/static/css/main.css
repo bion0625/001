@@ -416,3 +416,20 @@ body {
     cursor: not-allowed;
     opacity: 0.6;
 }
+
+/* 줄바꿈 방지 */
+.content th {
+    white-space: nowrap;
+}
+
+/* main.css 맨 하단에 추가 */
+@media (max-width: 768px) {
+    .content table {
+        width: auto;            /* 100% → auto */
+        table-layout: auto;     /* 열 너비를 내용물에 맞춰 재계산 */
+    }
+    .content {
+        overflow-x: auto;       /* 가로 스크롤은 이미 켜져 있으니 그대로 */
+    }
+}
+
