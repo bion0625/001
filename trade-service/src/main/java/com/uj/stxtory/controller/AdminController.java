@@ -9,11 +9,13 @@ import com.uj.stxtory.domain.entity.TbUPbitKey;
 import com.uj.stxtory.service.DealSettingsService;
 import com.uj.stxtory.service.UserService;
 import com.uj.stxtory.service.account.upbit.UPbitAccountService;
+import com.uj.stxtory.service.deal.notify.StockNotifyService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,22 +31,18 @@ public class AdminController {
   private final UserService userService;
   private final UPbitAccountService uPbitAccountService;
   private final DealSettingsService dealSettingsService;
+  private final StockNotifyService stockNotifyService;
 
   public AdminController(
       UserService userService,
       UPbitAccountService uPbitAccountService,
-      DealSettingsService dealSettingsService) {
+      DealSettingsService dealSettingsService,
+      StockNotifyService stockNotifyService) {
     this.userService = userService;
     this.uPbitAccountService = uPbitAccountService;
     this.dealSettingsService = dealSettingsService;
+    this.stockNotifyService = stockNotifyService;
   }
-
-  // 메일링 종료
-  //    @GetMapping(value = "/admin")
-  //    public String admin(Model model){
-  //        model.addAttribute("targets", mailService.getTargets());
-  //        return "admin/mail";
-  //    }
 
   @GetMapping(value = "/admin/setting")
   public String settingPage(Model model) {
@@ -121,5 +119,11 @@ public class AdminController {
   @ResponseBody
   public String adminTest(@RequestBody String loginId) {
     return userService.getAdmin(loginId);
+  }
+
+  @GetMapping(value = "/admin/save/stock")
+  public ResponseEntity<String> stockSave() {
+    stockNotifyService.save();
+    return ResponseEntity.ok("save success");
   }
 }
