@@ -164,7 +164,7 @@ public class StockNotifyService implements DealNotifyService {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
 
     Map<String, List<StockHistory>> historyMap =
-        stockHistoryRepository.findAll().stream()
+        stockHistoryRepository.findByCreatedAtAfter(LocalDateTime.now().minusYears(1)).stream()
             .collect(Collectors.groupingBy(StockHistory::getCode));
     historyMap.forEach(
         (code, histories) -> {
