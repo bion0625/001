@@ -13,11 +13,13 @@ import java.util.*;
 import java.util.stream.Collectors;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
 @Data
 @NoArgsConstructor
+@Slf4j
 public class UPbitInfo implements DealItem {
 
   private String market;
@@ -108,7 +110,7 @@ public class UPbitInfo implements DealItem {
 
     JsonNode jsonNode = getJsonNodeByUrl(url);
 
-    if (jsonNode.get("error") != null) return Collections.emptyList();
+    if (jsonNode == null || jsonNode.get("error") != null) return Collections.emptyList();
 
     List<DealItem> coins = new ArrayList<>();
     for (JsonNode node : jsonNode) {
@@ -132,7 +134,7 @@ public class UPbitInfo implements DealItem {
 
     JsonNode jsonNode = getJsonNodeByUrl(url);
 
-    if (jsonNode.get("error") != null) return Collections.emptyList();
+    if (jsonNode == null || jsonNode.get("error") != null) return Collections.emptyList();
 
     List<DealPrice> prices = new ArrayList<>();
 
@@ -159,7 +161,7 @@ public class UPbitInfo implements DealItem {
 
     JsonNode jsonNode = getJsonNodeByUrl(url);
 
-    if (jsonNode.get("error") != null) return Optional.empty();
+    if (jsonNode == null || jsonNode.get("error") != null) return Optional.empty();
 
     return Optional.ofNullable(jsonNode.get(0))
         .map(
@@ -178,14 +180,14 @@ public class UPbitInfo implements DealItem {
 
   private static JsonNode getJsonNodeByUrl(String url) {
     Document doc;
-    JsonNode jsonNode;
+    JsonNode jsonNode = null;
     try {
       doc = getDocumentByUrl(url);
       String jsonData = doc.select("body").text();
       ObjectMapper mapper = new ObjectMapper();
       jsonNode = mapper.readTree(jsonData);
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.info(e.getMessage());
     }
     return jsonNode;
   }
