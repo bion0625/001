@@ -196,7 +196,7 @@ public class UPbitNotifyService implements DealNotifyService {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
 
     Map<String, List<UpbitHistory>> historyMap =
-        upbitHistoryRepository.findAll().stream()
+        upbitHistoryRepository.findByCreatedAtAfter(LocalDateTime.now().minusYears(1)).stream()
             .collect(Collectors.groupingBy(UpbitHistory::getCode));
     historyMap.forEach(
         (code, histories) -> {

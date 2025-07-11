@@ -18,7 +18,7 @@ public class LocalDateTimeAttributeConverter implements AttributeConverter<Local
 
   @Override
   public LocalDateTime convertToEntityAttribute(String dbData) {
-    if (dbData == null) return null;
+    if (dbData == null || dbData.isEmpty()) return null;
 
     // " " 기준으로 날짜/시간 분리 후 초 단위까지만 자르기
     String trimmed;
