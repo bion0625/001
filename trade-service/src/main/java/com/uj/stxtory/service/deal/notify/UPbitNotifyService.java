@@ -142,6 +142,7 @@ public class UPbitNotifyService implements DealNotifyService {
                     }));
   }
 
+  @Override
   @Async
   public void saveHistory() {
     DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);

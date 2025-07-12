@@ -6,4 +6,6 @@ public interface DealNotifyService {
   void save();
 
   DealInfo update();
+
+  void saveHistory();
 }
