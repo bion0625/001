@@ -70,7 +70,7 @@ public class StockNotifyService implements DealNotifyService {
     StockModel stockModel = new StockModel(settings.getHighestPriceReferenceDays());
 
     List<DealItem> saveItems =
-        stockModel.calculateByThreeDaysByPageForSave(
+        stockModel.calculateByThreeDaysByPageForSaveByDatabase(
             1 + ((double) settings.getExpectedLowPercentage() / 100),
             getPricesMap(stockModel, settings),
             settings.isVolumeCheck());
@@ -109,7 +109,7 @@ public class StockNotifyService implements DealNotifyService {
     DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
 
     if (saved.isEmpty()) return model;
-    model.calculateForTodayUpdate(
+    model.calculateForTodayUpdateByDatabase(
         items,
         getPricesMap(items, model, settings),
         1 + ((double) settings.getExpectedHighPercentage() / 100),
