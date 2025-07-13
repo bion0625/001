@@ -125,7 +125,7 @@ public class DealSettingsService {
                   uPbitRepository
                       .findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
                       .forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
-                  stockNotifyService.save();
+                  // stockNotifyService.save();
                 }
               }
               return n;
