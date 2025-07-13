@@ -422,7 +422,7 @@ body {
     white-space: nowrap;
 }
 
-/* main.css 맨 하단에 추가 */
+/* main.css 맨 아래, 모바일 전용 */
 @media (max-width: 768px) {
     .content table {
         width: auto;            /* 100% → auto */
@@ -431,5 +431,9 @@ body {
     .content {
         overflow-x: auto;       /* 가로 스크롤은 이미 켜져 있으니 그대로 */
     }
+    /* 1) 첫 번째 컬럼(이름)의 input 크기 재정의 */
+    .content table td:nth-child(1) input.input-field {
+        width: 120px;      /* 원하는 절대 너비(px)로 설정 */
+        min-width: 100px;  /* 최소 너비 보장 (선택) */
+    }
 }
-
