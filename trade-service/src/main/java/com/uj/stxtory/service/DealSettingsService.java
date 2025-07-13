@@ -4,8 +4,6 @@ import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.repository.DealSettingsRepository;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.repository.UPbitRepository;
-import com.uj.stxtory.service.deal.notify.StockNotifyService;
-import com.uj.stxtory.service.deal.notify.UPbitNotifyService;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
@@ -17,22 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class DealSettingsService {
 
-  private final UPbitNotifyService uPbitNotifyService;
-  private final StockNotifyService stockNotifyService;
-
   private final DealSettingsRepository dealSettingsRepository;
 
   private final StockRepository stockRepository;
   private final UPbitRepository uPbitRepository;
 
   public DealSettingsService(
-      UPbitNotifyService uPbitNotifyService,
-      StockNotifyService stockNotifyService,
       DealSettingsRepository dealSettingsRepository,
       StockRepository stockRepository,
       UPbitRepository uPbitRepository) {
-    this.uPbitNotifyService = uPbitNotifyService;
-    this.stockNotifyService = stockNotifyService;
     this.dealSettingsRepository = dealSettingsRepository;
     this.stockRepository = stockRepository;
     this.uPbitRepository = uPbitRepository;
@@ -115,18 +106,14 @@ public class DealSettingsService {
         .map(
             n -> {
               switch (n) {
-                case "stock" -> {
-                  stockRepository
-                      .findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
-                      .forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
-                  uPbitNotifyService.save();
-                }
-                case "upbit" -> {
-                  uPbitRepository
-                      .findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
-                      .forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
-                  // stockNotifyService.save();
-                }
+                case "stock" ->
+                    stockRepository
+                        .findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
+                        .forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
+                case "upbit" ->
+                    uPbitRepository
+                        .findAllByDeletedAtIsNullOrderByPricingReferenceDateDesc()
+                        .forEach(entity -> entity.setDeletedAt(LocalDateTime.now()));
               }
               return n;
             });
