@@ -1,5 +1,5 @@
 ### 서비스 (USER)페이지
-- [GO USER PAGE](http://lietzsche.iptime.org/)
+- [GO USER PAGE](http://lietzsche.iptime.org:8080)
 
 ---
 
