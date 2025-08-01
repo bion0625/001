@@ -13,7 +13,7 @@ public class EmailController {
   @ResponseBody
   @PostMapping("/gmail/target")
   public boolean addTarget(@RequestBody String target) {
-    mailService.gmailTaretEmailSave(target.replaceAll("\"", ""));
+    mailService.gmailTaretEmailSave(target.replace("\"", ""));
     return true;
   }
 

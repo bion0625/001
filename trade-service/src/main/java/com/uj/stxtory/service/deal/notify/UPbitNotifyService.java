@@ -1,6 +1,6 @@
 package com.uj.stxtory.service.deal.notify;
 
-import com.uj.stxtory.domain.dto.deal.DealInfo;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
@@ -59,7 +59,7 @@ public class UPbitNotifyService implements DealNotifyService {
     List<UPbit> saved = callSaved();
 
     DealSettingsInfo settings = dealSettingsService.getByName("upbit");
-    DealInfo model = new UPbitModel(settings.getHighestPriceReferenceDays());
+    DealModel model = new UPbitModel(settings.getHighestPriceReferenceDays());
 
     List<DealItem> saveItems =
         model.calculateByThreeDaysByPageForSaveByWeb(
@@ -74,7 +74,7 @@ public class UPbitNotifyService implements DealNotifyService {
                         item.toEntity(
                             1 + ((double) settings.getExpectedHighPercentage() / 100),
                             1 + ((double) settings.getExpectedLowPercentage() / 100)))
-            .collect(Collectors.toList());
+            .toList();
     uPbitRepository.saveAll(save);
 
     List<UPbitInfo> deleteList =
@@ -89,13 +89,13 @@ public class UPbitNotifyService implements DealNotifyService {
   }
 
   @Override
-  public DealInfo update() {
+  public DealModel update() {
     List<UPbit> saved = callSaved();
 
     List<DealItem> items = saved.stream().map(UPbitInfo::fromEntity).collect(Collectors.toList());
 
     DealSettingsInfo settings = dealSettingsService.getByName("upbit");
-    DealInfo model = new UPbitModel(settings.getHighestPriceReferenceDays());
+    DealModel model = new UPbitModel(settings.getHighestPriceReferenceDays());
     if (saved.isEmpty()) return model;
     model.calculateForTodayUpdateByWeb(
         new ArrayList<>(items),

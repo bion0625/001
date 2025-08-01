@@ -25,7 +25,7 @@ public class FormatUtil {
     long result = 0L;
     str = str.isEmpty() ? "0" : str;
     try {
-      str = str.replaceAll(",", "");
+      str = str.replace(",", "");
       result = Long.parseLong(str);
     } catch (Exception e) {
       log.info(String.format("stringToLong : str >>>> %s", str));
@@ -38,7 +38,7 @@ public class FormatUtil {
     if ("null".equals(str) || str == null) return result;
     str = str.isEmpty() ? "0" : str;
     try {
-      str = str.replaceAll(",", "");
+      str = str.replace(",", "");
       result = Double.parseDouble(str);
     } catch (Exception e) {
       log.info(String.format("StringToDouble : str >>>> %s", str));

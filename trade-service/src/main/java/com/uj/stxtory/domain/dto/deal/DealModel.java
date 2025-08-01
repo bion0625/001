@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Getter
 @Slf4j
-public abstract class DealInfo {
+public abstract class DealModel {
   public List<DealItem> deleteItems = new ArrayList<>(); // 업데이트 작업 후 매도 종목
   public List<DealItem> nowItems = new ArrayList<>(); // 갱신 포함 현재 활성화 종목
 

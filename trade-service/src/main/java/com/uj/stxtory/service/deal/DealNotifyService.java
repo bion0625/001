@@ -1,11 +1,11 @@
 package com.uj.stxtory.service.deal;
 
-import com.uj.stxtory.domain.dto.deal.DealInfo;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 
 public interface DealNotifyService {
   void save();
 
-  DealInfo update();
+  DealModel update();
 
   void saveHistory();
 }

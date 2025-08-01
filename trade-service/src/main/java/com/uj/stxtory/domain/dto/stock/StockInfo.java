@@ -39,7 +39,7 @@ public class StockInfo implements DealItem {
 
   @Override
   public void setPrices(List<DealPrice> prices) {
-    this.prices = prices.stream().map(p -> (StockPriceInfo) p).collect(Collectors.toList());
+    this.prices = prices.stream().map(p -> (StockPriceInfo) p).toList();
   }
 
   // 하한 및 기대 매도 가격 업데이트
@@ -153,66 +153,6 @@ public class StockInfo implements DealItem {
     return false;
   }
 
-  public static List<DealPrice> getPriceInfoByPage(String code, int from, int to) {
-    List<DealPrice> prices = new ArrayList<>();
-    for (int page = from; page <= to; page++) {
-      prices.addAll(getPriceInfo(code, page));
-    }
-    return prices;
-  }
-
-  public static List<DealPrice> getPriceInfo(String code, int page) { // 종목 및 페이지로 가격 정보 가져오기
-    Document doc;
-    try {
-      doc =
-          getDocumentByUrl(
-              String.format(
-                  "http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page));
-    } catch (Exception e) {
-      log.info("getPriceInfo error: " + code + ", " + page);
-      return Collections.emptyList();
-    }
-
-    Elements infoList = doc.select("tr");
-
-    List<DealPrice> prices = new ArrayList<>();
-
-    for (int i = 2; i < infoList.size() - 2; i++) {
-      if (i >= 7 && i <= 9) {
-        continue;
-      }
-      StockPriceInfo price = new StockPriceInfo();
-
-      Elements info = infoList.get(i).select("td");
-      price.setDate(FormatUtil.stringToDate(info.get(0).text()));
-      price.setClose(FormatUtil.stringToLong(info.get(1).text()));
-      price.setOpen(FormatUtil.stringToLong(info.get(3).text()));
-      price.setHigh(FormatUtil.stringToLong(info.get(4).text()));
-      price.setLow(FormatUtil.stringToLong(info.get(5).text()));
-      price.setVolume(FormatUtil.stringToLong(info.get(6).text()));
-
-      boolean minusDiffFlag =
-          info.get(2).text().contains("하한가") || info.get(2).text().contains("하락");
-      price.setDiff(
-          FormatUtil.stringToLong(
-              info.get(2)
-                  .text()
-                  .replaceAll("상한가", "")
-                  .replaceAll("하한가", "")
-                  .replaceAll("상승", "")
-                  .replaceAll("하락", "")
-                  .replaceAll("보합", "")
-                  .trim()));
-      if (minusDiffFlag) {
-        price.setDiff(price.getDiff() * -1);
-      }
-
-      prices.add(price);
-    }
-
-    return prices;
-  }
-
   //    public static int getPriceTotalPage(String code) throws IOException { // 가격 정보 가져올 때, 전체 페이지
   // 가져오기
   //        Document doc =
@@ -224,7 +164,7 @@ public class StockInfo implements DealItem {
   //        return totalPage;
   //    }
 
-  private static Document getDocumentByUrl(String url) {
+  public static Document getDocumentByUrl(String url) {
     try {
       return Jsoup.connect(url)
           .userAgent("Mozilla/5.0")

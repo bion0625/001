@@ -1,6 +1,6 @@
 package com.uj.stxtory.service.deal.notify;
 
-import com.uj.stxtory.domain.dto.deal.DealInfo;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
@@ -99,14 +99,14 @@ public class StockNotifyService implements DealNotifyService {
   }
 
   @Override
-  public DealInfo update() {
+  public DealModel update() {
     List<Stock> saved = callSaved();
 
     List<DealItem> items = saved.stream().map(StockInfo::fromEntity).collect(Collectors.toList());
 
     DealSettingsInfo settings = dealSettingsService.getByName(SETTING_NAME);
 
-    DealInfo model = new StockModel(settings.getHighestPriceReferenceDays());
+    DealModel model = new StockModel(settings.getHighestPriceReferenceDays());
 
     if (saved.isEmpty()) return model;
     model.calculateForTodayUpdateByDatabase(
@@ -124,7 +124,7 @@ public class StockNotifyService implements DealNotifyService {
   }
 
   private Map<String, List<DealPrice>> getPricesMap(
-      List<DealItem> items, DealInfo model, DealSettingsInfo settings) {
+          List<DealItem> items, DealModel model, DealSettingsInfo settings) {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
     items.forEach(
         item -> {
@@ -160,7 +160,7 @@ public class StockNotifyService implements DealNotifyService {
     return pricesMap;
   }
 
-  private Map<String, List<DealPrice>> getPricesMap(DealInfo model, DealSettingsInfo settings) {
+  private Map<String, List<DealPrice>> getPricesMap(DealModel model, DealSettingsInfo settings) {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
 
     Map<String, List<StockHistory>> historyMap =
