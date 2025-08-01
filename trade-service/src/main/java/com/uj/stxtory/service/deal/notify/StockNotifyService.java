@@ -12,7 +12,6 @@ import com.uj.stxtory.domain.entity.DividendStock;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.StockHistory;
 import com.uj.stxtory.repository.DividendStockRepository;
-import com.uj.stxtory.repository.StockHistoryLabelRepository;
 import com.uj.stxtory.repository.StockHistoryRepository;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.service.DealSettingsService;
@@ -254,7 +253,7 @@ public class StockNotifyService implements DealNotifyService {
   }
 
   public Map<String, Double> getSavedDividendStocks() {
-        return dividendStockRepository.findAllByDeletedAtIsNull().stream()
+        return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc().stream()
                 .collect(Collectors.toMap(DividendStock::getName, DividendStock::getDividendRate));
   }
 
@@ -263,10 +262,8 @@ public class StockNotifyService implements DealNotifyService {
       List<DividendStock> items = DividendStockInfo.getDividendStocks();
 
       // 기존 히스토리 있으면 삭제
-      items.forEach(item -> {
-          dividendStockRepository.findByCodeAndDeletedAtIsNull(item.getCode())
-                  .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now()));
-      });
+      items.forEach(item -> dividendStockRepository.findByCodeAndDeletedAtIsNull(item.getCode())
+                  .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now())));
 
       // 저장
       dividendStockRepository.saveAll(items);

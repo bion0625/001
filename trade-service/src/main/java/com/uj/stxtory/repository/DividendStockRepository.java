@@ -8,5 +8,5 @@ import java.util.Optional;
 
 public interface DividendStockRepository extends JpaRepository<DividendStock, Long> {
   Optional<DividendStock> findByCodeAndDeletedAtIsNull(String Code);
-  List<DividendStock> findAllByDeletedAtIsNull();
+  List<DividendStock> findAllByDeletedAtIsNullOrderByDividendRateDesc();
 }
