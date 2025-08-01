@@ -24,9 +24,7 @@
 		<h1>주식 및 코인 TRACKING</h1>
 		<button id="goStockList" class="button">STOCK</button>
 		<button id="goUpbitList" class="button">UPBIT</button>
-		<p class="highlight-red" th:if="${items != null && items.size() > 3}" th:text="${items.size()}"></p>
-		<p class="highlight-green" th:if="${items != null && items.size() == 3}" th:text="${items.size()}"></p>
-		<p class="highlight-blue" th:if="${items != null && items.size() > 0 && items.size() < 3}" th:text="${items.size()}"></p>
+		<button id="goDividendStockList" class="button">DIVIDEND STOCK</button>
 	</div>
 
 	<script>
@@ -36,6 +34,10 @@
 
 		document.querySelector("#goUpbitList").addEventListener("click", () => {
 			location.href = "/select/upbit";
+		});
+
+		document.querySelector("#goDividendStockList").addEventListener("click", () => {
+			location.href = "/select/dividend/stock";
 		});
 	</script>
 </body>

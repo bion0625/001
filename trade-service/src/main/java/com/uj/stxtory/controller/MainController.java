@@ -44,4 +44,10 @@ public class MainController {
     model.addAttribute("items", uPbitNotifyService.getSaved());
     return "upbit";
   }
+
+  @GetMapping(value = "/select/dividend/stock")
+  public String dividends(Model model) {
+    model.addAttribute("items", stockNotifyService.getSavedDividendStocks());
+    return "customStock";
+  }
 }

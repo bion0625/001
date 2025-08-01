@@ -49,8 +49,8 @@ public class StockNotifyService implements DealNotifyService {
     this.dealSettingsService = dealSettingsService;
     this.calculateStockService = calculStockService;
     this.stockHistoryRepository = stockHistoryRepository;
-      this.stockHistoryLabelRepository = stockHistoryLabelRepository;
-        this.dividendStockRepository = dividendStockRepository;
+    this.stockHistoryLabelRepository = stockHistoryLabelRepository;
+    this.dividendStockRepository = dividendStockRepository;
     }
 
   public List<StockInfo> getSaved() {
@@ -255,6 +255,11 @@ public class StockNotifyService implements DealNotifyService {
         .forEach(info -> calculateStockService.savePriceHistoryWithLabel(info, stockModel));
   }
 
+  public Map<String, Double> getSavedDividendStocks() {
+        return dividendStockRepository.findAllByDeletedAtIsNull().stream()
+                .collect(Collectors.toMap(DividendStock::getName, DividendStock::getDividendRate));
+  }
+
   @Async
     public void saveDividendStocks() {
       List<DividendStock> items = new ArrayList<>();
@@ -268,7 +273,7 @@ public class StockNotifyService implements DealNotifyService {
 
       // 기존 히스토리 있으면 삭제
       items.forEach(item -> {
-          dividendStockRepository.findByCodeAndDeletedAtIsNotNull(item.getCode())
+          dividendStockRepository.findByCodeAndDeletedAtIsNull(item.getCode())
                   .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now()));
       });
 
