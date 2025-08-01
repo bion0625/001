@@ -36,7 +36,6 @@ public class StockNotifyService implements DealNotifyService {
   private final StockHistoryRepository stockHistoryRepository;
   private final DealSettingsService dealSettingsService;
   private final CalculateStockService calculateStockService;
-  private final StockHistoryLabelRepository stockHistoryLabelRepository;
     private final DividendStockRepository dividendStockRepository;
 
     public StockNotifyService(
@@ -44,12 +43,11 @@ public class StockNotifyService implements DealNotifyService {
           DealSettingsService dealSettingsService,
           CalculateStockService calculStockService,
           StockHistoryRepository stockHistoryRepository,
-          StockHistoryLabelRepository stockHistoryLabelRepository, DividendStockRepository dividendStockRepository) {
+          DividendStockRepository dividendStockRepository) {
     this.stockRepository = stockRepository;
     this.dealSettingsService = dealSettingsService;
     this.calculateStockService = calculStockService;
     this.stockHistoryRepository = stockHistoryRepository;
-    this.stockHistoryLabelRepository = stockHistoryLabelRepository;
     this.dividendStockRepository = dividendStockRepository;
     }
 
@@ -262,14 +260,7 @@ public class StockNotifyService implements DealNotifyService {
 
   @Async
     public void saveDividendStocks() {
-      List<DividendStock> items = new ArrayList<>();
-
-      Map<String, Double> dividendStocksMap = DividendStockInfo.getDividendStocks();
-      dividendStocksMap.keySet().forEach(code -> {
-          stockHistoryLabelRepository.findByCode(code)
-                  .map(s -> DividendStock.of(code, s.getName(), dividendStocksMap.get(code)))
-                  .ifPresent(items::add);
-      });
+      List<DividendStock> items = DividendStockInfo.getDividendStocks();
 
       // 기존 히스토리 있으면 삭제
       items.forEach(item -> {

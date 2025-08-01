@@ -1,28 +1,26 @@
 package com.uj.stxtory.domain.dto.stock;
 
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.entity.DividendStock;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
 public class DividendStockInfo {
 
-    public static Map<String, Double> getDividendStocks() {
-        Map<String, Double> dividend = StockInfo.getCompanyInfo()
-                .parallelStream()
-                .collect(
-                        Collectors.toMap(DealItem::getCode,
-                                info -> getDividendStock(info.getCode()),
-                                (a, v) -> a));
-
-        dividend.entrySet().removeIf(entry -> entry.getValue() == 0.0);
-
-        return dividend;
+    public static List<DividendStock> getDividendStocks() {
+        return StockInfo.getCompanyInfo().parallelStream()
+                .map(info -> DividendStock.of(info.getCode(), info.getName(), getDividendStock(info.getCode())))
+                .filter(Objects::nonNull)
+                .filter(ds -> !ds.getDividendRate().equals(0.0))
+                .toList();
     }
 
     // 배당 수익률 가져오기
