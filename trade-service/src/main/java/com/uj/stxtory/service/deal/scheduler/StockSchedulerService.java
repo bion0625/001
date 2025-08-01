@@ -63,4 +63,11 @@ public class StockSchedulerService implements DealSchedulerService {
     stockNotifyService.saveHistory();
     log.info("\n\n\nstock saveHistory complete\n\n\n");
   }
+
+  @Scheduled(cron = "0 30 17 * * *")
+  public void saveDividendStocks() {
+    log.info("\n\n\nstock saveDividendStocks start\n\n\n");
+    stockNotifyService.saveDividendStocks();
+    log.info("\n\n\nstock saveDividendStocks complete\n\n\n");
+  }
 }

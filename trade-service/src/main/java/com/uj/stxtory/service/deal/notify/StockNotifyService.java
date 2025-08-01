@@ -4,11 +4,15 @@ import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
+import com.uj.stxtory.domain.dto.stock.DividendStockInfo;
 import com.uj.stxtory.domain.dto.stock.StockInfo;
 import com.uj.stxtory.domain.dto.stock.StockModel;
 import com.uj.stxtory.domain.dto.stock.StockPriceInfo;
+import com.uj.stxtory.domain.entity.DividendStock;
 import com.uj.stxtory.domain.entity.Stock;
 import com.uj.stxtory.domain.entity.StockHistory;
+import com.uj.stxtory.repository.DividendStockRepository;
+import com.uj.stxtory.repository.StockHistoryLabelRepository;
 import com.uj.stxtory.repository.StockHistoryRepository;
 import com.uj.stxtory.repository.StockRepository;
 import com.uj.stxtory.service.DealSettingsService;
@@ -32,17 +36,22 @@ public class StockNotifyService implements DealNotifyService {
   private final StockHistoryRepository stockHistoryRepository;
   private final DealSettingsService dealSettingsService;
   private final CalculateStockService calculateStockService;
+  private final StockHistoryLabelRepository stockHistoryLabelRepository;
+    private final DividendStockRepository dividendStockRepository;
 
-  public StockNotifyService(
-      StockRepository stockRepository,
-      DealSettingsService dealSettingsService,
-      CalculateStockService calculStockService,
-      StockHistoryRepository stockHistoryRepository) {
+    public StockNotifyService(
+          StockRepository stockRepository,
+          DealSettingsService dealSettingsService,
+          CalculateStockService calculStockService,
+          StockHistoryRepository stockHistoryRepository,
+          StockHistoryLabelRepository stockHistoryLabelRepository, DividendStockRepository dividendStockRepository) {
     this.stockRepository = stockRepository;
     this.dealSettingsService = dealSettingsService;
     this.calculateStockService = calculStockService;
     this.stockHistoryRepository = stockHistoryRepository;
-  }
+      this.stockHistoryLabelRepository = stockHistoryLabelRepository;
+        this.dividendStockRepository = dividendStockRepository;
+    }
 
   public List<StockInfo> getSaved() {
     return callSaved().stream().map(StockInfo::fromEntity).toList();
@@ -244,5 +253,26 @@ public class StockNotifyService implements DealNotifyService {
     stockModel
         .getAll()
         .forEach(info -> calculateStockService.savePriceHistoryWithLabel(info, stockModel));
+  }
+
+  @Async
+    public void saveDividendStocks() {
+      List<DividendStock> items = new ArrayList<>();
+
+      Map<String, Double> dividendStocksMap = DividendStockInfo.getDividendStocks();
+      dividendStocksMap.keySet().forEach(code -> {
+          stockHistoryLabelRepository.findByCode(code)
+                  .map(s -> DividendStock.of(code, s.getName(), dividendStocksMap.get(code)))
+                  .ifPresent(items::add);
+      });
+
+      // 기존 히스토리 있으면 삭제
+      items.forEach(item -> {
+          dividendStockRepository.findByCodeAndDeletedAtIsNotNull(item.getCode())
+                  .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now()));
+      });
+
+      // 저장
+      dividendStockRepository.saveAll(items);
   }
 }

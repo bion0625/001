@@ -6,4 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface StockHistoryLabelRepository extends JpaRepository<StockHistoryLabel, Long> {
   Optional<StockHistoryLabel> findByCodeAndName(String code, String name);
+  Optional<StockHistoryLabel> findByCode(String code);
 }
