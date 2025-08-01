@@ -254,7 +254,11 @@ public class StockNotifyService implements DealNotifyService {
 
   public Map<String, Double> getSavedDividendStocks() {
         return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc().stream()
-                .collect(Collectors.toMap(DividendStock::getName, DividendStock::getDividendRate));
+                .collect(Collectors.toMap(
+                        DividendStock::getName,
+                        DividendStock::getDividendRate,
+                        (a, b) -> a,
+                        LinkedHashMap::new));
   }
 
   @Async
