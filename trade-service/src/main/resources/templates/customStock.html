@@ -24,9 +24,21 @@
 	<p class="highlight-blue" th:if="${items != null}" th:text="|총 ${items.size()} 종목|"></p>
 
 	<div class="stock-cards-container">
-		<div class="stock-card" th:each="entry : ${items}">
-			<h3 th:text="${entry.key}"></h3> <!-- 종목명 -->
-			<p>배당수익률: <span class="highlight-green" th:text="|${#numbers.formatDecimal(entry.value, 1, 2)}%|"></span></p>
+		<div class="stock-card" th:each="stock : ${items}">
+			<h3 th:text="${stock.name}">종목명</h3>
+			<p>
+				배당수익률:
+				<span class="highlight-green"
+					  th:text="|${#numbers.formatDecimal(stock.dividendRate, 1, 2)}%|">0.00%</span>
+			</p>
+			<p th:if="${stock.exDivDate != null}">
+				기준일:
+				<span th:text="${stock.exDivDate}">YYYY-MM-DD</span>
+			</p>
+			<p th:if="${stock.payDate != null}">
+				지급일:
+				<span th:text="${stock.payDate}">YYYY-MM-DD</span>
+			</p>
 		</div>
 	</div>
 

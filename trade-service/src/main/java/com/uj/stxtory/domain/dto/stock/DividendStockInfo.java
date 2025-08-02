@@ -2,6 +2,10 @@ package com.uj.stxtory.domain.dto.stock;
 
 import com.uj.stxtory.domain.entity.DividendStock;
 import com.uj.stxtory.util.FormatUtil;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -13,7 +17,24 @@ import java.util.List;
 import java.util.Objects;
 
 @Slf4j
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class DividendStockInfo {
+    private String name;
+    private Double dividendRate;
+    private LocalDate exDivDate;
+    private LocalDate payDate;
+
+    public static DividendStockInfo fromEntity(DividendStock entity) {
+        return DividendStockInfo.builder()
+                .name(entity.getName())
+                .dividendRate(entity.getDividendRate())
+                .exDivDate(entity.getExDivDate())
+                .payDate(entity.getPayDate())
+                .build();
+    }
 
     public static List<DividendStock> getDividendStocks() {
         return StockInfo.getCompanyInfo().parallelStream()
@@ -61,7 +82,8 @@ public class DividendStockInfo {
     }
 
     public static void main(String[] args) {
-        List<List<LocalDate>> list = StockInfo.getCompanyInfo().parallelStream()
+        List<List<LocalDate>> list = StockInfo.getCompanyInfo().subList(0,10)
+                .parallelStream()
                 .map(c -> getDateListAboutDividend(c.getCode()))
                 .filter(l -> l.size() == 2)
                 .toList();

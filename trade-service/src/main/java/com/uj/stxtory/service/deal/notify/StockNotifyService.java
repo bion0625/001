@@ -252,13 +252,18 @@ public class StockNotifyService implements DealNotifyService {
         .forEach(info -> calculateStockService.savePriceHistoryWithLabel(info, stockModel));
   }
 
-  public Map<String, Double> getSavedDividendStocks() {
-        return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc().stream()
-                .collect(Collectors.toMap(
-                        DividendStock::getName,
-                        DividendStock::getDividendRate,
-                        (a, b) -> a,
-                        LinkedHashMap::new));
+  public List<DividendStockInfo> getSavedDividendStocks() {
+      return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc()
+              .stream()
+              .map(DividendStockInfo::fromEntity)
+              .sorted(Comparator
+                      .comparing((DividendStockInfo s) ->
+                              s.getExDivDate() != null || s.getPayDate() != null)
+                      .reversed()
+                      .thenComparing(DividendStockInfo::getDividendRate,
+                              Comparator.nullsLast(Comparator.reverseOrder()))
+              )
+              .toList();
   }
 
   @Async
