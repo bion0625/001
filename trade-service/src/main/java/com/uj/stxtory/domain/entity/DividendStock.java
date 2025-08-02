@@ -1,6 +1,5 @@
 package com.uj.stxtory.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -10,7 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Builder
 @Data
@@ -29,8 +28,20 @@ public class DividendStock extends Base {
   @Column(name = "dividend_rate", nullable = false)
   private Double dividendRate;
 
-  public static DividendStock of(String code, String name, Double dividendRate) {
+  @Column(name = "ex_div_date")
+  private LocalDate exDivDate; // 배당락일
+
+  @Column(name = "pay_date")
+  private LocalDate payDate; // 지급일
+
+  public static DividendStock of(String code, String name, Double dividendRate, LocalDate exDivDate, LocalDate payDate) {
     if (code == null || name == null || dividendRate == null) return null;
-    return DividendStock.builder().code(code).name(name).dividendRate(dividendRate).build();
+    return DividendStock.builder()
+            .code(code)
+            .name(name)
+            .dividendRate(dividendRate)
+            .exDivDate(exDivDate)
+            .payDate(payDate)
+            .build();
   }
 }

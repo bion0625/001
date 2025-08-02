@@ -1,6 +1,7 @@
 package com.uj.stxtory.util;
 
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -75,9 +76,21 @@ public class FormatUtil {
 
       localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
     } catch (Exception e) {
-      e.printStackTrace();
+      log.warn("dateToLocalDateTime : date >>>> {}", date, e);
     }
     return localDateTime;
+  }
+
+  public static LocalDate stringToLocalDate(String str) {
+    // String -> LocalDate
+    LocalDate localDate = null;
+    if (str.isEmpty()) return null;
+    try {
+      localDate = LocalDate.parse(str);
+    } catch (Exception e) {
+      log.warn("stringToLocalDate : str >>>> {}", str, e);
+    }
+    return localDate;
   }
 
   public static String dateToString(Date date) {
