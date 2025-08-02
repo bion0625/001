@@ -23,8 +23,8 @@ public class DividendStockInfo {
                             info.getCode(),
                             info.getName(),
                             getDividendStock(info.getCode()),
-                            dates.get(0),
-                            dates.get(1));
+                            dates.size() == 2 ? dates.get(0) : null,
+                            dates.size() == 2 ? dates.get(1) : null);
                 })
                 .filter(Objects::nonNull)
                 .filter(ds -> !ds.getDividendRate().equals(0.0))
