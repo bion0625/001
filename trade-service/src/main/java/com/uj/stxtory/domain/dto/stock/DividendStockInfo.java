@@ -37,7 +37,7 @@ public class DividendStockInfo {
     }
 
     public static List<DividendStock> getDividendStocks() {
-        return StockInfo.getCompanyInfo().parallelStream()
+        return StockInfo.getCompanyInfo().stream()
                 .map(info -> {
                     List<LocalDate> dates = getDateListAboutDividend(info.getCode());
                     return DividendStock.of(
@@ -79,11 +79,6 @@ public class DividendStockInfo {
             dividendRate = 0.0;
         }
         return dividendRate;
-    }
-
-    public static void main(String[] args) {
-        List<DividendStock> a = getDividendStocks();
-        System.out.println(a);
     }
 
     public static List<LocalDate> getDateListAboutDividend(String code) {
