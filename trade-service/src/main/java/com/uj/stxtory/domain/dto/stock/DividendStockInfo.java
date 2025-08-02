@@ -82,12 +82,8 @@ public class DividendStockInfo {
     }
 
     public static void main(String[] args) {
-        List<List<LocalDate>> list = StockInfo.getCompanyInfo().subList(0,10)
-                .parallelStream()
-                .map(c -> getDateListAboutDividend(c.getCode()))
-                .filter(l -> l.size() == 2)
-                .toList();
-        System.out.println(list);
+        List<DividendStock> a = getDividendStocks();
+        System.out.println(a);
     }
 
     public static List<LocalDate> getDateListAboutDividend(String code) {
