@@ -1,7 +1,7 @@
 package com.uj.stxtory.service.deal.notify;
 
-import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitInfo;
 import com.uj.stxtory.domain.dto.upbit.UPbitModel;

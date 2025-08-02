@@ -3,11 +3,9 @@ package com.uj.stxtory.domain.dto.stock;
 import com.uj.stxtory.domain.dto.deal.DealItem;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.entity.Stock;
-import com.uj.stxtory.util.FormatUtil;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -112,6 +110,9 @@ public class StockInfo implements DealItem {
     } catch (Exception e) {
       throw new RuntimeException("getCompanyInfo error");
     }
+
+    if (doc == null) return new ArrayList<>();
+
     Elements infoList = doc.select("tr");
     for (int i = 1; i < infoList.size(); i++) {
       Elements info = infoList.get(i).select("td");
@@ -136,6 +137,8 @@ public class StockInfo implements DealItem {
       log.info("getStockMarketIdentifier error: " + code);
       return false;
     }
+
+    if (doc == null) return false;
 
     Elements kospiList = doc.select("img.kospi");
 

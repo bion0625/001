@@ -4,12 +4,11 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import java.time.LocalDate;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDate;
 
 @Builder
 @Data
@@ -34,14 +33,15 @@ public class DividendStock extends Base {
   @Column(name = "pay_date")
   private LocalDate payDate; // 지급일
 
-  public static DividendStock of(String code, String name, Double dividendRate, LocalDate exDivDate, LocalDate payDate) {
+  public static DividendStock of(
+      String code, String name, Double dividendRate, LocalDate exDivDate, LocalDate payDate) {
     if (code == null || name == null || dividendRate == null) return null;
     return DividendStock.builder()
-            .code(code)
-            .name(name)
-            .dividendRate(dividendRate)
-            .exDivDate(exDivDate)
-            .payDate(payDate)
-            .build();
+        .code(code)
+        .name(name)
+        .dividendRate(dividendRate)
+        .exDivDate(exDivDate)
+        .payDate(payDate)
+        .build();
   }
 }

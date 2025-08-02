@@ -1,10 +1,9 @@
 package com.uj.stxtory.domain.dto.upbit;
 
-import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,7 +1,7 @@
 package com.uj.stxtory.service.deal.notify;
 
-import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import com.uj.stxtory.domain.dto.deal.DealSettingsInfo;
 import com.uj.stxtory.domain.dto.stock.DividendStockInfo;
@@ -35,20 +35,20 @@ public class StockNotifyService implements DealNotifyService {
   private final StockHistoryRepository stockHistoryRepository;
   private final DealSettingsService dealSettingsService;
   private final CalculateStockService calculateStockService;
-    private final DividendStockRepository dividendStockRepository;
+  private final DividendStockRepository dividendStockRepository;
 
-    public StockNotifyService(
-          StockRepository stockRepository,
-          DealSettingsService dealSettingsService,
-          CalculateStockService calculStockService,
-          StockHistoryRepository stockHistoryRepository,
-          DividendStockRepository dividendStockRepository) {
+  public StockNotifyService(
+      StockRepository stockRepository,
+      DealSettingsService dealSettingsService,
+      CalculateStockService calculStockService,
+      StockHistoryRepository stockHistoryRepository,
+      DividendStockRepository dividendStockRepository) {
     this.stockRepository = stockRepository;
     this.dealSettingsService = dealSettingsService;
     this.calculateStockService = calculStockService;
     this.stockHistoryRepository = stockHistoryRepository;
     this.dividendStockRepository = dividendStockRepository;
-    }
+  }
 
   public List<StockInfo> getSaved() {
     return callSaved().stream().map(StockInfo::fromEntity).toList();
@@ -130,7 +130,7 @@ public class StockNotifyService implements DealNotifyService {
   }
 
   private Map<String, List<DealPrice>> getPricesMap(
-          List<DealItem> items, DealModel model, DealSettingsInfo settings) {
+      List<DealItem> items, DealModel model, DealSettingsInfo settings) {
     Map<String, List<DealPrice>> pricesMap = new HashMap<>();
     items.forEach(
         item -> {
@@ -253,28 +253,30 @@ public class StockNotifyService implements DealNotifyService {
   }
 
   public List<DividendStockInfo> getSavedDividendStocks() {
-      return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc()
-              .stream()
-              .map(DividendStockInfo::fromEntity)
-              .sorted(Comparator
-                      .comparing((DividendStockInfo s) ->
-                              s.getExDivDate() != null || s.getPayDate() != null)
-                      .reversed()
-                      .thenComparing(DividendStockInfo::getDividendRate,
-                              Comparator.nullsLast(Comparator.reverseOrder()))
-              )
-              .toList();
+    return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc().stream()
+        .map(DividendStockInfo::fromEntity)
+        .sorted(
+            Comparator.comparing(
+                    (DividendStockInfo s) -> s.getExDivDate() != null || s.getPayDate() != null)
+                .reversed()
+                .thenComparing(
+                    DividendStockInfo::getDividendRate,
+                    Comparator.nullsLast(Comparator.reverseOrder())))
+        .toList();
   }
 
   @Async
-    public void saveDividendStocks() {
-      List<DividendStock> items = DividendStockInfo.getDividendStocks();
+  public void saveDividendStocks() {
+    List<DividendStock> items = DividendStockInfo.getDividendStocks();
 
-      // 기존 히스토리 있으면 삭제
-      items.forEach(item -> dividendStockRepository.findByCodeAndDeletedAtIsNull(item.getCode())
-                  .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now())));
+    // 기존 히스토리 있으면 삭제
+    items.forEach(
+        item ->
+            dividendStockRepository
+                .findByCodeAndDeletedAtIsNull(item.getCode())
+                .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now())));
 
-      // 저장
-      dividendStockRepository.saveAll(items);
+    // 저장
+    dividendStockRepository.saveAll(items);
   }
 }

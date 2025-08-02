@@ -2,10 +2,8 @@ package com.uj.stxtory.domain.dto.upbit;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
-
-import java.util.*;
-
 import com.uj.stxtory.util.FormatUtil;
+import java.util.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +23,7 @@ public class UPbitPriceInfo implements DealPrice {
   public static List<DealPrice> getPriceInfoByDay(String market, int days) {
 
     String url =
-            String.format("https://api.upbit.com/v1/candles/days?count=%d&market=%s", days, market);
+        String.format("https://api.upbit.com/v1/candles/days?count=%d&market=%s", days, market);
 
     JsonNode jsonNode = UPbitInfo.getJsonNodeByUrl(url);
 
@@ -36,8 +34,8 @@ public class UPbitPriceInfo implements DealPrice {
     for (JsonNode node : jsonNode) {
       UPbitPriceInfo price = new UPbitPriceInfo();
       price.setDate(
-              FormatUtil.stringToDate(
-                      node.get("candle_date_time_kst").asText().substring(0, 10).replace("-", ".")));
+          FormatUtil.stringToDate(
+              node.get("candle_date_time_kst").asText().substring(0, 10).replace("-", ".")));
       price.setClose(FormatUtil.stringToDouble(node.get("trade_price").asText()));
       price.setOpen(FormatUtil.stringToDouble(node.get("opening_price").asText()));
       price.setHigh(FormatUtil.stringToDouble(node.get("high_price").asText()));
@@ -59,17 +57,17 @@ public class UPbitPriceInfo implements DealPrice {
     if (jsonNode == null || jsonNode.get("error") != null) return Optional.empty();
 
     return Optional.ofNullable(jsonNode.get(0))
-            .map(
-                    node -> {
-                      UPbitPriceInfo price = new UPbitPriceInfo();
-                      price.setDate(new Date());
-                      price.setClose(FormatUtil.stringToDouble(node.get("trade_price").asText()));
-                      price.setOpen(FormatUtil.stringToDouble(node.get("opening_price").asText()));
-                      price.setHigh(FormatUtil.stringToDouble(node.get("high_price").asText()));
-                      price.setLow(FormatUtil.stringToDouble(node.get("low_price").asText()));
-                      price.setDiff(FormatUtil.stringToDouble(node.get("change_price").asText()));
-                      price.setVolume(FormatUtil.stringToDouble(node.get("acc_trade_volume").asText()));
-                      return price;
-                    });
+        .map(
+            node -> {
+              UPbitPriceInfo price = new UPbitPriceInfo();
+              price.setDate(new Date());
+              price.setClose(FormatUtil.stringToDouble(node.get("trade_price").asText()));
+              price.setOpen(FormatUtil.stringToDouble(node.get("opening_price").asText()));
+              price.setHigh(FormatUtil.stringToDouble(node.get("high_price").asText()));
+              price.setLow(FormatUtil.stringToDouble(node.get("low_price").asText()));
+              price.setDiff(FormatUtil.stringToDouble(node.get("change_price").asText()));
+              price.setVolume(FormatUtil.stringToDouble(node.get("acc_trade_volume").asText()));
+              return price;
+            });
   }
 }

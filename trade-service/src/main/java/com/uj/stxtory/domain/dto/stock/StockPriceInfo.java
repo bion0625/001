@@ -1,13 +1,11 @@
 package com.uj.stxtory.domain.dto.stock;
 
 import com.uj.stxtory.domain.dto.deal.DealPrice;
-
+import com.uj.stxtory.util.FormatUtil;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-
-import com.uj.stxtory.util.FormatUtil;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,13 +37,16 @@ public class StockPriceInfo implements DealPrice {
   public static List<DealPrice> getPriceInfo(String code, int page) { // 종목 및 페이지로 가격 정보 가져오기
     Document doc;
     try {
-      doc = StockInfo.getDocumentByUrl(
-                      String.format(
-                              "http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page));
+      doc =
+          StockInfo.getDocumentByUrl(
+              String.format(
+                  "http://finance.naver.com/item/sise_day.nhn?code=%s&page=%d", code, page));
     } catch (Exception e) {
       log.info("getPriceInfo error: " + code + ", " + page);
       return Collections.emptyList();
     }
+
+    if (doc == null) return new ArrayList<>();
 
     Elements infoList = doc.select("tr");
 
@@ -66,17 +67,17 @@ public class StockPriceInfo implements DealPrice {
       price.setVolume(FormatUtil.stringToLong(info.get(6).text()));
 
       boolean minusDiffFlag =
-              info.get(2).text().contains("하한가") || info.get(2).text().contains("하락");
+          info.get(2).text().contains("하한가") || info.get(2).text().contains("하락");
       price.setDiff(
-              FormatUtil.stringToLong(
-                      info.get(2)
-                              .text()
-                              .replace("상한가", "")
-                              .replace("하한가", "")
-                              .replace("상승", "")
-                              .replace("하락", "")
-                              .replace("보합", "")
-                              .trim()));
+          FormatUtil.stringToLong(
+              info.get(2)
+                  .text()
+                  .replace("상한가", "")
+                  .replace("하한가", "")
+                  .replace("상승", "")
+                  .replace("하락", "")
+                  .replace("보합", "")
+                  .trim()));
       if (minusDiffFlag) {
         price.setDiff(price.getDiff() * -1);
       }

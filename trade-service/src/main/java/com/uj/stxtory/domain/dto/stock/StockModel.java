@@ -1,7 +1,7 @@
 package com.uj.stxtory.domain.dto.stock;
 
-import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealItem;
+import com.uj.stxtory.domain.dto.deal.DealModel;
 import com.uj.stxtory.domain.dto.deal.DealPrice;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
