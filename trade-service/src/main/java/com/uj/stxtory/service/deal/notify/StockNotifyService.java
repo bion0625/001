@@ -77,7 +77,8 @@ public class StockNotifyService implements DealNotifyService {
 
     List<DealItem> saveItems =
         stockModel.calculateByThreeDaysByPageForSaveByDatabase(
-            1 + ((double) settings.getExpectedLowPercentage() / 100),
+            (double) settings.getExpectedLowPercentage(),
+            (double) settings.getExpectedHighPercentage(),
             getPricesMap(stockModel, settings),
             settings.isVolumeCheck());
 
@@ -255,14 +256,15 @@ public class StockNotifyService implements DealNotifyService {
   public List<DividendStockInfo> getSavedDividendStocks() {
     return dividendStockRepository.findAllByDeletedAtIsNullOrderByDividendRateDesc().stream()
         .map(DividendStockInfo::fromEntity)
-            // 추후 배당락일과 지급일이 설정된 종목이 우선 보여야 할 때 수정(현재 크롤링해서 가져오는 배당락일과 지급일이 유효하지 않음)
-//        .sorted(
-//            Comparator.comparing(
-//                    (DividendStockInfo s) -> s.getExDivDate() != null || s.getPayDate() != null)
-//                .reversed()
-//                .thenComparing(
-//                    DividendStockInfo::getDividendRate,
-//                    Comparator.nullsLast(Comparator.reverseOrder())))
+        // 추후 배당락일과 지급일이 설정된 종목이 우선 보여야 할 때 수정(현재 크롤링해서 가져오는 배당락일과 지급일이 유효하지 않음)
+        //        .sorted(
+        //            Comparator.comparing(
+        //                    (DividendStockInfo s) -> s.getExDivDate() != null || s.getPayDate() !=
+        // null)
+        //                .reversed()
+        //                .thenComparing(
+        //                    DividendStockInfo::getDividendRate,
+        //                    Comparator.nullsLast(Comparator.reverseOrder())))
         .toList();
   }
 

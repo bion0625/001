@@ -95,7 +95,7 @@ public abstract class DealModel {
   }
 
   public List<DealItem> calculateByThreeDaysByPageForSaveByDatabase(
-      double lowPer, Map<String, List<DealPrice>> pricesMap, boolean isValueCheck) {
+      double lowPer, double highPer, Map<String, List<DealPrice>> pricesMap, boolean isValueCheck) {
     log.info("\n\n\nsave log start!\n\n\n");
 
     Stream<DealItem> stream;
@@ -143,7 +143,8 @@ public abstract class DealModel {
 
               // 고점 대비 lowPer 미만이면 제외 - 현재가(종가) 기준
               if (prices.get(lastdayIndex).getClose()
-                  < (Math.round(prices.get(lastdayIndex).getHigh() * lowPer))) return false;
+                  < (Math.round(prices.get(lastdayIndex).getHigh() * (1 - (lowPer / 100)))))
+                return false;
 
               // 조회 기간(6개월) 중 신고가가 아니면 제외
               DealPrice checkPrice =
@@ -152,6 +153,17 @@ public abstract class DealModel {
                       .orElse(null);
               if (checkPrice == null || prices.get(lastdayIndex).getHigh() != checkPrice.getHigh())
                 return false;
+
+              // 진폭
+              // 조회 기간이 20일 이상이면 20일 최대 진폭, 미만이면 조회 기간 최대 진폭 계산
+              int size = Math.min(prices.size(), 20);
+              double high =
+                  prices.subList(0, size).stream().mapToDouble(DealPrice::getHigh).max().orElse(0D);
+              double low =
+                  prices.subList(0, size).stream().mapToDouble(DealPrice::getHigh).min().orElse(0D);
+              if (high == 0D || low == 0D) return false;
+              double amplitudePercent = (high - low) / low * 100;
+              if (amplitudePercent < (highPer) || amplitudePercent > (highPer * 3)) return false;
 
               // 리스트에 저장
               item.setPrices(prices);
