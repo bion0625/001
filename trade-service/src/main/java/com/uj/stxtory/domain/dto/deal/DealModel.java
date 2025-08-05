@@ -143,7 +143,7 @@ public abstract class DealModel {
 
               // 고점 대비 lowPer 미만이면 제외 - 현재가(종가) 기준
               if (prices.get(lastdayIndex).getClose()
-                  < (Math.round(prices.get(lastdayIndex).getHigh() * (1 - (lowPer / 100)))))
+                  < (Math.round(prices.get(lastdayIndex).getHigh() * (1 + (lowPer / 100)))))
                 return false;
 
               // 조회 기간(6개월) 중 신고가가 아니면 제외
