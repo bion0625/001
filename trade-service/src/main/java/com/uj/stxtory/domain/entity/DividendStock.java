@@ -44,4 +44,10 @@ public class DividendStock extends Base {
         .payDate(payDate)
         .build();
   }
+
+  public boolean valueEquals(DividendStock ds) {
+    return this.dividendRate.equals(ds.getDividendRate())
+        && this.exDivDate.equals(ds.getExDivDate())
+        && this.payDate.equals(ds.getPayDate());
+  }
 }

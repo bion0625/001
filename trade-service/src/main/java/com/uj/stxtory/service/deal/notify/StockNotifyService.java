@@ -272,12 +272,23 @@ public class StockNotifyService implements DealNotifyService {
   public void saveDividendStocks() {
     List<DividendStock> items = DividendStockInfo.getDividendStocks();
 
-    // 기존 히스토리 있으면 삭제
-    items.forEach(
-        item ->
-            dividendStockRepository
-                .findByCodeAndDeletedAtIsNull(item.getCode())
-                .ifPresent(stock -> stock.setDeletedAt(LocalDateTime.now())));
+    // 기존 히스토리 있으면, 비교 후 모든 값이 같으면 삭제
+    items =
+        items.stream()
+            .filter(
+                item -> {
+                  Optional<DividendStock> optional =
+                      dividendStockRepository.findByCodeAndDeletedAtIsNull(item.getCode());
+                  if (optional.isPresent()) {
+                    DividendStock ds = optional.get();
+                    if (item.valueEquals(ds)) return false;
+                    else {
+                      ds.setDeletedAt(LocalDateTime.now());
+                    }
+                  }
+                  return true;
+                })
+            .toList();
 
     // 저장
     dividendStockRepository.saveAll(items);
