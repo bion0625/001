@@ -67,6 +67,20 @@ public class StockNotifyService implements DealNotifyService {
         .toList();
   }
 
+  public static void main(String[] args) {
+    int page = 13;
+    String stockCode = "033240";
+    long highPer = 10L;
+    long lowPer = -5L;
+
+    List<DealPrice> priceInfos = StockPriceInfo.getPriceInfoByPage(stockCode, 1, page);
+
+    Map<String, List<DealPrice>> map = Map.of(stockCode, priceInfos);
+
+    StockModel model = new StockModel(page);
+    model.calculateByThreeDaysByPageForSaveByDatabase(lowPer, highPer, map, true);
+  }
+
   @Async
   @Override
   public void save() {
